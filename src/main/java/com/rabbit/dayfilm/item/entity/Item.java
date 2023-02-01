@@ -23,6 +23,7 @@ public class Item {
     private Integer pricePerOne;
 
     private Integer pricePerFive;
+
     private Integer pricePerTen;
 
     @Column(nullable = false)
@@ -35,8 +36,8 @@ public class Item {
     @Enumerated(EnumType.STRING)
     private ItemStatus itemStatus;
 
-    @Temporal(TemporalType.DATE)
     private LocalDate purchaseDate;
+
     private Integer purchasePrice;
 
     @Column(nullable = false)
@@ -52,10 +53,8 @@ public class Item {
     @Column(nullable = false)
     private Integer quantity;
 
-    @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime createdDate;
 
-    @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime modifiedDate;
 
 }
