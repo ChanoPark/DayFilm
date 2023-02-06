@@ -1,21 +1,26 @@
 package com.rabbit.dayfilm.item.entity;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+
 public enum Category {
-    CAMERA(1000, "카메라"),
-    LENS(2000, "렌즈"),
-    CAMCORDER(3000, "캠코더"),
-    DRONE(4000, "드론, 액션캠"),
-    MIC(5000, "음향 및 마이크"),
-    LIGHT(6000, "조명"),
-    ACCESSORY(7000, "액세서리"),
-    ETC(8000, "기타");
+    CAMERA("카메라"),
+    LENS("렌즈"),
+    CAMCORDER( "캠코더"),
+    DRONE("드론, 액션캠"),
+    MIC( "음향 및 마이크"),
+    LIGHT( "조명"),
+    ACCESSORY( "액세서리"),
+    ETC("기타");
 
 
-    private final int code;
     private final String value;
 
-    Category(int code, String value) {
-        this.code = code;
+    Category(String value) {
         this.value = value;
+    }
+
+    @JsonCreator
+    public static Category from(String value) {
+        return Category.valueOf(value);
     }
 }
