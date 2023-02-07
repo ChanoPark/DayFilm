@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class Item {
     @Id @GeneratedValue
-    private int id;
+    private Long id;
 
     @Column(nullable = false)
     private String title;
