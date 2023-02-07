@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Builder
@@ -14,6 +16,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class Item {
     @Id @GeneratedValue
+    @Column(name = "item_id")
     private Long id;
 
     @Column(nullable = false)
@@ -59,6 +62,11 @@ public class Item {
 
     @Column(nullable = false)
     private Integer quantity;
+
+    @Column(nullable = false)
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "item_id")
+    private List<ItemImage> itemImages;
 
     private LocalDateTime createdDate;
 
