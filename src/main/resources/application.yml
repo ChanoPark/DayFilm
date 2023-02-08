@@ -11,3 +11,20 @@ spring:
       hibernate:
         format_sql: true
         highlight_sql: true
+
+cloud:
+  aws:
+    s3:
+      bucket: day-film-bucket
+      filePath: ${cloud.aws.s3.filePath}
+    credentials:
+      instanceProfile: true
+      accessKey: ${cloud.aws.credentials.accessKey}
+      secretKey: ${cloud.aws.credentials.secretKey}
+    region:
+      static: ap-northeast-2
+    stack:
+      auto: false
+
+businessApi:
+  serviceKey: ${businessApi.serviceKey}
