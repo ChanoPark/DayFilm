@@ -1,6 +1,7 @@
 package com.rabbit.dayfilm.item.service;
 
 import com.amazonaws.util.CollectionUtils;
+import com.rabbit.dayfilm.exception.CustomException;
 import com.rabbit.dayfilm.item.dto.ImageInfoDto;
 import com.rabbit.dayfilm.item.dto.InsertItemRequestDto;
 import com.rabbit.dayfilm.item.dto.SelectAllItemsDto;
@@ -10,6 +11,9 @@ import com.rabbit.dayfilm.item.repository.ItemImageRepository;
 import com.rabbit.dayfilm.item.repository.ItemRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -71,14 +75,19 @@ public class ItemServiceImpl implements ItemSerivce{
                     .build();
 
             itemRepository.save(item);
-        } catch (Exception e) {
+        } catch (IOException e) {
             e.printStackTrace();
+            throw new CustomException("Item 생성 실패");
         }
 
     }
 
     @Override
-    public List<SelectAllItemsDto> selectAllItems() {
+    public Page<SelectAllItemsDto> selectAllItems(Pageable pageable, int pageNo, String category) {
+        if(category == null || category.isEmpty()) {
+            pageable = PageRequest.of(pageNo,1);
+            List<Item> findItems = itemRepository.findWithPagination(pageable);
+        }
         return null;
     }
 }

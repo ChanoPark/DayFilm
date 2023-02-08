@@ -11,14 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 @Service
 @Slf4j
@@ -26,11 +19,14 @@ import java.util.Optional;
 public class S3UploadService {
     private final AmazonS3Client amazonS3Client;
     @Value("${cloud.aws.s3.bucket}")
-    private String bucket;
+    public String bucket;
+
+    @Value("${cloud.aws.s3.filePath}")
+    private String filePath;
 
     public ImageInfoDto uploadFile(MultipartFile multipartFile) throws IOException {
         String fileName = multipartFile.getOriginalFilename();
-
+        filePath = "https://"+filePath+fileName;
         //파일 형식 구하기
         String ext = fileName.split("\\.")[1];
         String contentType = "";
@@ -43,18 +39,13 @@ public class S3UploadService {
             case "png":
                 contentType = "image/png";
                 break;
-            case "txt":
-                contentType = "text/plain";
-                break;
-            case "csv":
-                contentType = "text/csv";
-                break;
             default:
                 throw new CustomException("파일 형식이 잘못됐습니다.");
         }
 
         try {
             ObjectMetadata metadata = new ObjectMetadata();
+            metadata.setContentLength(multipartFile.getSize());
             metadata.setContentType(contentType);
 
             amazonS3Client.putObject(new PutObjectRequest(bucket, fileName, multipartFile.getInputStream(), metadata)
@@ -72,7 +63,11 @@ public class S3UploadService {
 //        for (S3ObjectSummary object: objectSummaries) {
 //            log.debug("object = " + object.toString());
 //        }
-        String filePath = amazonS3Client.getUrl(bucket, fileName).toString();
         return new ImageInfoDto(filePath, fileName);
+    }
+
+    /*S3의 파일 삭제*/
+    public void deleteFile(String fileName) {
+        amazonS3Client.deleteObject(new DeleteObjectRequest(bucket, fileName));
     }
 }

@@ -14,6 +14,7 @@ import java.time.LocalDate;
 @Getter
 @AllArgsConstructor
 public class InsertItemRequestDto {
+    private Long id;
     private String title;
     private Category category;
     private String detail;

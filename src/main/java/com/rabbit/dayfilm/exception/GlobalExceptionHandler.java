@@ -25,7 +25,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<ErrorResponse> handleInvalidPannelException(CustomException e) {
         log.error("CustomException: {}", e.getElement());
-        final ErrorResponse response = new ErrorResponse(CodeSet.BAD_REQUEST, e.getElement(), getFewStackTrace(e.getStackTrace()));
+        final ErrorResponse response = new ErrorResponse(CodeSet.BAD_REQUEST, e.getElement());
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 }

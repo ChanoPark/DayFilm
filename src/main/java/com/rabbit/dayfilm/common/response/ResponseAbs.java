@@ -15,6 +15,12 @@ public abstract class ResponseAbs implements Response{
         this.detail = codeSet.getMessage();
     }
 
+    public ResponseAbs(CodeSet codeSet, Object value) {
+        this.code = codeSet;
+        this.detail = codeSet.getMessage();
+        this.value = value;
+    }
+
     @Override
     public void setCode(CodeSet code) {
         this.code = code;

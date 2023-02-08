@@ -3,6 +3,7 @@ package com.rabbit.dayfilm.item.entity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.BatchSize;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -18,6 +19,14 @@ public class Item {
     @Id @GeneratedValue
     @Column(name = "item_id")
     private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "store_id")
+    private Store store;
+
+    @Column(nullable = false)
+    private String storeName; //리스트 가져올 때 가게 이름이 필요한데, join 쿼리를 사용할 때 리소스낭비가 심할 것으로 예상되서 name만 중복
+
 
     @Column(nullable = false)
     private String title;
