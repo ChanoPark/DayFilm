@@ -24,6 +24,7 @@ public class Store {
     private String pw;
 
     @Column(name = "role", nullable = false)
+    @Enumerated(EnumType.STRING)
     private Role role;
 
     @Column(name = "business_number", nullable = false, unique = true)
@@ -40,6 +41,7 @@ public class Store {
     private String managerName;
 
     @Column(name = "bank", nullable = false)
+    @Enumerated(EnumType.STRING)
     private Bank bank;
 
     @Column(name = "account_holder", nullable = false)
