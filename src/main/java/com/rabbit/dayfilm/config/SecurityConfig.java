@@ -1,5 +1,6 @@
 package com.rabbit.dayfilm.config;
 
+import com.rabbit.dayfilm.auth.filter.JWTFilter;
 import com.rabbit.dayfilm.auth.filter.SignUserFilter;
 import com.rabbit.dayfilm.auth.service.AuthService;
 import com.rabbit.dayfilm.auth.service.AuthServiceImpl;
@@ -47,6 +48,7 @@ public class SecurityConfig {
         LoginFilter loginFilter = new LoginFilter(authenticationManager(authenticationConfiguration), authenticationEntryPoint);
         SignStoreFilter signStoreFilter = new SignStoreFilter(authenticationManager(authenticationConfiguration), authenticationEntryPoint, authService, storeRepository, authRedisRepository,passwordEncoder);
         SignUserFilter signUserFilter = new SignUserFilter(authenticationManager(authenticationConfiguration), authenticationEntryPoint, authService, userRepository, authRedisRepository, passwordEncoder);
+        JWTFilter jwtFilter = new JWTFilter(authenticationManager(authenticationConfiguration), authService, authenticationEntryPoint);
 
         return http
                 .csrf().disable()
@@ -58,6 +60,7 @@ public class SecurityConfig {
                 .addFilterBefore(loginFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(signStoreFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(signUserFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling()
                 .authenticationEntryPoint(authenticationEntryPoint)
                 .accessDeniedHandler(accessDeniedHandler)

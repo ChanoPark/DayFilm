@@ -3,8 +3,10 @@ package com.rabbit.dayfilm.auth.service;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.rabbit.dayfilm.auth.AuthUtil;
 import com.rabbit.dayfilm.auth.Role;
 import com.rabbit.dayfilm.auth.UserInfo;
+import com.rabbit.dayfilm.auth.dto.LoginInfo;
 import com.rabbit.dayfilm.auth.dto.SignReqDto;
 import com.rabbit.dayfilm.auth.repository.AuthRedisRepository;
 import com.rabbit.dayfilm.common.CodeSet;
@@ -61,6 +63,7 @@ public class AuthServiceImpl implements UserDetailsService, AuthService {
 
     /**
      * 가게(Store) 회원 가입
+     *
      * @param request
      * @param refreshToken
      */
@@ -105,6 +108,7 @@ public class AuthServiceImpl implements UserDetailsService, AuthService {
 
     /**
      * 일반 회원 가입
+     *
      * @param request
      * @param refreshToken
      */
@@ -133,16 +137,19 @@ public class AuthServiceImpl implements UserDetailsService, AuthService {
 
     /**
      * 토큰
+     *
      * @param token
      * @return
      */
-    public UserInfo getUserClaim(String token) {
+    public LoginInfo getLoginInfoByToken(String token) {
         final Algorithm ALGORITHM = Algorithm.HMAC256(SECRET_KEY);
 
         DecodedJWT decodedToken = JWT.require(ALGORITHM).build().verify(token);
         String email = decodedToken.getSubject();
+        String encryptedPw = decodedToken.getClaim("code").asString();
+        String privateKey = decodedToken.getClaim("secret_key").asString();
 
-        Optional<UserInfo> userInfoOpt = authRedisRepository.findById(email);
-        return userInfoOpt.orElseThrow(() -> new FilterException(CodeSet.TOKEN_INVALID));
+        String decryptedPw = AuthUtil.decrypt(encryptedPw, privateKey);
+        return new LoginInfo(email, decryptedPw);
     }
 }
