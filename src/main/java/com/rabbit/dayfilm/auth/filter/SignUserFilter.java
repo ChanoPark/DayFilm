@@ -1,15 +1,15 @@
 package com.rabbit.dayfilm.auth.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.rabbit.dayfilm.auth.*;
+import com.rabbit.dayfilm.auth.AuthUtil;
+import com.rabbit.dayfilm.auth.RSAKey;
 import com.rabbit.dayfilm.auth.dto.LoginDto;
 import com.rabbit.dayfilm.auth.dto.SignReqDto;
 import com.rabbit.dayfilm.auth.repository.AuthRedisRepository;
 import com.rabbit.dayfilm.auth.service.AuthService;
 import com.rabbit.dayfilm.common.CodeSet;
 import com.rabbit.dayfilm.exception.FilterException;
-import com.rabbit.dayfilm.store.repository.StoreRepository;
-import lombok.extern.slf4j.Slf4j;
+import com.rabbit.dayfilm.user.UserRepository;
 import org.apache.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -27,28 +27,26 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-@Slf4j
-public class SignStoreFilter extends UsernamePasswordAuthenticationFilter {
-
-    public SignStoreFilter(AuthenticationManager authenticationManager,
-                           AuthenticationEntryPoint authenticationEntryPoint,
-                           AuthService authService,
-                           StoreRepository storeRepository,
-                           AuthRedisRepository authRedisRepository,
-                           PasswordEncoder passwordEncoder) {
+public class SignUserFilter extends UsernamePasswordAuthenticationFilter {
+    public SignUserFilter(AuthenticationManager authenticationManager,
+                          AuthenticationEntryPoint authenticationEntryPoint,
+                          AuthService authService,
+                          UserRepository userRepository,
+                          AuthRedisRepository authRedisRepository,
+                          PasswordEncoder passwordEncoder) {
         super(authenticationManager);
         this.authenticationEntryPoint = authenticationEntryPoint;
         this.authService = authService;
-        this.storeRepository = storeRepository;
+        this.userRepository = userRepository;
         this.authRedisRepository = authRedisRepository;
         this.passwordEncoder = passwordEncoder;
-        setFilterProcessesUrl("/sign/store");
+        setFilterProcessesUrl("/sign/user");
     }
 
     private final AuthenticationEntryPoint authenticationEntryPoint;
     private final AuthService authService;
     private final AuthRedisRepository authRedisRepository;
-    private final StoreRepository storeRepository;
+    private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
@@ -60,21 +58,21 @@ public class SignStoreFilter extends UsernamePasswordAuthenticationFilter {
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request,
                                                 HttpServletResponse response) throws AuthenticationException {
-        SignReqDto.SignStore signStoreDto;
+        SignReqDto.SignUser singUserDto;
 
         try {
-            signStoreDto = objectMapper.readValue(request.getInputStream(), SignReqDto.SignStore.class);
+            singUserDto = objectMapper.readValue(request.getInputStream(), SignReqDto.SignUser.class);
         } catch (IOException e) {
             throw new FilterException(CodeSet.INTERNAL_SERVER_ERROR);
         }
-        claim = new LoginDto(signStoreDto.getEmail(), signStoreDto.getPw());
+        claim = new LoginDto(singUserDto.getEmail(), singUserDto.getPw());
 
-        String originPw = signStoreDto.getPw();
-        String encodedPw = passwordEncoder.encode(signStoreDto.getPw());
-        signStoreDto.changeEncodedPw(encodedPw);
+        String originPw = singUserDto.getPw();
+        String encodedPw = passwordEncoder.encode(singUserDto.getPw());
+        singUserDto.changeEncodedPw(encodedPw);
 
         refreshToken = AuthUtil.createRefreshToken(claim.getEmail());
-        authService.signStore(signStoreDto, refreshToken);
+        authService.signUser(singUserDto, refreshToken);
 
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                 claim.getEmail(), originPw
@@ -106,8 +104,8 @@ public class SignStoreFilter extends UsernamePasswordAuthenticationFilter {
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response,
                                               AuthenticationException failed) throws IOException, ServletException {
-        if (claim != null && storeRepository.findStoreByEmail(claim.getEmail()).isPresent()) {
-            storeRepository.deleteStoreByEmail(claim.getEmail());
+        if (claim != null && userRepository.findUserByEmail(claim.getEmail()).isPresent()) {
+            userRepository.deleteUserByEmail(claim.getEmail());
             authRedisRepository.deleteById(claim.getEmail());
         }
 

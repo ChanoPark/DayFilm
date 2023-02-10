@@ -1,11 +1,14 @@
 package com.rabbit.dayfilm.user;
 
 import com.rabbit.dayfilm.auth.Role;
-import lombok.Getter;
+import lombok.*;
 
 import javax.persistence.*;
 
 @Entity
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class User {
     @Id @GeneratedValue
@@ -20,6 +23,12 @@ public class User {
 
     @Column(name = "nickname", nullable = false, unique = true)
     private String nickname;
+
+    @Column(name = "profile_path")
+    private String profilePath;
+
+    @Column(name = "profile_name")
+    private String profileName;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false)
