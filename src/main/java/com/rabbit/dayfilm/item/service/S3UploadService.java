@@ -24,8 +24,7 @@ public class S3UploadService {
     @Value("${cloud.aws.s3.filePath}")
     private String filePath;
 
-    public ImageInfoDto uploadFile(MultipartFile multipartFile) throws IOException {
-        String fileName = multipartFile.getOriginalFilename();
+    public ImageInfoDto uploadFile(MultipartFile multipartFile, String fileName) throws IOException {
         filePath = "https://"+filePath+fileName;
         //파일 형식 구하기
         String ext = fileName.split("\\.")[1];
@@ -55,14 +54,6 @@ public class S3UploadService {
         } catch (SdkClientException e) {
             e.printStackTrace();
         }
-
-        //object 정보 가져오기
-//        ListObjectsV2Result listObjectsV2Result = amazonS3Client.listObjectsV2(bucket);
-//        List<S3ObjectSummary> objectSummaries = listObjectsV2Result.getObjectSummaries();
-//
-//        for (S3ObjectSummary object: objectSummaries) {
-//            log.debug("object = " + object.toString());
-//        }
         return new ImageInfoDto(filePath, fileName);
     }
 
