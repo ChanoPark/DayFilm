@@ -2,7 +2,7 @@ package com.rabbit.dayfilm.auth.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rabbit.dayfilm.auth.*;
-import com.rabbit.dayfilm.auth.dto.LoginDto;
+import com.rabbit.dayfilm.auth.dto.LoginInfo;
 import com.rabbit.dayfilm.auth.dto.SignReqDto;
 import com.rabbit.dayfilm.auth.repository.AuthRedisRepository;
 import com.rabbit.dayfilm.auth.service.AuthService;
@@ -54,7 +54,7 @@ public class SignStoreFilter extends UsernamePasswordAuthenticationFilter {
     private final ObjectMapper objectMapper = new ObjectMapper();
     private static final String BEARER = "Bearer ";
 
-    private LoginDto claim;
+    private LoginInfo claim;
     private String refreshToken;
 
     @Override
@@ -67,7 +67,7 @@ public class SignStoreFilter extends UsernamePasswordAuthenticationFilter {
         } catch (IOException e) {
             throw new FilterException(CodeSet.INTERNAL_SERVER_ERROR);
         }
-        claim = new LoginDto(signStoreDto.getEmail(), signStoreDto.getPw());
+        claim = new LoginInfo(signStoreDto.getEmail(), signStoreDto.getPw());
 
         String originPw = signStoreDto.getPw();
         String encodedPw = passwordEncoder.encode(signStoreDto.getPw());
