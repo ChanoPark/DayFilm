@@ -1,7 +1,6 @@
 package com.rabbit.dayfilm.config;
 
 import com.rabbit.dayfilm.auth.service.AuthServiceImpl;
-import com.rabbit.dayfilm.auth.filter.LoginFilter;
 import com.rabbit.dayfilm.auth.filter.SignStoreFilter;
 import com.rabbit.dayfilm.auth.repository.AuthRedisRepository;
 import com.rabbit.dayfilm.store.repository.StoreRepository;
@@ -40,7 +39,6 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        LoginFilter loginFilter = new LoginFilter(authenticationManager(authenticationConfiguration));
         SignStoreFilter signStoreFilter = new SignStoreFilter(authenticationManager(authenticationConfiguration), authenticationEntryPoint, authService, storeRepository, authRedisRepository,passwordEncoder);
 
         return http
@@ -50,7 +48,6 @@ public class SecurityConfig {
                 .antMatchers("/yes").hasRole("ADMIN")
                 .anyRequest().permitAll()
                 .and()
-                .addFilterBefore(loginFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(signStoreFilter, UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling()
                 .authenticationEntryPoint(authenticationEntryPoint)
