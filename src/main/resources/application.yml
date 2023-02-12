@@ -29,13 +29,7 @@ cloud:
     stack:
       auto: false
 
-businessApi:
-  serviceKey: ${businessApi.serviceKey}
-
 secure:
   jwt:
     secretKey: ${secure.jwt.secretKey}
     issuer: ${secure.jwt.issuer}
-  RSA:
-    privateKey: ${secure.RSA.privateKey}
-    publicKey: ${secure.RSA.publicKey}

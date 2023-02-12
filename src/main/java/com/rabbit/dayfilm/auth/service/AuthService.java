@@ -1,8 +1,11 @@
 package com.rabbit.dayfilm.auth.service;
 
+import com.rabbit.dayfilm.auth.dto.LoginInfo;
 import com.rabbit.dayfilm.auth.dto.SignReqDto;
 
 public interface AuthService {
-    boolean checkBusinessNumber(Long bno);
-    void signStore(SignReqDto.SignStore request);
+    void signStore(SignReqDto.SignStore request, String refreshToken);
+    void signUser(SignReqDto.SignUser request, String refreshToken);
+    LoginInfo getLoginInfoByToken(String token);
+    String decryptPwInToken(String token, String encryptedPw);
 }

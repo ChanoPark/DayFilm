@@ -1,43 +1,44 @@
 package com.rabbit.dayfilm.auth.service;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.interfaces.DecodedJWT;
+import com.rabbit.dayfilm.auth.AuthUtil;
 import com.rabbit.dayfilm.auth.Role;
 import com.rabbit.dayfilm.auth.UserInfo;
+import com.rabbit.dayfilm.auth.dto.LoginInfo;
 import com.rabbit.dayfilm.auth.dto.SignReqDto;
 import com.rabbit.dayfilm.auth.repository.AuthRedisRepository;
 import com.rabbit.dayfilm.common.CodeSet;
-import com.rabbit.dayfilm.exception.CustomException;
 import com.rabbit.dayfilm.exception.FilterException;
 import com.rabbit.dayfilm.item.dto.ImageInfoDto;
 import com.rabbit.dayfilm.store.entity.Address;
 import com.rabbit.dayfilm.store.entity.Store;
 import com.rabbit.dayfilm.store.repository.StoreRepository;
+import com.rabbit.dayfilm.user.User;
+import com.rabbit.dayfilm.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.MediaType;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import javax.annotation.PostConstruct;
-import java.util.List;
 import java.util.Optional;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class AuthServiceImpl implements UserDetailsService, AuthService {
+    private final UserRepository userRepository;
     private final StoreRepository storeRepository;
     private final AuthRedisRepository authRedisRepository;
 
-    @Value("${businessApi.serviceKey}")
-    private String SERVICE_KEY;
-
+    @Value("${secure.jwt.secretKey}")
+    private String SECRET_KEY;
     WebClient webClient;
 
     @PostConstruct
@@ -47,75 +48,22 @@ public class AuthServiceImpl implements UserDetailsService, AuthService {
 
     @Override
     public UserDetails loadUserByUsername(String email) {
-
         Optional<UserInfo> userOpt = authRedisRepository.findById(email);
-        if (userOpt.isPresent()) {
-            UserInfo user = userOpt.get();
-            return org.springframework.security.core.userdetails.User.builder()
-                    .username(email)
-                    .password(user.getPw())
-                    .authorities("BASIC")
-                    .build();
-        } else {
-            Optional<Store> storeOpt = storeRepository.findStoreByEmail(email);
-            if (storeOpt.isPresent()) {
-                Store store = storeOpt.get();
-                return org.springframework.security.core.userdetails.User.builder()
-                        .username(email)
-                        .password(store.getPw())
-                        .authorities("BASIC")
-                        .build();
-            } else throw new CustomException("회원 정보가 올바르지 않습니다.");
-        }
+        UserInfo userInfo = userOpt.orElseThrow(() -> new FilterException(CodeSet.INVALID_USER));
+        return org.springframework.security.core.userdetails.User.builder()
+                .username(email)
+                .password(userInfo.getPw())
+                .authorities("BASIC")
+                .build();
     }
 
     /**
-     * 사업자 번호 상태 검사
-     * @apiNote 공공포털에서 발급 받은 키가 동작하지 않는 상태.
-     * 서버에 등록되기까지 기다려야 한다고 해서, 추후 확인 예정.
+     * 가게(Store) 회원 가입
+     * @param request
+     * @param refreshToken
      */
-    public boolean checkBusinessNumber(Long bno) {
-        MultiValueMap<String, List<Long>> body = new LinkedMultiValueMap<>();
-        body.add("b_no", List.of(bno));
-
-        String uri = "https://api.odcloud.kr/api/nts-businessman/v1/status?serviceKey=" + SERVICE_KEY;
-
-        String result = webClient.post()
-                .uri(uri)
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
-                .body(BodyInserters.fromMultipartData(body))
-                .exchangeToMono(response -> response.bodyToMono(String.class))
-                .block();
-
-        log.info("encoding Key:{}", result);
-
-        MultiValueMap<String, List<Long>> body2 = new LinkedMultiValueMap<>();
-        body2.add("b_no", List.of(bno));
-
-        String uri2 = "https://api.odcloud.kr/api/nts-businessman/v1/status?serviceKey=2VqG27NBkWZE8I9ugAQ0ezpMMOaKKTCns6zTQ5gqZkhtVjdREPCQ3Grr5q9/4atMcTGUG+09fF7ERAQ/+9kYUw==";
-
-        String result2 = webClient.post()
-                .uri(uri2)
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
-                .body(BodyInserters.fromMultipartData(body2))
-                .exchangeToMono(response -> response.bodyToMono(String.class))
-                .block();
-
-        log.info("decoding Key:{}", result2);
-        return false;
-    }
-
-    /**
-     * 대표자명 검사 (진위여부)
-     */
-    public void checkManagerName() {
-
-    }
-
     @Transactional
-    public void signStore(SignReqDto.SignStore request) {
+    public void signStore(SignReqDto.SignStore request, String refreshToken) {
         Optional<UserInfo> userOpt = authRedisRepository.findById(request.getEmail());
 
         if (userOpt.isEmpty()) {
@@ -143,7 +91,73 @@ public class AuthServiceImpl implements UserDetailsService, AuthService {
                     .build();
 
             storeRepository.save(store);
+            authRedisRepository.save(
+                    UserInfo.builder()
+                            .email(store.getEmail())
+                            .pw(store.getPw())
+                            .refreshToken(refreshToken)
+                            .nickname(request.getStoreName())
+                            .role(Role.STORE)
+                            .build()
+            );
         } else throw new FilterException(CodeSet.SIGNED_USER);
+    }
 
+    /**
+     * 일반 회원 가입
+     * @param request
+     * @param refreshToken
+     */
+    @Transactional
+    public void signUser(SignReqDto.SignUser request, String refreshToken) {
+        Optional<UserInfo> userOpt = authRedisRepository.findById(request.getEmail());
+
+        if (userOpt.isEmpty()) {
+            User user = User.builder()
+                    .email(request.getEmail())
+                    .pw(request.getPw())
+                    .nickname(request.getNickname())
+                    .role(Role.USER)
+                    .build();
+
+            userRepository.save(user);
+            authRedisRepository.save(
+                    UserInfo.builder()
+                            .email(user.getEmail())
+                            .pw(user.getPw())
+                            .refreshToken(refreshToken)
+                            .nickname(user.getNickname())
+                            .role(Role.USER)
+                            .build()
+            );
+        } else throw new FilterException(CodeSet.SIGNED_USER);
+    }
+
+    /**
+     * 토큰의 payload에 있는 로그인 정보 조회
+     * @param token
+     * @return LoginInfo
+     */
+    public LoginInfo getLoginInfoByToken(String token) {
+        final Algorithm ALGORITHM = Algorithm.HMAC256(SECRET_KEY);
+
+        DecodedJWT decodedToken = JWT.require(ALGORITHM).build().verify(token);
+        String email = decodedToken.getSubject();
+        String encryptedPw = decodedToken.getClaim("code").asString();
+        String privateKey = decodedToken.getClaim("secret_key").asString();
+
+        String decryptedPw = AuthUtil.decrypt(encryptedPw, privateKey);
+        return new LoginInfo(email, decryptedPw);
+    }
+
+    /**
+     * 토큰 내부에 있는 비밀번호 복호화
+     */
+    public String decryptPwInToken(String token, String encryptedPw) {
+        final Algorithm ALGORITHM = Algorithm.HMAC256(SECRET_KEY);
+
+        DecodedJWT decodedToken = JWT.require(ALGORITHM).build().verify(token);
+        String secretKey = decodedToken.getClaim("secret_key").asString();
+        return AuthUtil.decrypt(encryptedPw, secretKey);
     }
 }
