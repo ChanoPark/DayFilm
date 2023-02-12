@@ -14,7 +14,7 @@ import java.time.LocalDate;
 @Getter
 @AllArgsConstructor
 public class InsertItemRequestDto {
-    private Long id;
+    private Long sellerId;
     private String title;
     private Category category;
     private String detail;
@@ -24,7 +24,6 @@ public class InsertItemRequestDto {
     private String brandName;
     private String modelName;
     private ItemStatus itemStatus;
-    private Integer purchasePrice;
     private Method method;
     private Integer quantity;
 }

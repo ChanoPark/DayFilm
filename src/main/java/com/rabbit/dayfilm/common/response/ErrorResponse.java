@@ -7,15 +7,7 @@ import java.util.List;
 public class ErrorResponse extends ResponseAbs {
 
     transient String cause;
-    transient List<String> stackTrace;
 
-    public ErrorResponse(CodeSet code, String cause, List<String> stackTrace) {
-        super(code);
-        super.setDetail(cause);
-        super.setValue(stackTrace);
-        this.cause = cause;
-        this.stackTrace = stackTrace;
-    }
 
     public ErrorResponse(CodeSet code, String detail, String cause) {
         super(code);

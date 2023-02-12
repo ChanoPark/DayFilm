@@ -1,7 +1,9 @@
 package com.rabbit.dayfilm.item.entity;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import lombok.Getter;
 
+@Getter
 public enum Method {
     PARCEL("택배수령"),
     VISIT("방문수령");
@@ -12,7 +14,12 @@ public enum Method {
     }
 
     @JsonCreator
-    public static Method from(String value) {
-        return Method.valueOf(value);
+    public static Method get(String value) {
+        for (Method m : Method.values()) {
+            if(m.getValue().equals(value)) {
+                return m;
+            }
+        }
+        return null;
     }
 }

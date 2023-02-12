@@ -5,14 +5,18 @@ import com.querydsl.core.types.ExpressionUtils;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.JPAExpressions;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.rabbit.dayfilm.item.dto.ItemSearchCondition;
 import com.rabbit.dayfilm.item.dto.SelectAllItemsDto;
 import com.rabbit.dayfilm.item.entity.Category;
+import com.rabbit.dayfilm.item.entity.Item;
 import com.rabbit.dayfilm.item.entity.QItem;
 import com.rabbit.dayfilm.item.entity.QItemImage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.support.PageableExecutionUtils;
 
 import java.util.List;
 
@@ -25,8 +29,8 @@ public class ItemRepositoryImpl implements ItemRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public Page<SelectAllItemsDto> selectAllItems(ItemSearchCondition itemSearchCondition) {
-        List<SelectAllItemsDto> itemDto = queryFactory.
+    public Page<SelectAllItemsDto> selectAllItems(Category category, Pageable pageable) {
+        List<SelectAllItemsDto> content = queryFactory.
                 select(Projections.constructor(SelectAllItemsDto.class,
                         item.id.as("itemId"),
                         item.storeName,
@@ -41,10 +45,18 @@ public class ItemRepositoryImpl implements ItemRepositoryCustom {
                                 , "imagePath")))
                 .from(item)
                 .innerJoin(item.itemImages, itemImage)
-                .where(useCategoryEq(itemSearchCondition.getCategory()))
+                .where(useCategoryEq(category))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
                 .fetch();
 
-        return null;
+        JPAQuery<Long> countQuery = queryFactory
+                .select(item.count())
+                .from(item)
+                .innerJoin(item.itemImages, itemImage)
+                .where(useCategoryEq(category));
+
+        return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
     }
 
     private BooleanExpression useCategoryEq(Category category) {

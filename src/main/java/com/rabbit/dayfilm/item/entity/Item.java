@@ -55,9 +55,6 @@ public class Item {
     @Enumerated(EnumType.STRING)
     private ItemStatus itemStatus;
 
-    private LocalDate purchaseDate;
-
-    private Integer purchasePrice;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
@@ -65,9 +62,6 @@ public class Item {
 
     @Column(nullable = false)
     private Boolean use_yn;
-
-    @Column(nullable = false)
-    private Boolean permit_yn;
 
     @Column(nullable = false)
     private Integer quantity;

@@ -15,7 +15,12 @@ public enum ItemStatus {
     }
 
     @JsonCreator
-    public static ItemStatus from(String value) {
-        return ItemStatus.valueOf(value);
+    public static ItemStatus get(String value) {
+        for (ItemStatus i : ItemStatus.values()) {
+            if(i.getValue().equals(value)) {
+                return i;
+            }
+        }
+        return null;
     }
 }
