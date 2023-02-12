@@ -77,6 +77,10 @@ public class JWTReissueFilter extends UsernamePasswordAuthenticationFilter {
 
         response.setHeader(HttpHeaders.AUTHORIZATION, BEARER + accessToken);
         response.setHeader(REFRESH_TOKEN, BEARER + refreshToken);
+
+        UserInfo user = authRedisRepository.findById(claim.getEmail()).orElseThrow(() -> new FilterException(CodeSet.INVALID_USER));
+        user.changeRefreshToken(refreshToken);
+        authRedisRepository.save(user);
     }
 
     @Override

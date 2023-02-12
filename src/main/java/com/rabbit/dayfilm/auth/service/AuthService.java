@@ -7,4 +7,5 @@ public interface AuthService {
     void signStore(SignReqDto.SignStore request, String refreshToken);
     void signUser(SignReqDto.SignUser request, String refreshToken);
     LoginInfo getLoginInfoByToken(String token);
+    String decryptPwInToken(String token, String encryptedPw);
 }

@@ -6,7 +6,6 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.rabbit.dayfilm.common.CodeSet;
 import com.rabbit.dayfilm.exception.FilterException;
-import com.rabbit.dayfilm.exception.FilterException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -29,11 +28,13 @@ import static com.rabbit.dayfilm.common.CodeSet.REFRESH_TOKEN_INVALID;
 public class AuthUtil {
     private static String SECRET_KEY;
     private static String ISSUER;
-    private static String RSA_PUBLIC_KEY;
-    private static String RSA_PRIVATE_KEY;
     private static final String ALGORITHM = "RSA";
 
     private static final String TYPE = "type";
+    private static final String SECRET_KEY_IN_TOKEN = "secret_key";
+    private static final String ACCESS = "access";
+    private static final String REFRESH = "refresh";
+    private static final String CODE = "code";
     private static final long ACCESS_TIME = 60 * 3600;  // 액세스 토큰 6시간
     private static final long REFRESH_TIME = 60 * 60 * 24 * 55;  // 리프레시 토큰 약 2달
 
@@ -47,16 +48,6 @@ public class AuthUtil {
         AuthUtil.ISSUER = issuer;
     }
 
-    @Value("${secure.RSA.publicKey}")
-    public void setRsaPublicKey(String publicKey) {
-        AuthUtil.RSA_PUBLIC_KEY = publicKey;
-    }
-
-    @Value("${secure.RSA.privateKey}")
-    public void setRsaPrivateKey(String privateKey) {
-        AuthUtil.RSA_PRIVATE_KEY = privateKey;
-    }
-
     public static String createAccessToken(String email, String privateKey, String encryptedPw) {
         final Algorithm ALGORITHM = Algorithm.HMAC256(SECRET_KEY);
 
@@ -66,14 +57,14 @@ public class AuthUtil {
                 .withIssuedAt(Date.from(Instant.now()))
                 .withNotBefore(Date.from(Instant.now()))
                 .withSubject(email)
-                .withClaim("secret_key", privateKey)
-                .withClaim("code", encryptedPw)
-                .withClaim(TYPE, "access")
+                .withClaim(SECRET_KEY_IN_TOKEN, privateKey)
+                .withClaim(CODE, encryptedPw)
+                .withClaim(TYPE, ACCESS)
                 .sign(ALGORITHM);
     }
 
     /*Refresh token provider*/
-    public static String createRefreshToken(String email) {
+    public static String createRefreshToken(String email, String privateKey) {
         final Algorithm ALGORITHM = Algorithm.HMAC256(SECRET_KEY);
 
         return JWT.create()
@@ -81,7 +72,8 @@ public class AuthUtil {
                 .withExpiresAt(Date.from(Instant.now().plusSeconds(REFRESH_TIME)))
                 .withNotBefore(Date.from(Instant.now()))
                 .withSubject(email)
-                .withClaim(TYPE, "refresh")
+                .withClaim(TYPE, REFRESH)
+                .withClaim(SECRET_KEY_IN_TOKEN, privateKey)
                 .sign(ALGORITHM);
     }
 
@@ -98,8 +90,9 @@ public class AuthUtil {
         if (!verify.getIssuer().equals(ISSUER)
                 || verify.getNotBefore().after(Date.from(Instant.now()))
                 || verify.getSubject().isEmpty()
-                || verify.getClaim("secret_key").isNull()
-                || verify.getClaim(TYPE).asString().equals("access"))
+                || verify.getClaim(SECRET_KEY_IN_TOKEN).isNull()
+                || verify.getClaim(CODE).isNull()
+                || !verify.getClaim(TYPE).asString().equals(ACCESS))
             throw new FilterException(ACCESS_TOKEN_INVALID);
         else if (verify.getExpiresAt().before(Date.from(Instant.now())))
             throw new FilterException(CodeSet.ACCESS_TOKEN_EXPIRED);
@@ -117,7 +110,10 @@ public class AuthUtil {
             throw new FilterException(REFRESH_TOKEN_INVALID);
         }
 
-        if (!verify.getIssuer().equals(ISSUER) || verify.getNotBefore().after(Date.from(Instant.now())))
+        if (!verify.getIssuer().equals(ISSUER)
+                || !verify.getClaim(TYPE).asString().equals(REFRESH)
+                || verify.getNotBefore().after(Date.from(Instant.now()))
+                || verify.getClaim(SECRET_KEY_IN_TOKEN).isNull())
             throw new FilterException(REFRESH_TOKEN_INVALID);
         else if (verify.getExpiresAt().before(Date.from(Instant.now())))
             throw new FilterException(CodeSet.REFRESH_TOKEN_EXPIRED);
@@ -177,7 +173,7 @@ public class AuthUtil {
 
     public static RSAKey generateKey() {
         SecureRandom secureRandom = new SecureRandom();
-        KeyPairGenerator keyPairGenerator = null;
+        KeyPairGenerator keyPairGenerator;
         try {
             keyPairGenerator = KeyPairGenerator.getInstance(ALGORITHM);
         } catch (NoSuchAlgorithmException e) {

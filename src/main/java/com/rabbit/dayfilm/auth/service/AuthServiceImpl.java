@@ -37,12 +37,8 @@ public class AuthServiceImpl implements UserDetailsService, AuthService {
     private final StoreRepository storeRepository;
     private final AuthRedisRepository authRedisRepository;
 
-    @Value("${businessApi.serviceKey}")
-    private String SERVICE_KEY;
-
     @Value("${secure.jwt.secretKey}")
     private String SECRET_KEY;
-
     WebClient webClient;
 
     @PostConstruct
@@ -63,7 +59,6 @@ public class AuthServiceImpl implements UserDetailsService, AuthService {
 
     /**
      * 가게(Store) 회원 가입
-     *
      * @param request
      * @param refreshToken
      */
@@ -101,6 +96,8 @@ public class AuthServiceImpl implements UserDetailsService, AuthService {
                             .email(store.getEmail())
                             .pw(store.getPw())
                             .refreshToken(refreshToken)
+                            .nickname(request.getStoreName())
+                            .role(Role.STORE)
                             .build()
             );
         } else throw new FilterException(CodeSet.SIGNED_USER);
@@ -108,7 +105,6 @@ public class AuthServiceImpl implements UserDetailsService, AuthService {
 
     /**
      * 일반 회원 가입
-     *
      * @param request
      * @param refreshToken
      */
@@ -130,16 +126,17 @@ public class AuthServiceImpl implements UserDetailsService, AuthService {
                             .email(user.getEmail())
                             .pw(user.getPw())
                             .refreshToken(refreshToken)
+                            .nickname(user.getNickname())
+                            .role(Role.USER)
                             .build()
             );
         } else throw new FilterException(CodeSet.SIGNED_USER);
     }
 
     /**
-     * 토큰
-     *
+     * 토큰의 payload에 있는 로그인 정보 조회
      * @param token
-     * @return
+     * @return LoginInfo
      */
     public LoginInfo getLoginInfoByToken(String token) {
         final Algorithm ALGORITHM = Algorithm.HMAC256(SECRET_KEY);
@@ -151,5 +148,16 @@ public class AuthServiceImpl implements UserDetailsService, AuthService {
 
         String decryptedPw = AuthUtil.decrypt(encryptedPw, privateKey);
         return new LoginInfo(email, decryptedPw);
+    }
+
+    /**
+     * 토큰 내부에 있는 비밀번호 복호화
+     */
+    public String decryptPwInToken(String token, String encryptedPw) {
+        final Algorithm ALGORITHM = Algorithm.HMAC256(SECRET_KEY);
+
+        DecodedJWT decodedToken = JWT.require(ALGORITHM).build().verify(token);
+        String secretKey = decodedToken.getClaim("secret_key").asString();
+        return AuthUtil.decrypt(encryptedPw, secretKey);
     }
 }

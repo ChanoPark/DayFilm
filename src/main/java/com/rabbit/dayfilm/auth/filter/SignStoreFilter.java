@@ -2,7 +2,7 @@ package com.rabbit.dayfilm.auth.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rabbit.dayfilm.auth.*;
-import com.rabbit.dayfilm.auth.dto.LoginInfo;
+import com.rabbit.dayfilm.auth.dto.AuthResDto;
 import com.rabbit.dayfilm.auth.dto.SignReqDto;
 import com.rabbit.dayfilm.auth.repository.AuthRedisRepository;
 import com.rabbit.dayfilm.auth.service.AuthService;
@@ -50,31 +50,29 @@ public class SignStoreFilter extends UsernamePasswordAuthenticationFilter {
     private final AuthRedisRepository authRedisRepository;
     private final StoreRepository storeRepository;
     private final PasswordEncoder passwordEncoder;
-
     private final ObjectMapper objectMapper = new ObjectMapper();
     private static final String BEARER = "Bearer ";
 
-    private LoginInfo claim;
+    private SignReqDto.SignStore claim;
+    private RSAKey keys;
     private String refreshToken;
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request,
                                                 HttpServletResponse response) throws AuthenticationException {
-        SignReqDto.SignStore signStoreDto;
-
         try {
-            signStoreDto = objectMapper.readValue(request.getInputStream(), SignReqDto.SignStore.class);
+            claim = objectMapper.readValue(request.getInputStream(), SignReqDto.SignStore.class);
         } catch (IOException e) {
             throw new FilterException(CodeSet.INTERNAL_SERVER_ERROR);
         }
-        claim = new LoginInfo(signStoreDto.getEmail(), signStoreDto.getPw());
 
-        String originPw = signStoreDto.getPw();
-        String encodedPw = passwordEncoder.encode(signStoreDto.getPw());
-        signStoreDto.changeEncodedPw(encodedPw);
+        String originPw = claim.getPw();
+        String encodedPw = passwordEncoder.encode(claim.getPw());
+        claim.changeEncodedPw(encodedPw);
 
-        refreshToken = AuthUtil.createRefreshToken(claim.getEmail());
-        authService.signStore(signStoreDto, refreshToken);
+        keys = AuthUtil.generateKey();
+        refreshToken = AuthUtil.createRefreshToken(claim.getEmail(), keys.getPrivateKey());
+        authService.signStore(claim, refreshToken);
 
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                 claim.getEmail(), originPw
@@ -89,7 +87,6 @@ public class SignStoreFilter extends UsernamePasswordAuthenticationFilter {
             HttpServletResponse response,
             FilterChain chain,
             Authentication authResult) throws IOException {
-        RSAKey keys = AuthUtil.generateKey();
         String encryptedPw = AuthUtil.encrypt(claim.getPw(), keys.getPublicKey());
 
         String accessToken = AuthUtil.createAccessToken(claim.getEmail(), keys.getPrivateKey(), encryptedPw);
@@ -97,10 +94,8 @@ public class SignStoreFilter extends UsernamePasswordAuthenticationFilter {
         response.setHeader(HttpHeaders.AUTHORIZATION, BEARER + accessToken);
         response.setHeader("Refresh-Token", BEARER + refreshToken);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-
-        /**
-         * Response는 추후 프론트와 협의 후 추가 예정
-         */
+        response.setCharacterEncoding("utf-8");
+        response.getWriter().write(objectMapper.writeValueAsString(new AuthResDto(claim.getStoreName(), Role.STORE)));
     }
 
     @Override

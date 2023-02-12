@@ -1,11 +1,7 @@
 package com.rabbit.dayfilm.config;
 
-import com.rabbit.dayfilm.auth.filter.JWTFilter;
-import com.rabbit.dayfilm.auth.filter.SignUserFilter;
+import com.rabbit.dayfilm.auth.filter.*;
 import com.rabbit.dayfilm.auth.service.AuthService;
-import com.rabbit.dayfilm.auth.service.AuthServiceImpl;
-import com.rabbit.dayfilm.auth.filter.LoginFilter;
-import com.rabbit.dayfilm.auth.filter.SignStoreFilter;
 import com.rabbit.dayfilm.auth.repository.AuthRedisRepository;
 import com.rabbit.dayfilm.store.repository.StoreRepository;
 import com.rabbit.dayfilm.user.UserRepository;
@@ -23,6 +19,7 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -45,10 +42,11 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        LoginFilter loginFilter = new LoginFilter(authenticationManager(authenticationConfiguration), authenticationEntryPoint);
-        SignStoreFilter signStoreFilter = new SignStoreFilter(authenticationManager(authenticationConfiguration), authenticationEntryPoint, authService, storeRepository, authRedisRepository,passwordEncoder);
+        LoginFilter loginFilter = new LoginFilter(authenticationManager(authenticationConfiguration), authRedisRepository, authenticationEntryPoint);
+        SignStoreFilter signStoreFilter = new SignStoreFilter(authenticationManager(authenticationConfiguration), authenticationEntryPoint, authService, storeRepository, authRedisRepository, passwordEncoder);
         SignUserFilter signUserFilter = new SignUserFilter(authenticationManager(authenticationConfiguration), authenticationEntryPoint, authService, userRepository, authRedisRepository, passwordEncoder);
         JWTFilter jwtFilter = new JWTFilter(authenticationManager(authenticationConfiguration), authService, authenticationEntryPoint);
+        JWTReissueFilter jwtReissueFilter = new JWTReissueFilter(authenticationManager(authenticationConfiguration), authService, authRedisRepository, authenticationEntryPoint);
 
         return http
                 .csrf().disable()
@@ -60,7 +58,8 @@ public class SecurityConfig {
                 .addFilterBefore(loginFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(signStoreFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(signUserFilter, UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(jwtReissueFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(jwtFilter, BasicAuthenticationFilter.class)
                 .exceptionHandling()
                 .authenticationEntryPoint(authenticationEntryPoint)
                 .accessDeniedHandler(accessDeniedHandler)

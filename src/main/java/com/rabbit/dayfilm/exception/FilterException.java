@@ -10,4 +10,8 @@ public class FilterException extends AuthenticationException {
         this.code = code;
     }
     private CodeSet code;
+
+    public CodeSet getCode() {
+        return this.code;
+    }
 }

@@ -3,7 +3,8 @@ package com.rabbit.dayfilm.auth.filter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rabbit.dayfilm.auth.AuthUtil;
 import com.rabbit.dayfilm.auth.RSAKey;
-import com.rabbit.dayfilm.auth.dto.LoginInfo;
+import com.rabbit.dayfilm.auth.Role;
+import com.rabbit.dayfilm.auth.dto.AuthResDto;
 import com.rabbit.dayfilm.auth.dto.SignReqDto;
 import com.rabbit.dayfilm.auth.repository.AuthRedisRepository;
 import com.rabbit.dayfilm.auth.service.AuthService;
@@ -52,27 +53,27 @@ public class SignUserFilter extends UsernamePasswordAuthenticationFilter {
     private final ObjectMapper objectMapper = new ObjectMapper();
     private static final String BEARER = "Bearer ";
 
-    private LoginInfo claim;
+    private SignReqDto.SignUser claim;
+    private RSAKey keys;
     private String refreshToken;
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request,
                                                 HttpServletResponse response) throws AuthenticationException {
-        SignReqDto.SignUser singUserDto;
 
         try {
-            singUserDto = objectMapper.readValue(request.getInputStream(), SignReqDto.SignUser.class);
+            claim = objectMapper.readValue(request.getInputStream(), SignReqDto.SignUser.class);
         } catch (IOException e) {
             throw new FilterException(CodeSet.INTERNAL_SERVER_ERROR);
         }
-        claim = new LoginInfo(singUserDto.getEmail(), singUserDto.getPw());
 
-        String originPw = singUserDto.getPw();
-        String encodedPw = passwordEncoder.encode(singUserDto.getPw());
-        singUserDto.changeEncodedPw(encodedPw);
+        String originPw = claim.getPw();
+        String encodedPw = passwordEncoder.encode(claim.getPw());
+        claim.changeEncodedPw(encodedPw);
 
-        refreshToken = AuthUtil.createRefreshToken(claim.getEmail());
-        authService.signUser(singUserDto, refreshToken);
+        keys = AuthUtil.generateKey();
+        refreshToken = AuthUtil.createRefreshToken(claim.getEmail(), keys.getPrivateKey());
+        authService.signUser(claim, refreshToken);
 
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                 claim.getEmail(), originPw
@@ -87,7 +88,6 @@ public class SignUserFilter extends UsernamePasswordAuthenticationFilter {
             HttpServletResponse response,
             FilterChain chain,
             Authentication authResult) throws IOException {
-        RSAKey keys = AuthUtil.generateKey();
         String encryptedPw = AuthUtil.encrypt(claim.getPw(), keys.getPublicKey());
 
         String accessToken = AuthUtil.createAccessToken(claim.getEmail(), keys.getPrivateKey(), encryptedPw);
@@ -95,10 +95,8 @@ public class SignUserFilter extends UsernamePasswordAuthenticationFilter {
         response.setHeader(HttpHeaders.AUTHORIZATION, BEARER + accessToken);
         response.setHeader("Refresh-Token", BEARER + refreshToken);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-
-        /**
-         * Response는 추후 프론트와 협의 후 추가 예정
-         */
+        response.setCharacterEncoding("utf-8");
+        response.getWriter().write(objectMapper.writeValueAsString(new AuthResDto(claim.getNickname(), Role.USER)));
     }
 
     @Override
