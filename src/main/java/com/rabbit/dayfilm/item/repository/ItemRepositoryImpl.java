@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
@@ -24,6 +25,7 @@ import static com.rabbit.dayfilm.item.entity.QItem.*;
 import static com.rabbit.dayfilm.item.entity.QItemImage.*;
 
 @RequiredArgsConstructor
+@Repository
 public class ItemRepositoryImpl implements ItemRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
@@ -41,7 +43,7 @@ public class ItemRepositoryImpl implements ItemRepositoryCustom {
                                 JPAExpressions
                                         .select(itemImage.imagePath)
                                         .from(itemImage)
-                                        .where(itemImage.order.eq(1))
+                                        .where(itemImage.orderNumber.eq(1))
                                 , "imagePath")))
                 .from(item)
                 .innerJoin(item.itemImages, itemImage)

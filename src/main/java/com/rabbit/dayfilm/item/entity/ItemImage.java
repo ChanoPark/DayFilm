@@ -5,19 +5,17 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Entity
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
+@Table(name="ITEM_IMAGE_TABLE")
 public class ItemImage {
     @Id @GeneratedValue
-    @Column(name = "item_image_id")
+    @Column(name = "image_id")
     private Long id;
 
     @Column(nullable = false)
@@ -27,6 +25,6 @@ public class ItemImage {
     private String imageName;
 
     @Column(nullable = false)
-    private Integer order;
+    private Integer orderNumber;
 
 }

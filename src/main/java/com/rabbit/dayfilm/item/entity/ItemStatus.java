@@ -1,6 +1,7 @@
 package com.rabbit.dayfilm.item.entity;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 
 @Getter
@@ -15,7 +16,7 @@ public enum ItemStatus {
     }
 
     @JsonCreator
-    public static ItemStatus get(String value) {
+    public static ItemStatus get(@JsonProperty("value") String value) {
         for (ItemStatus i : ItemStatus.values()) {
             if(i.getValue().equals(value)) {
                 return i;

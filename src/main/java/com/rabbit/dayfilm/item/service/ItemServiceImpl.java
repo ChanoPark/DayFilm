@@ -50,7 +50,7 @@ public class ItemServiceImpl implements ItemSerivce{
                     ItemImage itemImage = ItemImage.builder()
                             .imagePath(imageInfoDto.getImagePath())
                             .imageName(imageInfoDto.getImageName())
-                            .order(count)
+                            .orderNumber(count)
                             .build();
                     itemImages.add(itemImage);
                     count ++;
@@ -59,6 +59,7 @@ public class ItemServiceImpl implements ItemSerivce{
             }
 
             Item item = Item.builder()
+                    .storeName("sample")
                     .title(dto.getTitle())
                     .category(dto.getCategory())
                     .detail(dto.getDetail())

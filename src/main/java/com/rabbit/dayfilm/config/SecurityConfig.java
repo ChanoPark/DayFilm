@@ -71,6 +71,6 @@ public class SecurityConfig {
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return (web) -> web.ignoring()
-                .antMatchers("/doc", "/swagger*/**", "/favicon*/**", "/v2/api-docs");
+                .antMatchers("/doc", "/swagger*/**", "/favicon*/**", "/v2/api-docs", "/**");
     }
 }
