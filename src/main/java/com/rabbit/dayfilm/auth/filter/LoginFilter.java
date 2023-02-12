@@ -1,14 +1,15 @@
 package com.rabbit.dayfilm.auth.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.rabbit.dayfilm.auth.*;
+import com.rabbit.dayfilm.auth.AuthUtil;
+import com.rabbit.dayfilm.auth.RSAKey;
+import com.rabbit.dayfilm.auth.Role;
+import com.rabbit.dayfilm.auth.UserInfo;
 import com.rabbit.dayfilm.auth.dto.AuthResDto;
-import com.rabbit.dayfilm.auth.dto.SignReqDto;
+import com.rabbit.dayfilm.auth.dto.LoginInfo;
 import com.rabbit.dayfilm.auth.repository.AuthRedisRepository;
-import com.rabbit.dayfilm.auth.service.AuthService;
 import com.rabbit.dayfilm.common.CodeSet;
 import com.rabbit.dayfilm.exception.FilterException;
-import com.rabbit.dayfilm.store.repository.StoreRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -17,7 +18,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -28,56 +28,35 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @Slf4j
-public class SignStoreFilter extends UsernamePasswordAuthenticationFilter {
+public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
-    public SignStoreFilter(AuthenticationManager authenticationManager,
-                           AuthenticationEntryPoint authenticationEntryPoint,
-                           AuthService authService,
-                           StoreRepository storeRepository,
-                           AuthRedisRepository authRedisRepository,
-                           PasswordEncoder passwordEncoder) {
+    public LoginFilter(AuthenticationManager authenticationManager,
+                       AuthRedisRepository authRedisRepository,
+                       AuthenticationEntryPoint authenticationEntryPoint) {
         super(authenticationManager);
-        this.authenticationEntryPoint = authenticationEntryPoint;
-        this.authService = authService;
-        this.storeRepository = storeRepository;
         this.authRedisRepository = authRedisRepository;
-        this.passwordEncoder = passwordEncoder;
-        setFilterProcessesUrl("/sign/store");
+        this.authenticationEntryPoint = authenticationEntryPoint;
+        setFilterProcessesUrl("/login");
     }
 
     private final AuthenticationEntryPoint authenticationEntryPoint;
-    private final AuthService authService;
     private final AuthRedisRepository authRedisRepository;
-    private final StoreRepository storeRepository;
-    private final PasswordEncoder passwordEncoder;
     private final ObjectMapper objectMapper = new ObjectMapper();
+    private LoginInfo claim;
     private static final String BEARER = "Bearer ";
 
-    private SignReqDto.SignStore claim;
-    private RSAKey keys;
-    private String refreshToken;
 
     @Override
-    public Authentication attemptAuthentication(HttpServletRequest request,
-                                                HttpServletResponse response) throws AuthenticationException {
+    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) {
         try {
-            claim = objectMapper.readValue(request.getInputStream(), SignReqDto.SignStore.class);
+            claim = objectMapper.readValue(request.getInputStream(), LoginInfo.class);
         } catch (IOException e) {
             throw new FilterException(CodeSet.INTERNAL_SERVER_ERROR);
         }
 
-        String originPw = claim.getPw();
-        String encodedPw = passwordEncoder.encode(claim.getPw());
-        claim.changeEncodedPw(encodedPw);
-
-        keys = AuthUtil.generateKey();
-        refreshToken = AuthUtil.createRefreshToken(claim.getEmail(), keys.getPrivateKey());
-        authService.signStore(claim, refreshToken);
-
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                claim.getEmail(), originPw
+                claim.getEmail(), claim.getPw()
         );
-
         return getAuthenticationManager().authenticate(authenticationToken);
     }
 
@@ -87,25 +66,26 @@ public class SignStoreFilter extends UsernamePasswordAuthenticationFilter {
             HttpServletResponse response,
             FilterChain chain,
             Authentication authResult) throws IOException {
+        RSAKey keys = AuthUtil.generateKey();
         String encryptedPw = AuthUtil.encrypt(claim.getPw(), keys.getPublicKey());
 
+        String refreshToken = AuthUtil.createRefreshToken(claim.getEmail(), keys.getPrivateKey());
         String accessToken = AuthUtil.createAccessToken(claim.getEmail(), keys.getPrivateKey(), encryptedPw);
+
+        UserInfo user = authRedisRepository.findById(claim.getEmail()).orElseThrow(() -> new FilterException(CodeSet.INVALID_USER));
+        user.changeRefreshToken(refreshToken);
+        authRedisRepository.save(user);
 
         response.setHeader(HttpHeaders.AUTHORIZATION, BEARER + accessToken);
         response.setHeader("Refresh-Token", BEARER + refreshToken);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding("utf-8");
-        response.getWriter().write(objectMapper.writeValueAsString(new AuthResDto(claim.getStoreName(), Role.STORE)));
+        response.getWriter().write(objectMapper.writeValueAsString(new AuthResDto(user.getNickname(), user.getRole())));
     }
 
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response,
                                               AuthenticationException failed) throws IOException, ServletException {
-        if (claim != null && storeRepository.findStoreByEmail(claim.getEmail()).isPresent()) {
-            storeRepository.deleteStoreByEmail(claim.getEmail());
-            authRedisRepository.deleteById(claim.getEmail());
-        }
-
         SecurityContextHolder.clearContext();
         authenticationEntryPoint.commence(request, response, failed);
     }

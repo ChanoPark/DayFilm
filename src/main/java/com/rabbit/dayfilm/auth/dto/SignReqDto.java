@@ -24,4 +24,15 @@ public class SignReqDto {
             this.pw = encodedPw;
         }
     }
+
+    @Getter
+    public static class SignUser {
+        private String email;
+        private String pw;
+        private String nickname;
+
+        public void changeEncodedPw(String encodedPw) {
+            this.pw = encodedPw;
+        }
+    }
 }
