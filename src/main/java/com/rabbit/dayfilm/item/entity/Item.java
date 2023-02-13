@@ -15,14 +15,15 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "ITEM_TABLE")
 public class Item {
     @Id @GeneratedValue
     @Column(name = "item_id")
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "store_id")
-    private Store store;
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "store_id")
+//    private Store store;
 
     @Column(nullable = false)
     private String storeName; //리스트 가져올 때 가게 이름이 필요한데, join 쿼리를 사용할 때 리소스낭비가 심할 것으로 예상되서 name만 중복
@@ -55,9 +56,6 @@ public class Item {
     @Enumerated(EnumType.STRING)
     private ItemStatus itemStatus;
 
-    private LocalDate purchaseDate;
-
-    private Integer purchasePrice;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
@@ -65,9 +63,6 @@ public class Item {
 
     @Column(nullable = false)
     private Boolean use_yn;
-
-    @Column(nullable = false)
-    private Boolean permit_yn;
 
     @Column(nullable = false)
     private Integer quantity;

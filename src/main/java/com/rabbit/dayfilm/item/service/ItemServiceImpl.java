@@ -5,6 +5,7 @@ import com.rabbit.dayfilm.exception.CustomException;
 import com.rabbit.dayfilm.item.dto.ImageInfoDto;
 import com.rabbit.dayfilm.item.dto.InsertItemRequestDto;
 import com.rabbit.dayfilm.item.dto.SelectAllItemsDto;
+import com.rabbit.dayfilm.item.entity.Category;
 import com.rabbit.dayfilm.item.entity.Item;
 import com.rabbit.dayfilm.item.entity.ItemImage;
 import com.rabbit.dayfilm.item.repository.ItemImageRepository;
@@ -19,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,11 +45,12 @@ public class ItemServiceImpl implements ItemSerivce{
                 int count = 1;
                 for(MultipartFile image : images) {
                     //개수 제한을 걸 경우, 조건문으로 예외 터트리면 됨.
-                    ImageInfoDto imageInfoDto = s3UploadService.uploadFile(image);
+                    String filename = "ex_name/" + dto.getModelName() + count;
+                    ImageInfoDto imageInfoDto = s3UploadService.uploadFile(image, filename);
                     ItemImage itemImage = ItemImage.builder()
                             .imagePath(imageInfoDto.getImagePath())
                             .imageName(imageInfoDto.getImageName())
-                            .order(count)
+                            .orderNumber(count)
                             .build();
                     itemImages.add(itemImage);
                     count ++;
@@ -56,6 +59,7 @@ public class ItemServiceImpl implements ItemSerivce{
             }
 
             Item item = Item.builder()
+                    .storeName("sample")
                     .title(dto.getTitle())
                     .category(dto.getCategory())
                     .detail(dto.getDetail())
@@ -65,7 +69,6 @@ public class ItemServiceImpl implements ItemSerivce{
                     .brandName(dto.getBrandName())
                     .modelName(dto.getModelName())
                     .itemStatus(dto.getItemStatus())
-                    .purchasePrice(dto.getPurchasePrice())
                     .method(dto.getMethod())
                     .use_yn(Boolean.TRUE)
                     .quantity(dto.getQuantity())
@@ -79,15 +82,12 @@ public class ItemServiceImpl implements ItemSerivce{
             e.printStackTrace();
             throw new CustomException("Item 생성 실패");
         }
-
     }
 
     @Override
-    public Page<SelectAllItemsDto> selectAllItems(Pageable pageable, int pageNo, String category) {
-        if(category == null || category.isEmpty()) {
-            pageable = PageRequest.of(pageNo,1);
-            List<Item> findItems = itemRepository.findWithPagination(pageable);
-        }
-        return null;
+    @Transactional(readOnly = true)
+    public Page<SelectAllItemsDto> selectAllItems(Category category, Pageable pageable) {
+        return itemRepository.selectAllItems(category, pageable);
     }
+
 }

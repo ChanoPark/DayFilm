@@ -24,24 +24,10 @@ public class S3UploadService {
     @Value("${cloud.aws.s3.filePath}")
     private String filePath;
 
-    public ImageInfoDto uploadFile(MultipartFile multipartFile) throws IOException {
-        String fileName = multipartFile.getOriginalFilename();
+    public ImageInfoDto uploadFile(MultipartFile multipartFile, String fileName) throws IOException {
         filePath = "https://"+filePath+fileName;
         //파일 형식 구하기
-        String ext = fileName.split("\\.")[1];
-        String contentType = "";
-
-        //content type을 지정해서 올려주지 않으면 자동으로 "application/octet-stream"으로 고정이 되서 링크 클릭시 웹에서 열리는게 아니라 자동 다운이 시작됨.
-        switch (ext) {
-            case "jpeg":
-                contentType = "image/jpeg";
-                break;
-            case "png":
-                contentType = "image/png";
-                break;
-            default:
-                throw new CustomException("파일 형식이 잘못됐습니다.");
-        }
+        String contentType = multipartFile.getContentType();
 
         try {
             ObjectMetadata metadata = new ObjectMetadata();
@@ -55,14 +41,6 @@ public class S3UploadService {
         } catch (SdkClientException e) {
             e.printStackTrace();
         }
-
-        //object 정보 가져오기
-//        ListObjectsV2Result listObjectsV2Result = amazonS3Client.listObjectsV2(bucket);
-//        List<S3ObjectSummary> objectSummaries = listObjectsV2Result.getObjectSummaries();
-//
-//        for (S3ObjectSummary object: objectSummaries) {
-//            log.debug("object = " + object.toString());
-//        }
         return new ImageInfoDto(filePath, fileName);
     }
 

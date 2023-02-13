@@ -1,7 +1,14 @@
 package com.rabbit.dayfilm.item.entity;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Getter;
 
+import java.util.Arrays;
+
+@Getter
+@JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum Category {
     CAMERA("카메라"),
     LENS("렌즈"),
@@ -19,8 +26,14 @@ public enum Category {
         this.value = value;
     }
 
+
     @JsonCreator
-    public static Category from(String value) {
-        return Category.valueOf(value);
+    public static Category from(@JsonProperty("value") String value) {
+        for (Category category : Category.values()) {
+            if (category.getValue().equals(value)) {
+                return category;
+            }
+        }
+        return null;
     }
 }

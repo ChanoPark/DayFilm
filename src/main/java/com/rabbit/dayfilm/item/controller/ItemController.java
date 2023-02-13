@@ -5,6 +5,8 @@ import com.rabbit.dayfilm.common.EndPoint;
 import com.rabbit.dayfilm.common.response.ResponseAbs;
 import com.rabbit.dayfilm.common.response.SuccessResponse;
 import com.rabbit.dayfilm.item.dto.InsertItemRequestDto;
+import com.rabbit.dayfilm.item.entity.Category;
+import com.rabbit.dayfilm.item.response.SelectAllItemsResponse;
 import com.rabbit.dayfilm.item.service.ItemSerivce;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,26 +37,17 @@ public class ItemController {
 
     private final ItemSerivce itemSerivce;
 
-//    @PostMapping("")
-//    public ResponseEntity<ResponseAbs> createItem(@RequestBody InsertItemRequestDto dto) {
-//        itemSerivce.createItem(dto);
-//        return ResponseEntity.status(HttpStatus.OK)
-//                .body(new SuccessResponse(CodeSet.OK));
-//    }
-
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ResponseAbs> createItem(@RequestPart List<MultipartFile> images, @RequestPart InsertItemRequestDto dto) {
+    public ResponseEntity<SuccessResponse> createItem(@RequestPart List<MultipartFile> images, @RequestPart InsertItemRequestDto dto) {
         itemSerivce.createItem(images, dto);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(new SuccessResponse(CodeSet.OK));
     }
 
     @GetMapping()
-    public ResponseEntity<ResponseAbs> selectAllItems(@RequestParam(required = false, defaultValue = "0", value = "page") int pageNo
-    , @RequestParam(required = false) String category, Pageable pageable) {
-        pageNo = (pageNo == 0) ? 0 : (pageNo - 1);
-        itemSerivce.selectAllItems();
+    public ResponseEntity<SelectAllItemsResponse> selectAllItems(@RequestParam(required = false) Category category, Pageable pageable) {
+        itemSerivce.selectAllItems(category, pageable);
         return ResponseEntity.status(HttpStatus.OK)
-                .body(new SuccessResponse(CodeSet.OK));
+                .body(new SelectAllItemsResponse(CodeSet.OK));
     }
 }
