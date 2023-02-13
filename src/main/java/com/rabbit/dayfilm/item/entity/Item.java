@@ -2,6 +2,7 @@ package com.rabbit.dayfilm.item.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.BatchSize;
 
@@ -16,6 +17,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "ITEM_TABLE")
+@Getter
 public class Item {
     @Id @GeneratedValue
     @Column(name = "item_id")
@@ -68,12 +70,16 @@ public class Item {
     private Integer quantity;
 
     @Column(nullable = false)
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "item_id")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "item")
     private List<ItemImage> itemImages;
 
     private LocalDateTime createdDate;
 
     private LocalDateTime modifiedDate;
+
+    public void addItemImage(ItemImage itemImage) {
+        this.itemImages.add(itemImage);
+        itemImage.setItem(this);
+    }
 
 }

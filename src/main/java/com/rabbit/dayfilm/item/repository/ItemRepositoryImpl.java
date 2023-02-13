@@ -39,12 +39,7 @@ public class ItemRepositoryImpl implements ItemRepositoryCustom {
                         item.title,
                         item.method,
                         item.pricePerOne,
-                        ExpressionUtils.as(
-                                JPAExpressions
-                                        .select(itemImage.imagePath)
-                                        .from(itemImage)
-                                        .where(itemImage.orderNumber.eq(1))
-                                , "imagePath")))
+                        itemImage.imagePath))
                 .from(item)
                 .innerJoin(item.itemImages, itemImage)
                 .where(useCategoryEq(category))
@@ -62,6 +57,6 @@ public class ItemRepositoryImpl implements ItemRepositoryCustom {
     }
 
     private BooleanExpression useCategoryEq(Category category) {
-        return category == null ? null : item.category.eq(category);
+        return category == null ? null : item.category.eq(category).and(itemImage.orderNumber.eq(1));
     }
 }

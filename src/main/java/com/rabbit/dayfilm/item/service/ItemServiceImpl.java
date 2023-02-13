@@ -39,25 +39,6 @@ public class ItemServiceImpl implements ItemSerivce{
     public void createItem(List<MultipartFile> images, InsertItemRequestDto dto) {
         // store 에 대한 get method 필요, 그 후 item 빌더에 추가.
         try {
-            List<ItemImage> itemImages = new ArrayList<>();
-
-            if(!CollectionUtils.isNullOrEmpty(images)) {
-                int count = 1;
-                for(MultipartFile image : images) {
-                    //개수 제한을 걸 경우, 조건문으로 예외 터트리면 됨.
-                    String filename = "ex_name/" + dto.getModelName() + count;
-                    ImageInfoDto imageInfoDto = s3UploadService.uploadFile(image, filename);
-                    ItemImage itemImage = ItemImage.builder()
-                            .imagePath(imageInfoDto.getImagePath())
-                            .imageName(imageInfoDto.getImageName())
-                            .orderNumber(count)
-                            .build();
-                    itemImages.add(itemImage);
-                    count ++;
-                }
-                itemImageRepository.saveAll(itemImages);
-            }
-
             Item item = Item.builder()
                     .storeName("sample")
                     .title(dto.getTitle())
@@ -72,12 +53,30 @@ public class ItemServiceImpl implements ItemSerivce{
                     .method(dto.getMethod())
                     .use_yn(Boolean.TRUE)
                     .quantity(dto.getQuantity())
-                    .itemImages(itemImages)
+                    .itemImages(new ArrayList<>())
                     .createdDate(LocalDateTime.now())
                     .modifiedDate(LocalDateTime.now())
-                    .build();
+                    .build(); //아이템 엔티티 먼저 생성
+
+            if(!CollectionUtils.isNullOrEmpty(images)) {
+                int count = 1;
+                for(MultipartFile image : images) {
+                    //개수 제한을 걸 경우, 조건문으로 예외 터트리면 됨.
+                    String filename = "ex_name/" + dto.getModelName() + count;
+                    ImageInfoDto imageInfoDto = s3UploadService.uploadFile(image, filename);
+                    ItemImage itemImage = ItemImage.builder()
+                            .imagePath(imageInfoDto.getImagePath())
+                            .imageName(imageInfoDto.getImageName())
+                            .orderNumber(count)
+                            .build();
+                    item.addItemImage(itemImage);
+                    count ++;
+                }
+            }
 
             itemRepository.save(item);
+            itemImageRepository.saveAll(item.getItemImages());
+
         } catch (IOException e) {
             e.printStackTrace();
             throw new CustomException("Item 생성 실패");
