@@ -1,25 +1,26 @@
 package com.rabbit.dayfilm.common;
 
 import com.rabbit.dayfilm.item.entity.Category;
+import org.apache.tomcat.util.bcel.Const;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.ConverterFactory;
 
 import java.util.Arrays;
 
-public class CodeToEnumConverterFactory implements ConverterFactory<String, Enum<? extends Category>> {
+public class CodeToEnumConverterFactory implements ConverterFactory<String, Enum<? extends Constant>> {
     @Override
-    public <T extends Enum<? extends Category>> Converter<String, T> getConverter(Class<T> targetType) {
+    public <T extends Enum<? extends Constant>> Converter<String, T> getConverter(Class<T> targetType) {
         return new StringToEnumsConverter<>(targetType);
     }
 
-    private static final class StringToEnumsConverter<T extends Enum<? extends Category>> implements Converter<String, T> {
+    private static final class StringToEnumsConverter<T extends Enum<? extends Constant>> implements Converter<String, T> {
 
         private final Class<T> enumType;
         private final boolean constantEnum;
 
         public StringToEnumsConverter(Class<T> enumType) {
             this.enumType = enumType;
-            this.constantEnum = Arrays.stream(enumType.getInterfaces()).anyMatch(i -> i == Category.class);
+            this.constantEnum = Arrays.stream(enumType.getInterfaces()).anyMatch(i -> i == Constant.class);
         }
 
         @Override
@@ -30,7 +31,7 @@ public class CodeToEnumConverterFactory implements ConverterFactory<String, Enum
             T[] constants = enumType.getEnumConstants();
             for (T c : constants) {
                 if (constantEnum) {
-                    if (((Category) c).getValue().equals(source.trim())) {
+                    if (((Constant) c).getValue().equals(source.trim())) {
                         return c;
                     }
                 } else {
