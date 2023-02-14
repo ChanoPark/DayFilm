@@ -9,6 +9,8 @@ import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.rabbit.dayfilm.item.dto.ItemSearchCondition;
 import com.rabbit.dayfilm.item.dto.SelectAllItemsDto;
+import com.rabbit.dayfilm.item.dto.SelectDetailImageDto;
+import com.rabbit.dayfilm.item.dto.SelectDetailItemDto;
 import com.rabbit.dayfilm.item.entity.Category;
 import com.rabbit.dayfilm.item.entity.Item;
 import com.rabbit.dayfilm.item.entity.QItem;
@@ -56,7 +58,32 @@ public class ItemRepositoryImpl implements ItemRepositoryCustom {
         return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
     }
 
+    @Override
+    public SelectDetailItemDto selectItem(Long id) {
+        return queryFactory
+                .select(Projections.constructor(SelectDetailItemDto.class,
+                        item.title,
+                        item.category,
+                        item.detail,
+                        item.pricePerOne,
+                        item.pricePerFive,
+                        item.pricePerTen,
+                        item.brandName,
+                        item.modelName,
+                        item.method,
+                        item.quantity,
+                        Projections.constructor(SelectDetailImageDto.class,
+                                itemImage.imagePath,
+                                itemImage.imageName,
+                                itemImage.orderNumber)))
+                .from(item)
+                .innerJoin(item.itemImages, itemImage)
+                .where(item.id.eq(id))
+                .fetchOne();
+    }
+
+
     private BooleanExpression useCategoryEq(Category category) {
-        return category == null ? null : item.category.eq(category).and(itemImage.orderNumber.eq(1));
+        return category == null ? null : item.category.eq(category).and(itemImage.orderNumber.eq(1).and(item.use_yn.eq(Boolean.TRUE)));
     }
 }

@@ -58,6 +58,8 @@ public class ItemServiceImpl implements ItemSerivce{
                     .modifiedDate(LocalDateTime.now())
                     .build(); //아이템 엔티티 먼저 생성
 
+            item.checkQuantity(item.getQuantity()); //재고 있는지 체크
+
             if(!CollectionUtils.isNullOrEmpty(images)) {
                 int count = 1;
                 for(MultipartFile image : images) {

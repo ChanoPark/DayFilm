@@ -4,12 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.BatchSize;
 
 import javax.persistence.*;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -73,6 +70,12 @@ public class Item {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "item")
     private List<ItemImage> itemImages;
 
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "item_id")
+    private List<Product> products;
+
+
     private LocalDateTime createdDate;
 
     private LocalDateTime modifiedDate;
@@ -80,6 +83,12 @@ public class Item {
     public void addItemImage(ItemImage itemImage) {
         this.itemImages.add(itemImage);
         itemImage.setItem(this);
+    }
+
+    public void checkQuantity(Integer quantity) {
+        if(quantity <= 0) {
+            this.use_yn = Boolean.FALSE;
+        }
     }
 
 }

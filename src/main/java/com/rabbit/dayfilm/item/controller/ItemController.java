@@ -2,7 +2,6 @@ package com.rabbit.dayfilm.item.controller;
 
 import com.rabbit.dayfilm.common.CodeSet;
 import com.rabbit.dayfilm.common.EndPoint;
-import com.rabbit.dayfilm.common.response.ResponseAbs;
 import com.rabbit.dayfilm.common.response.SuccessResponse;
 import com.rabbit.dayfilm.item.dto.InsertItemRequestDto;
 import com.rabbit.dayfilm.item.dto.SelectAllItemsDto;
@@ -25,10 +24,9 @@ import java.util.List;
  * 1. Item 생성
  *
  *
- * 2. 전체 Item 요약 정보 조회(홈 화면)
+ * 2. 전체 Item 요약 정보 조회(홈 화면) 카테고리, 페이징 포함
  *
  *
- * 3. 카테고리별 전체 Item 요약 정보 조회(카테고리 홈 화면)
  */
 
 @Slf4j
