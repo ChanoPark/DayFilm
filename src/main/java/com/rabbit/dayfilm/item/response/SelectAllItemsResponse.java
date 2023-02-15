@@ -10,10 +10,10 @@ import org.springframework.data.domain.Page;
 @Getter
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class SelectAllItemsResponse extends ResponseAbs {
-    private final Page<SelectAllItemsDto> dto;
+    private final Page<SelectAllItemsDto> data;
 
     public SelectAllItemsResponse(CodeSet codeSet, Page<SelectAllItemsDto> dto) {
         super(codeSet);
-        this.dto = dto;
+        this.data = dto;
     }
 }

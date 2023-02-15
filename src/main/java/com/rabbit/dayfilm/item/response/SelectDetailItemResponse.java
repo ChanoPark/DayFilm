@@ -12,16 +12,14 @@ import java.util.List;
 @Getter
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class SelectDetailItemResponse extends ResponseAbs {
-    private SelectDetailItemDto item;
-    private List<SelectDetailImageDto> image;
+    private SelectDetailItemDto data;
 
     public SelectDetailItemResponse(CodeSet codeSet) {
         super(codeSet);
     }
 
-    public SelectDetailItemResponse(CodeSet codeSet, SelectDetailItemDto item, List<SelectDetailImageDto> image) {
+    public SelectDetailItemResponse(CodeSet codeSet, SelectDetailItemDto item) {
         super(codeSet);
-        this.item = item;
-        this.image = image;
+        this.data = item;
     }
 }

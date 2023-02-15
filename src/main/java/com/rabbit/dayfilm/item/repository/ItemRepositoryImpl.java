@@ -72,12 +72,13 @@ public class ItemRepositoryImpl implements ItemRepositoryCustom {
                         item.modelName,
                         item.method,
                         item.quantity,
-                        Projections.constructor(SelectDetailImageDto.class,
-                                itemImage.imagePath,
+                        Projections.list(Projections.constructor(SelectDetailImageDto.class,
                                 itemImage.imageName,
-                                itemImage.orderNumber)))
+                                itemImage.imagePath,
+                                itemImage.orderNumber))
+                ))
                 .from(item)
-                .innerJoin(item.itemImages, itemImage)
+                .leftJoin(item.itemImages, itemImage)
                 .where(item.id.eq(id))
                 .fetchOne();
     }
