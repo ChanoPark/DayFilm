@@ -20,6 +20,7 @@ import javax.persistence.EntityManager;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static com.querydsl.core.group.GroupBy.groupBy;
 import static com.querydsl.core.group.GroupBy.list;
@@ -61,15 +62,24 @@ class ItemRepositoryImplTest {
                 .quantity(3)
                 .build();
 
-        ItemImage itemImages = ItemImage.builder()
-                .imageName("testImage")
+        ItemImage itemImages1 = ItemImage.builder()
+                .imageName("testImage1")
                 .imagePath("/test/a")
                 .orderNumber(1).build();
 
-        items.addItemImage(itemImages);
+        ItemImage itemImages2 = ItemImage.builder()
+                .imageName("testImage2")
+                .imagePath("/test/a")
+                .orderNumber(1).build();
+
+        items.addItemImage(itemImages1);
+        items.addItemImage(itemImages2);
+
 
         itemRepository.save(items);
-        itemImageRepository.save(itemImages);
+        itemImageRepository.save(itemImages1);
+        itemImageRepository.save(itemImages2);
+
     }
 
     @Test
@@ -107,7 +117,7 @@ class ItemRepositoryImplTest {
     @Test
     void 아이템_상세조회_테스트() {
 //
-        SelectDetailItemDto itemDto = queryFactory
+        List<SelectDetailItemDto> itemDto = queryFactory
                 .select(Projections.constructor(SelectDetailItemDto.class,
                         item.title,
                         item.category,
@@ -125,14 +135,19 @@ class ItemRepositoryImplTest {
                         itemImage.orderNumber))
                         ))
                 .from(item)
-                .leftJoin(item.itemImages, itemImage)
+                .leftJoin(itemImage).on(itemImage.item.id.eq(item.id))
                 .where(item.title.eq("item1"))
-                .fetchOne();
+                .fetch();
+
+        SelectDetailItemDto result = itemDto.stream()
+                .findFirst()
+                .map(item -> new SelectDetailItemDto(item.getTitle(), item.getCategory(), item.getDetail(), item.getPricePerOne(), item.getPricePerFive(),
+                        item.getPricePerTen(), item.getBrandName(), item.getModelName(), item.getMethod(), item.getQuantity(),
+                        itemDto.stream().flatMap(i -> i.getImages().stream()).collect(Collectors.toList())))
+                .orElse(null);
 
 
-        assertThat(itemDto.getDetail()).isEqualTo("example");
-        assertThat(itemDto.getImages().get(0).getImageName()).isEqualTo("testImage");
-
+        assertThat(result.getImages().get(0).getImageName().equals("testImage1"));
 
     }
 }

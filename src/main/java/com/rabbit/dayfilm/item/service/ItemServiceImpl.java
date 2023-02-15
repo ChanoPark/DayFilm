@@ -5,6 +5,7 @@ import com.rabbit.dayfilm.exception.CustomException;
 import com.rabbit.dayfilm.item.dto.ImageInfoDto;
 import com.rabbit.dayfilm.item.dto.InsertItemRequestDto;
 import com.rabbit.dayfilm.item.dto.SelectAllItemsDto;
+import com.rabbit.dayfilm.item.dto.SelectDetailItemDto;
 import com.rabbit.dayfilm.item.entity.Category;
 import com.rabbit.dayfilm.item.entity.Item;
 import com.rabbit.dayfilm.item.entity.ItemImage;
@@ -90,5 +91,11 @@ public class ItemServiceImpl implements ItemSerivce{
     public Page<SelectAllItemsDto> selectAllItems(Category category, Pageable pageable) {
         return itemRepository.selectAllItems(category, pageable);
     }
+
+    @Override
+    public SelectDetailItemDto selectDetailItem(Long id) {
+        return itemRepository.selectItem(id);
+    }
+
 
 }

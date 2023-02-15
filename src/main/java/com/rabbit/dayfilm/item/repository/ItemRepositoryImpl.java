@@ -22,6 +22,7 @@ import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.rabbit.dayfilm.item.entity.QItem.*;
 import static com.rabbit.dayfilm.item.entity.QItemImage.*;
@@ -60,7 +61,7 @@ public class ItemRepositoryImpl implements ItemRepositoryCustom {
 
     @Override
     public SelectDetailItemDto selectItem(Long id) {
-        return queryFactory
+        List<SelectDetailItemDto> itemDto = queryFactory
                 .select(Projections.constructor(SelectDetailItemDto.class,
                         item.title,
                         item.category,
@@ -80,7 +81,14 @@ public class ItemRepositoryImpl implements ItemRepositoryCustom {
                 .from(item)
                 .leftJoin(item.itemImages, itemImage)
                 .where(item.id.eq(id))
-                .fetchOne();
+                .fetch();
+
+        return itemDto.stream()
+                .findFirst()
+                .map(item -> new SelectDetailItemDto(item.getTitle(), item.getCategory(), item.getDetail(), item.getPricePerOne(), item.getPricePerFive(),
+                        item.getPricePerTen(), item.getBrandName(), item.getModelName(), item.getMethod(), item.getQuantity(),
+                        itemDto.stream().flatMap(i -> i.getImages().stream()).collect(Collectors.toList())))
+                .orElse(null);
     }
 
 
