@@ -24,4 +24,5 @@ public class SelectDetailItemDto {
     private String modelName;
     private Method method;
     private Integer quantity;
+    private List<SelectDetailImageDto> images;
 }

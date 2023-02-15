@@ -106,16 +106,7 @@ class ItemRepositoryImplTest {
 
     @Test
     void 아이템_상세조회_테스트() {
-
-        List<SelectDetailImageDto> imageDto = queryFactory
-                .select(Projections.constructor(SelectDetailImageDto.class,
-                        itemImage.imageName,
-                        itemImage.imagePath,
-                        itemImage.orderNumber))
-                .from(itemImage)
-                .where(itemImage.item.title.eq("item1"))
-                .fetch();
-
+//
         SelectDetailItemDto itemDto = queryFactory
                 .select(Projections.constructor(SelectDetailItemDto.class,
                         item.title,
@@ -127,14 +118,21 @@ class ItemRepositoryImplTest {
                         item.brandName,
                         item.modelName,
                         item.method,
-                        item.quantity
+                        item.quantity,
+                        Projections.list(Projections.constructor(SelectDetailImageDto.class,
+                        itemImage.imageName,
+                        itemImage.imagePath,
+                        itemImage.orderNumber))
                         ))
                 .from(item)
+                .leftJoin(item.itemImages, itemImage)
                 .where(item.title.eq("item1"))
                 .fetchOne();
 
 
         assertThat(itemDto.getDetail()).isEqualTo("example");
-        assertThat(imageDto.get(0).getImageName()).isEqualTo("testImage");
+        assertThat(itemDto.getImages().get(0).getImageName()).isEqualTo("testImage");
+
+
     }
 }
