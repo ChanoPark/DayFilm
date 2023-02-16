@@ -3,13 +3,14 @@ package com.rabbit.dayfilm.item.entity;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.rabbit.dayfilm.common.Constant;
 import lombok.Getter;
-
-import java.util.Arrays;
+import lombok.RequiredArgsConstructor;
 
 @Getter
+@RequiredArgsConstructor
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
-public enum Category {
+public enum Category implements Constant {
     CAMERA("카메라"),
     LENS("렌즈"),
     CAMCORDER( "캠코더"),
@@ -21,11 +22,6 @@ public enum Category {
 
 
     private final String value;
-
-    Category(String value) {
-        this.value = value;
-    }
-
 
     @JsonCreator
     public static Category from(@JsonProperty("value") String value) {

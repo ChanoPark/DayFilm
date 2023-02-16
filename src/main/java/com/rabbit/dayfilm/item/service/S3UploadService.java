@@ -25,7 +25,7 @@ public class S3UploadService {
     private String filePath;
 
     public ImageInfoDto uploadFile(MultipartFile multipartFile, String fileName) throws IOException {
-        filePath = "https://"+filePath+fileName;
+        String imagePath = "https://"+filePath+fileName;
         //파일 형식 구하기
         String contentType = multipartFile.getContentType();
 
@@ -41,7 +41,7 @@ public class S3UploadService {
         } catch (SdkClientException e) {
             e.printStackTrace();
         }
-        return new ImageInfoDto(filePath, fileName);
+        return new ImageInfoDto(imagePath, fileName);
     }
 
     /*S3의 파일 삭제*/

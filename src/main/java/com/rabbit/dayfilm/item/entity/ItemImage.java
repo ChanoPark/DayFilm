@@ -1,9 +1,6 @@
 package com.rabbit.dayfilm.item.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 
@@ -11,12 +8,16 @@ import javax.persistence.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter
+@Getter @Setter
 @Table(name="ITEM_IMAGE_TABLE")
 public class ItemImage {
     @Id @GeneratedValue
     @Column(name = "image_id")
     private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="item_id")
+    private Item item;
 
     @Column(nullable = false)
     private String imagePath;
