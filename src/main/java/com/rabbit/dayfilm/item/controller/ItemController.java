@@ -4,6 +4,7 @@ import com.rabbit.dayfilm.common.CodeSet;
 import com.rabbit.dayfilm.common.EndPoint;
 import com.rabbit.dayfilm.common.response.SuccessResponse;
 import com.rabbit.dayfilm.item.dto.InsertItemRequestDto;
+import com.rabbit.dayfilm.item.dto.ModifyItemDto;
 import com.rabbit.dayfilm.item.dto.SelectAllItemsDto;
 import com.rabbit.dayfilm.item.dto.SelectDetailItemDto;
 import com.rabbit.dayfilm.item.entity.Category;
@@ -40,8 +41,8 @@ public class ItemController {
     private final ItemSerivce itemSerivce;
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<SuccessResponse> createItem(@RequestPart List<MultipartFile> images, @RequestPart InsertItemRequestDto dto) {
-        itemSerivce.createItem(images, dto);
+    public ResponseEntity<SuccessResponse> createItem(@RequestPart List<MultipartFile> images, @RequestPart InsertItemRequestDto data) {
+        itemSerivce.createItem(images, data);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(new SuccessResponse(CodeSet.OK));
     }
@@ -55,9 +56,14 @@ public class ItemController {
 
     @GetMapping("/{itemId}")
     public ResponseEntity<SelectDetailItemResponse> getItem(@PathVariable Long itemId) {
-        // get the item by itemId
         SelectDetailItemDto dto = itemSerivce.selectDetailItem(itemId);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(new SelectDetailItemResponse(CodeSet.OK, dto));
+    }
+
+    @PutMapping("/{itemId}")
+    public ResponseEntity<> modifyItem(@PathVariable Long itemId, @RequestBody ModifyItemDto data) {
+        itemSerivce.(itemId, data);
+        return null;
     }
 }

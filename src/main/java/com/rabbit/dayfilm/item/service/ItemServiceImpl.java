@@ -2,10 +2,7 @@ package com.rabbit.dayfilm.item.service;
 
 import com.amazonaws.util.CollectionUtils;
 import com.rabbit.dayfilm.exception.CustomException;
-import com.rabbit.dayfilm.item.dto.ImageInfoDto;
-import com.rabbit.dayfilm.item.dto.InsertItemRequestDto;
-import com.rabbit.dayfilm.item.dto.SelectAllItemsDto;
-import com.rabbit.dayfilm.item.dto.SelectDetailItemDto;
+import com.rabbit.dayfilm.item.dto.*;
 import com.rabbit.dayfilm.item.entity.Category;
 import com.rabbit.dayfilm.item.entity.Item;
 import com.rabbit.dayfilm.item.entity.ItemImage;
@@ -25,6 +22,7 @@ import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -95,6 +93,11 @@ public class ItemServiceImpl implements ItemSerivce{
     @Override
     public SelectDetailItemDto selectDetailItem(Long id) {
         return itemRepository.selectItem(id);
+    }
+
+    @Override
+    public void modifyItem(Long itemId, ModifyItemDto dto) {
+        Optional<Item> findItem = itemRepository.findById(itemId);
     }
 
 
