@@ -8,4 +8,5 @@ import java.util.Optional;
 
 public interface AuthRedisRepository extends CrudRepository<UserInfo, String> {
     Optional<UserInfo> findByRefreshToken(@Param("refreshToken") String refreshToken);
+
 }
