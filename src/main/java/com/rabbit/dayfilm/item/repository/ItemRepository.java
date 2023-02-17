@@ -10,6 +10,7 @@ import java.util.Optional;
 
 public interface ItemRepository extends JpaRepository<Item, Long>, ItemRepositoryCustom {
 
-    @Query("select i from Item i join fetch i.itemImages where i.title = :title")
-    Optional<Item> findByTitle(String title);
+    @Override
+    @Query("select i from Item i join fetch i.itemImages where i.id = :id")
+    Optional<Item> findById(Long id);
 }

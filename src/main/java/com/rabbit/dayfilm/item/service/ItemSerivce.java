@@ -15,6 +15,8 @@ public interface ItemSerivce {
     public void createItem(List<MultipartFile> images, InsertItemRequestDto dto);
     public Page<SelectAllItemsDto> selectAllItems(Category category, Pageable pageable);
     public SelectDetailItemDto selectDetailItem(Long id);
+
+    public Page<SelectAllItemsDto> selectWriteItems(Long storeId, Pageable pageable);
     public void modifyItem(Long itemId, ModifyItemDto dto);
 
 }

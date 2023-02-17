@@ -3,7 +3,9 @@ package com.rabbit.dayfilm.item.repository;
 import com.querydsl.core.types.ExpressionUtils;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPAExpressions;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.rabbit.dayfilm.item.dto.SelectAllItemsDto;
 import com.rabbit.dayfilm.item.dto.SelectDetailImageDto;
 import com.rabbit.dayfilm.item.dto.SelectDetailItemDto;
 import com.rabbit.dayfilm.item.entity.*;
@@ -14,6 +16,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
@@ -27,7 +30,6 @@ import static com.querydsl.core.group.GroupBy.list;
 import static com.rabbit.dayfilm.item.entity.QItem.item;
 import static com.rabbit.dayfilm.item.entity.QItemImage.itemImage;
 import static org.assertj.core.api.Assertions.*;
-import static org.springframework.test.web.servlet.result.StatusResultMatchersExtensionsKt.isEqualTo;
 
 @SpringBootTest
 @Transactional
@@ -48,6 +50,7 @@ class ItemRepositoryImplTest {
     @BeforeEach
     void 엔티티_초기화() {
         Item items = Item.builder()
+                .id(1L)
                 .title("item1")
                 .storeName("test1")
                 .category(Category.CAMERA)
@@ -56,8 +59,6 @@ class ItemRepositoryImplTest {
                 .brandName("testBrand")
                 .modelName("testModel")
                 .method(Method.VISIT)
-                .itemImages(new ArrayList<>())
-                .itemStatus(ItemStatus.AVERAGE)
                 .use_yn(Boolean.TRUE)
                 .quantity(3)
                 .build();
@@ -94,7 +95,6 @@ class ItemRepositoryImplTest {
                 .modelName("testModel")
                 .method(Method.VISIT)
                 .itemImages(new ArrayList<>())
-                .itemStatus(ItemStatus.AVERAGE)
                 .use_yn(Boolean.TRUE)
                 .quantity(3)
                 .build();

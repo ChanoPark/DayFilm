@@ -1,5 +1,6 @@
 package com.rabbit.dayfilm.item.entity;
 
+import com.rabbit.dayfilm.store.entity.Store;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -20,9 +21,10 @@ public class Item {
     @Column(name = "item_id")
     private Long id;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "store_id")
-//    private Store store;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="store_id")
+    private Store store;
+
 
     @Column(nullable = false)
     private String storeName; //리스트 가져올 때 가게 이름이 필요한데, join 쿼리를 사용할 때 리소스낭비가 심할 것으로 예상되서 name만 중복
@@ -51,10 +53,6 @@ public class Item {
     @Column(nullable = false)
     private String modelName;
 
-    @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    private ItemStatus itemStatus;
-
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
@@ -67,12 +65,11 @@ public class Item {
     private Integer quantity;
 
     @Column(nullable = false)
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "item")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "item", cascade = CascadeType.PERSIST)
     private List<ItemImage> itemImages;
 
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "item_id")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "item", cascade = CascadeType.PERSIST)
     private List<Product> products;
 
 

@@ -13,7 +13,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public class InsertItemRequestDto {
     @ApiModelProperty(value="판매자 고유값(pk)", example="1L", required = true)
-    private Long sellerId;
+    private Long storeId;
 
     @ApiModelProperty(value="게시글 제목", example="캐논 ~카메라", required = true)
     private String title;
@@ -38,9 +38,6 @@ public class InsertItemRequestDto {
 
     @ApiModelProperty(value="상품 모델 명", example="오토보이 S2", required = true)
     private String modelName;
-
-    @ApiModelProperty(value="제품 상태", example="itemStatus:{value:'상'}", required = true)
-    private ItemStatus itemStatus;
 
     @ApiModelProperty(value="대여 방법", example="method:{value:'방문수령'}", required = true)
     private Method method;

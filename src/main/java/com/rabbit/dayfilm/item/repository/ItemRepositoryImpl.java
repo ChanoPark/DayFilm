@@ -15,6 +15,7 @@ import com.rabbit.dayfilm.item.entity.Category;
 import com.rabbit.dayfilm.item.entity.Item;
 import com.rabbit.dayfilm.item.entity.QItem;
 import com.rabbit.dayfilm.item.entity.QItemImage;
+import com.rabbit.dayfilm.store.entity.Store;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -89,6 +90,32 @@ public class ItemRepositoryImpl implements ItemRepositoryCustom {
                         item.getPricePerTen(), item.getBrandName(), item.getModelName(), item.getMethod(), item.getQuantity(),
                         itemDto.stream().flatMap(i -> i.getImages().stream()).collect(Collectors.toList())))
                 .orElse(null);
+    }
+
+    @Override
+    public Page<SelectAllItemsDto> selectWriteItems(Store store, Pageable pageable) {
+        List<SelectAllItemsDto> content = queryFactory.
+                select(Projections.constructor(SelectAllItemsDto.class,
+                        item.id.as("itemId"),
+                        item.storeName,
+                        item.title,
+                        item.method,
+                        item.pricePerOne,
+                        itemImage.imagePath))
+                .from(item)
+                .innerJoin(item.itemImages, itemImage)
+                .where(item.store.eq(store))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        JPAQuery<Long> countQuery = queryFactory
+                .select(item.count())
+                .from(item)
+                .innerJoin(item.itemImages, itemImage)
+                .where(item.store.eq(store));
+
+        return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
     }
 
 

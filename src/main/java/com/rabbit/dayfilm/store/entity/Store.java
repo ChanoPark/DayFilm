@@ -2,9 +2,11 @@ package com.rabbit.dayfilm.store.entity;
 
 import com.rabbit.dayfilm.auth.Role;
 import com.rabbit.dayfilm.common.Bank;
+import com.rabbit.dayfilm.item.entity.Item;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name="store")
@@ -55,4 +57,7 @@ public class Store {
 
     @Column(name = "picture_name", nullable = false)
     private String pictureName;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "store", cascade = CascadeType.PERSIST)
+    private List<Item> items;
 }

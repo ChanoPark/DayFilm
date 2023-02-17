@@ -37,7 +37,6 @@ class ItemServiceImplTest {
                 .modelName("testModel")
                 .method(Method.VISIT)
                 .itemImages(new ArrayList<>())
-                .itemStatus(ItemStatus.AVERAGE)
                 .use_yn(Boolean.TRUE)
                 .quantity(3)
                 .build();
@@ -59,14 +58,5 @@ class ItemServiceImplTest {
         itemRepository.save(items);
         itemImageRepository.save(itemImages1);
         itemImageRepository.save(itemImages2);
-    }
-
-    @Test
-    void 아이템_수정() {
-        Optional<Item> findItem = itemRepository.findByTitle("item1");
-        List<ItemImage> images = new ArrayList<>();
-        if (findItem.isPresent()) {
-            images = findItem.get().getItemImages();
-        }
     }
 }

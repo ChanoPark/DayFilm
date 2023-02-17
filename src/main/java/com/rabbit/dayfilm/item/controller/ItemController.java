@@ -28,8 +28,13 @@ import java.util.List;
 /**
  * 1. Item 생성
  *
- *
  * 2. 전체 Item 요약 정보 조회(홈 화면) 카테고리, 페이징 포함
+ *
+ * 3. 해당 Item 상세 페이지 정보 조회
+ *
+ * 4. 작성한 Item 목록들 조회
+ *
+ * 5. Item 수정
  *
  *
  */
@@ -51,7 +56,7 @@ public class ItemController {
                 .body(new SuccessResponse(CodeSet.OK));
     }
 
-    @GetMapping()
+    @GetMapping("/all")
     @Operation(summary = "전체 상품 조회", description = "전체 상품 조회입니다. \n 쿼리파라미터 형식으로 ?category=카메라&page=1&size=9 보내주시면 됩니다. size는 후에 9로 default 처리 해놓을게요. page 가 0부터 시작해서 -1 해서 보내주시면 됩니다.")
     public ResponseEntity<SelectAllItemsResponse> getAllItems(@RequestParam(required = false) Category category, Pageable pageable) {
         Page<SelectAllItemsDto> dto = itemSerivce.selectAllItems(category, pageable);
@@ -67,7 +72,16 @@ public class ItemController {
                 .body(new SelectDetailItemResponse(CodeSet.OK, dto));
     }
 
-    @PutMapping("/{itemId}")
+    @GetMapping("/store-write/{storeId}")
+    @Operation(summary = "작성한 아이템 조회", description = "작성한 아이템 조회입니다. /items/store-write/3 으로 넘겨주시면 pk 값이 3과 일치하는 가게가 작성한 아이템 목록을 반환합니다.")
+    public ResponseEntity<SelectAllItemsResponse> getWriteItems(@PathVariable Long storeId, Pageable pageable) {
+        Page<SelectAllItemsDto> dto = itemSerivce.selectWriteItems(storeId, pageable);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(new SelectAllItemsResponse(CodeSet.OK, dto));
+    }
+
+
+    @PutMapping("/store-write/{itemId}")
     @Operation(summary = "상품 수정", description = "상품 수정입니다.")
     public void modifyItem(@PathVariable Long itemId, @RequestBody ModifyItemDto data) {
     }
