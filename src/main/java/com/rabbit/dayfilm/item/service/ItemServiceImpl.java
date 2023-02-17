@@ -152,6 +152,7 @@ public class ItemServiceImpl implements ItemSerivce{
 
         } catch (IOException e) {
             log.info("error message : {}", e.getMessage());
+            throw new CustomException("Item 수정 실패");
         }
 
 

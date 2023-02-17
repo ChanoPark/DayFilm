@@ -83,6 +83,9 @@ public class ItemController {
 
     @PutMapping("/store-write/{itemId}")
     @Operation(summary = "상품 수정", description = "상품 수정입니다.")
-    public void modifyItem(@PathVariable Long itemId, @RequestBody ModifyItemDto data) {
+    public ResponseEntity<SuccessResponse> modifyItem(@PathVariable Long itemId, @RequestPart List<MultipartFile> images, @RequestPart ModifyItemDto data) {
+        itemSerivce.modifyItem(itemId, images, data);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(new SuccessResponse(CodeSet.OK));
     }
 }
