@@ -1,13 +1,12 @@
 package com.rabbit.dayfilm.item.dto;
 
 import com.rabbit.dayfilm.item.entity.Category;
-import com.rabbit.dayfilm.item.entity.ItemStatus;
 import com.rabbit.dayfilm.item.entity.Method;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 
 @Getter
-public class ModifyItemDto {
+public class ModifyItemRequestDto {
     @ApiModelProperty(value="게시글 제목", example="캐논 ~카메라", required = true)
     private String title;
 

@@ -6,4 +6,5 @@ public class EndPoint {
     public static final String AUTH_REFRESH = AUTH + "/refresh";
 
     public static final String ITEM = "/items";
+    public static final String LIKE = "/likes";
 }

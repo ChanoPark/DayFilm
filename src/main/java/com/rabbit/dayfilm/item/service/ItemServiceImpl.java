@@ -16,7 +16,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,7 +23,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.beans.PropertyDescriptor;
 import java.io.IOException;
-import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -114,7 +112,7 @@ public class ItemServiceImpl implements ItemSerivce{
 
     @Override
     @Transactional
-    public void modifyItem(Long itemId, List<MultipartFile> images, ModifyItemDto dto) {
+    public void modifyItem(Long itemId, List<MultipartFile> images, ModifyItemRequestDto dto) {
         try{
             Item item = itemRepository.findById(itemId)
                     .orElseThrow(() -> new CustomException("해당 번호 아이템이 존재하지 않습니다."));
@@ -157,6 +155,15 @@ public class ItemServiceImpl implements ItemSerivce{
 
 
 
+    }
+
+    @Override
+    public Page<SelectAllItemsDto> selectLikeItems(Category category, Long userId, Pageable pageable) {
+        return itemRepository.selectLikeItems(category, userId, pageable);
+    }
+
+    @Override
+    public void modifyLikeItem(ModifyLikeRequestDto dto) {
     }
 
     private static String[] getNullPropertyNames(Object source) {

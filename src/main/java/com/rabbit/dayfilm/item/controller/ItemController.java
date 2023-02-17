@@ -4,7 +4,7 @@ import com.rabbit.dayfilm.common.CodeSet;
 import com.rabbit.dayfilm.common.EndPoint;
 import com.rabbit.dayfilm.common.response.SuccessResponse;
 import com.rabbit.dayfilm.item.dto.InsertItemRequestDto;
-import com.rabbit.dayfilm.item.dto.ModifyItemDto;
+import com.rabbit.dayfilm.item.dto.ModifyItemRequestDto;
 import com.rabbit.dayfilm.item.dto.SelectAllItemsDto;
 import com.rabbit.dayfilm.item.dto.SelectDetailItemDto;
 import com.rabbit.dayfilm.item.entity.Category;
@@ -28,15 +28,17 @@ import java.util.List;
 /**
  * 1. Item 생성
  *
- * 2. 전체 Item 요약 정보 조회(홈 화면) 카테고리, 페이징 포함
+ * 2. 전체 Item 요약 정보 조회(홈 화면) 카테고리, 페이징 포함.
  *
- * 3. 해당 Item 상세 페이지 정보 조회
+ * 3. 해당 Item 상세 페이지 정보 조회.
  *
- * 4. 작성한 Item 목록들 조회
+ * 4. 작성한 Item 목록들 조회.
  *
- * 5. Item 수정
+ * 5. Item 수정.
  *
+ * 6. 좋아요 Item list 조회.
  *
+ * 7. 좋아요 등록 및 삭제.
  */
 
 @Slf4j
@@ -83,9 +85,17 @@ public class ItemController {
 
     @PutMapping("/store-write/{itemId}")
     @Operation(summary = "상품 수정", description = "상품 수정입니다.")
-    public ResponseEntity<SuccessResponse> modifyItem(@PathVariable Long itemId, @RequestPart List<MultipartFile> images, @RequestPart ModifyItemDto data) {
+    public ResponseEntity<SuccessResponse> modifyItem(@PathVariable Long itemId, @RequestPart List<MultipartFile> images, @RequestPart ModifyItemRequestDto data) {
         itemSerivce.modifyItem(itemId, images, data);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(new SuccessResponse(CodeSet.OK));
+    }
+
+    @GetMapping("/likes/{userId}")
+    @Operation(summary = "좋아요 게시글 조회", description = "좋아요 누른 게시글 리스트를 조회합니다.")
+    public ResponseEntity<SelectAllItemsResponse> getLikeItems(@PathVariable Long userId, @RequestParam(required = false) Category category, Pageable pageable) {
+        Page<SelectAllItemsDto> dto = itemSerivce.selectLikeItems(category, userId, pageable);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(new SelectAllItemsResponse(CodeSet.OK, dto));
     }
 }

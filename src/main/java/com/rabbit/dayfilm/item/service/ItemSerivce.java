@@ -1,9 +1,6 @@
 package com.rabbit.dayfilm.item.service;
 
-import com.rabbit.dayfilm.item.dto.InsertItemRequestDto;
-import com.rabbit.dayfilm.item.dto.ModifyItemDto;
-import com.rabbit.dayfilm.item.dto.SelectAllItemsDto;
-import com.rabbit.dayfilm.item.dto.SelectDetailItemDto;
+import com.rabbit.dayfilm.item.dto.*;
 import com.rabbit.dayfilm.item.entity.Category;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,6 +14,8 @@ public interface ItemSerivce {
     public SelectDetailItemDto selectDetailItem(Long id);
 
     public Page<SelectAllItemsDto> selectWriteItems(Long storeId, Pageable pageable);
-    public void modifyItem(Long itemId, List<MultipartFile> images, ModifyItemDto dto);
+    public void modifyItem(Long itemId, List<MultipartFile> images, ModifyItemRequestDto dto);
 
+    public Page<SelectAllItemsDto> selectLikeItems(Category category, Long userId, Pageable pageable);
+    public void modifyLikeItem(ModifyLikeRequestDto dto);
 }
