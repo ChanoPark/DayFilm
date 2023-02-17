@@ -9,6 +9,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class SelectDetailImageDto {
+    @ApiModelProperty(value="이미지 고유 id", example="2L")
+    private Long imageId;
+
     @ApiModelProperty(value="이미지 이름", example="새롭게 조합할 예정")
     private String imageName;
 

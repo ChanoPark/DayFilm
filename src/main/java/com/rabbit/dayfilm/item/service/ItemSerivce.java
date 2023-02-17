@@ -17,6 +17,6 @@ public interface ItemSerivce {
     public SelectDetailItemDto selectDetailItem(Long id);
 
     public Page<SelectAllItemsDto> selectWriteItems(Long storeId, Pageable pageable);
-    public void modifyItem(Long itemId, ModifyItemDto dto);
+    public void modifyItem(Long itemId, List<MultipartFile> images, ModifyItemDto dto);
 
 }

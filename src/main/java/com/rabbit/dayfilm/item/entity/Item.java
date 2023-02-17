@@ -88,4 +88,8 @@ public class Item {
         }
     }
 
+    public void clearImages() {
+        this.itemImages.clear();
+    }
+
 }

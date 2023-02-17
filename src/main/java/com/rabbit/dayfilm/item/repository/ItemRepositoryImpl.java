@@ -75,6 +75,7 @@ public class ItemRepositoryImpl implements ItemRepositoryCustom {
                         item.method,
                         item.quantity,
                         Projections.list(Projections.constructor(SelectDetailImageDto.class,
+                                itemImage.id.as("imageId"),
                                 itemImage.imageName,
                                 itemImage.imagePath,
                                 itemImage.orderNumber))

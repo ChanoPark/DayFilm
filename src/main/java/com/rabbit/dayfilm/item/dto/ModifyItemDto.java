@@ -2,7 +2,9 @@ package com.rabbit.dayfilm.item.dto;
 
 import com.rabbit.dayfilm.item.entity.ItemStatus;
 import com.rabbit.dayfilm.item.entity.Method;
+import lombok.Getter;
 
+@Getter
 public class ModifyItemDto {
     private String title;
     private String detail;

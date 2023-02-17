@@ -87,7 +87,7 @@ public class ItemServiceImpl implements ItemSerivce{
             itemImageRepository.saveAll(item.getItemImages());
 
         } catch (IOException e) {
-            e.printStackTrace();
+            log.info("error message : {}", e.getMessage());
             throw new CustomException("Item 생성 실패");
         }
     }
@@ -114,15 +114,46 @@ public class ItemServiceImpl implements ItemSerivce{
 
     @Override
     @Transactional
-    public void modifyItem(Long itemId, ModifyItemDto dto) {
-        Item item = itemRepository.findById(itemId)
-                .orElseThrow(() -> new CustomException("해당 번호 아이템이 존재하지 않습니다."));
+    public void modifyItem(Long itemId, List<MultipartFile> images, ModifyItemDto dto) {
+        try{
+            Item item = itemRepository.findById(itemId)
+                    .orElseThrow(() -> new CustomException("해당 번호 아이템이 존재하지 않습니다."));
 
-        // DTO 객체의 null이 아닌 속성을 기존 Item 객체에 복사.
-        BeanUtils.copyProperties(dto, item, getNullPropertyNames(dto));
+            // DTO 객체의 null이 아닌 속성을 기존 Item 객체에 복사.
+            BeanUtils.copyProperties(dto, item, getNullPropertyNames(dto));
 
-        List<ItemImage> itemImages = item.getItemImages();
-        List<ItemImage> newItemImages = new ArrayList<>();
+            //기존 s3 image 삭제
+            List<ItemImage> itemImages = item.getItemImages();
+            for (ItemImage itemImage : itemImages) {
+                s3UploadService.deleteFile(itemImage.getImageName());
+            }
+            //이미지 비우기
+            item.clearImages();
+
+            //이미지 새롭게 업로드
+            String storeName = item.getStoreName();
+            if(!CollectionUtils.isNullOrEmpty(images)) {
+                int count = 1;
+                for(MultipartFile image : images) {
+                    //개수 제한을 걸 경우, 조건문으로 예외 터트리면 됨.
+                    String filename = storeName + "/" + dto.getModelName() + count;
+                    ImageInfoDto imageInfoDto = s3UploadService.uploadFile(image, filename);
+                    ItemImage itemImage = ItemImage.builder()
+                            .imagePath(imageInfoDto.getImagePath())
+                            .imageName(imageInfoDto.getImageName())
+                            .orderNumber(count)
+                            .build();
+                    item.addItemImage(itemImage);
+                    count ++;
+                }
+            }
+
+            itemRepository.save(item);
+
+        } catch (IOException e) {
+            log.info("error message : {}", e.getMessage());
+        }
+
 
 
     }

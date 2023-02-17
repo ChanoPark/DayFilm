@@ -130,6 +130,7 @@ class ItemRepositoryImplTest {
                         item.method,
                         item.quantity,
                         Projections.list(Projections.constructor(SelectDetailImageDto.class,
+                        itemImage.id.as("itemId"),
                         itemImage.imageName,
                         itemImage.imagePath,
                         itemImage.orderNumber))
