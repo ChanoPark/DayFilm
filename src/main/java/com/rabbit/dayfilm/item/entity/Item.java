@@ -1,10 +1,7 @@
 package com.rabbit.dayfilm.item.entity;
 
 import com.rabbit.dayfilm.store.entity.Store;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -69,8 +66,11 @@ public class Item {
     private List<ItemImage> itemImages;
 
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "item", cascade = CascadeType.PERSIST)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "item")
     private List<Product> products;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "item")
+    private List<Like> likes;
 
 
     private LocalDateTime createdDate;
@@ -90,6 +90,11 @@ public class Item {
 
     public void clearImages() {
         this.itemImages.clear();
+    }
+
+    public void addLike(Like like) {
+        this.likes.add(like);
+        like.setItem(this);
     }
 
 }

@@ -58,6 +58,6 @@ public class Store {
     @Column(name = "picture_name", nullable = false)
     private String pictureName;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "store", cascade = CascadeType.PERSIST)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "store")
     private List<Item> items;
 }
