@@ -104,10 +104,8 @@ public class ItemServiceImpl implements ItemSerivce{
 
     @Override
     @Transactional(readOnly = true)
-    public Page<SelectAllItemsDto> selectWriteItems(Long storeId, Pageable pageable) {
-        Store store = storeRepository.findById(storeId)
-                .orElseThrow(() -> new CustomException("해당 하는 id의 가게를 찾을 수 없습니다."));
-        return itemRepository.selectWriteItems(store, pageable);
+    public Page<SelectAllItemsDto> selectWriteItems(Category category, Long storeId, Pageable pageable) {
+        return itemRepository.selectWriteItems(category, storeId, pageable);
     }
 
     @Override
@@ -127,6 +125,7 @@ public class ItemServiceImpl implements ItemSerivce{
             }
             //이미지 비우기
             item.clearImages();
+            itemImageRepository.deleteByItemId(item.getId());
 
             //이미지 새롭게 업로드
             String storeName = item.getStoreName();

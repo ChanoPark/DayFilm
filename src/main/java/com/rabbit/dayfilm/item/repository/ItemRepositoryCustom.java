@@ -12,6 +12,6 @@ import org.springframework.data.domain.Pageable;
 public interface ItemRepositoryCustom {
     Page<SelectAllItemsDto> selectAllItems(Category category, Pageable pageable);
     SelectDetailItemDto selectItem(Long id);
-    Page<SelectAllItemsDto> selectWriteItems(Store store, Pageable pageable);
+    public Page<SelectAllItemsDto> selectWriteItems(Category category, Long storeId, Pageable pageable);
     Page<SelectAllItemsDto> selectLikeItems(Category category, Long userId, Pageable pageable);
 }

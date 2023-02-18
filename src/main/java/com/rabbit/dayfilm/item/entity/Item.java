@@ -62,7 +62,7 @@ public class Item {
     private Integer quantity;
 
     @Column(nullable = false)
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "item", cascade = CascadeType.PERSIST)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "item", cascade = CascadeType.ALL)
     private List<ItemImage> itemImages;
 
 

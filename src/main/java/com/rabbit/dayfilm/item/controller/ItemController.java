@@ -50,13 +50,6 @@ public class ItemController {
 
     private final ItemSerivce itemSerivce;
 
-    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @Operation(summary = "상품 등록", description = "상품 등록입니다.\n ContentType 확인해서 보내주세요")
-    public ResponseEntity<SuccessResponse> createItem(@RequestPart List<MultipartFile> images, @RequestPart InsertItemRequestDto data) {
-        itemSerivce.createItem(images, data);
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(new SuccessResponse(CodeSet.OK));
-    }
 
     @GetMapping("/all")
     @Operation(summary = "전체 상품 조회", description = "전체 상품 조회입니다. \n 쿼리파라미터 형식으로 ?category=CAMERA&page=1&size=9 보내주시면 됩니다. size는 후에 9로 default 처리 해놓을게요. page 가 0부터 시작해서 -1 해서 보내주시면 됩니다.")
@@ -76,14 +69,22 @@ public class ItemController {
 
     @GetMapping("/store-write/{storeId}")
     @Operation(summary = "작성한 아이템 조회", description = "작성한 아이템 조회입니다. /items/store-write/3 으로 넘겨주시면 pk 값이 3과 일치하는 가게가 작성한 아이템 목록을 반환합니다.")
-    public ResponseEntity<SelectAllItemsResponse> getWriteItems(@PathVariable Long storeId, Pageable pageable) {
-        Page<SelectAllItemsDto> dto = itemSerivce.selectWriteItems(storeId, pageable);
+    public ResponseEntity<SelectAllItemsResponse> getWriteItems(@PathVariable Long storeId, @RequestParam(required = false) Category category, Pageable pageable) {
+        Page<SelectAllItemsDto> dto = itemSerivce.selectWriteItems(category, storeId, pageable);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(new SelectAllItemsResponse(CodeSet.OK, dto));
     }
 
+    @PostMapping(value = "/store-write", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(summary = "상품 등록", description = "상품 등록입니다.\n ContentType 확인해서 보내주세요")
+    public ResponseEntity<SuccessResponse> createItem(@RequestPart List<MultipartFile> images, @RequestPart InsertItemRequestDto data) {
+        itemSerivce.createItem(images, data);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(new SuccessResponse(CodeSet.OK));
+    }
 
-    @PutMapping("/store-write/{itemId}")
+
+    @PutMapping(value = "/store-write/{itemId}",  consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "상품 수정", description = "상품 수정입니다.")
     public ResponseEntity<SuccessResponse> modifyItem(@PathVariable Long itemId, @RequestPart List<MultipartFile> images, @RequestPart ModifyItemRequestDto data) {
         itemSerivce.modifyItem(itemId, images, data);

@@ -95,7 +95,7 @@ public class ItemRepositoryImpl implements ItemRepositoryCustom {
     }
 
     @Override
-    public Page<SelectAllItemsDto> selectWriteItems(Store store, Pageable pageable) {
+    public Page<SelectAllItemsDto> selectWriteItems(Category category, Long storeId, Pageable pageable) {
         List<SelectAllItemsDto> content = queryFactory.
                 select(Projections.constructor(SelectAllItemsDto.class,
                         item.id.as("itemId"),
@@ -106,7 +106,8 @@ public class ItemRepositoryImpl implements ItemRepositoryCustom {
                         itemImage.imagePath))
                 .from(item)
                 .innerJoin(item.itemImages, itemImage)
-                .where(storeEq(store))
+                .where(storeIdEq(storeId),
+                        imageOrderEqOne())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -114,7 +115,7 @@ public class ItemRepositoryImpl implements ItemRepositoryCustom {
         JPAQuery<Long> countQuery = queryFactory
                 .select(item.count())
                 .from(item)
-                .where(storeEq(store));
+                .where(storeIdEq(storeId));
 
         return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
     }
@@ -133,7 +134,8 @@ public class ItemRepositoryImpl implements ItemRepositoryCustom {
                 .innerJoin(like.item, item)
                 .innerJoin(item.itemImages, itemImage)
                 .where(like.user.id.eq(userId),
-                        categoryEq(category))
+                        categoryEq(category),
+                        imageOrderEqOne())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -153,8 +155,8 @@ public class ItemRepositoryImpl implements ItemRepositoryCustom {
     private BooleanExpression itemIdEq(Long id) {
         return id == null ? null : item.id.eq(id);
     }
-    private BooleanExpression storeEq(Store store) {
-        return store == null ? null : item.store.eq(store);
+    private BooleanExpression storeIdEq(Long storeId) {
+        return storeId == null ? null : item.store.id.eq(storeId);
     }
 
     private BooleanExpression categoryEq(Category category) {

@@ -13,7 +13,7 @@ public interface ItemSerivce {
     public Page<SelectAllItemsDto> selectAllItems(Category category, Pageable pageable);
     public SelectDetailItemDto selectDetailItem(Long id);
 
-    public Page<SelectAllItemsDto> selectWriteItems(Long storeId, Pageable pageable);
+    public Page<SelectAllItemsDto> selectWriteItems(Category category, Long storeId, Pageable pageable);
     public void modifyItem(Long itemId, List<MultipartFile> images, ModifyItemRequestDto dto);
 
     public Page<SelectAllItemsDto> selectLikeItems(Category category, Long userId, Pageable pageable);
