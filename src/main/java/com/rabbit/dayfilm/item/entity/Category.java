@@ -9,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-@JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum Category implements Constant {
     CAMERA("카메라"),
     LENS("렌즈"),
@@ -19,17 +18,9 @@ public enum Category implements Constant {
     LIGHT( "조명"),
     ACCESSORY( "액세서리"),
     ETC("기타");
+    
 
 
     private final String value;
 
-    @JsonCreator
-    public static Category from(@JsonProperty("value") String value) {
-        for (Category category : Category.values()) {
-            if (category.getValue().equals(value)) {
-                return category;
-            }
-        }
-        return null;
-    }
 }

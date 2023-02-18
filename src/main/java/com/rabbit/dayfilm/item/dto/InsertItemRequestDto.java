@@ -1,12 +1,9 @@
 package com.rabbit.dayfilm.item.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.rabbit.dayfilm.item.entity.Category;
-import com.rabbit.dayfilm.item.entity.ItemStatus;
 import com.rabbit.dayfilm.item.entity.Method;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 
 @Getter
