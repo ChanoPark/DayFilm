@@ -9,4 +9,5 @@ public class EndPoint {
     public static final String LIKE = "/likes";
 
     public static final String BASKET = "/basket";
+    public static final String ALL = "/all";
 }

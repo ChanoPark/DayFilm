@@ -6,12 +6,16 @@ import com.rabbit.dayfilm.basket.entity.Basket;
 import com.rabbit.dayfilm.basket.repository.BasketRepository;
 import com.rabbit.dayfilm.exception.CustomException;
 import com.rabbit.dayfilm.item.repository.ItemRepository;
+import com.rabbit.dayfilm.user.User;
 import com.rabbit.dayfilm.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -38,5 +42,33 @@ public class BasketServiceImpl implements BasketService {
                 .build();
 
         basketRepository.save(basket);
+    }
+
+    @Override
+    public List<BasketResDto> findAllBasket(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new CustomException("회원이 존재하지 않습니다."));
+        List<BasketResDto.BasketQueryDto> basketList = basketRepository.findBasket(user);
+
+        List<BasketResDto> result = new ArrayList<>();
+        for (BasketResDto.BasketQueryDto basket : basketList) {
+            int price;
+
+            long rentDays = ChronoUnit.DAYS.between(basket.getStarted(), basket.getEnded());
+            if (rentDays >= 5 && rentDays < 10) price = basket.getPricePerFive();
+            else if (rentDays >= 10) price = basket.getPricePerTen();
+            else price = basket.getPricePerOne();
+
+            result.add(
+                    BasketResDto.builder()
+                            .basketId(basket.getBasketId())
+                            .imagePath(basket.getImagePath())
+                            .title(basket.getTitle())
+                            .started(basket.getStarted())
+                            .ended(basket.getEnded())
+                            .price(price)
+                            .build()
+            );
+        }
+        return result;
     }
 }
