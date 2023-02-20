@@ -61,12 +61,13 @@ public class Item {
     @Column(nullable = false)
     private Integer quantity;
 
+
     @Column(nullable = false)
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "item", cascade = CascadeType.ALL)
     private List<ItemImage> itemImages;
 
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "item")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "item", cascade = CascadeType.ALL)
     private List<Product> products;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "item")
@@ -95,6 +96,11 @@ public class Item {
     public void addLike(Like like) {
         this.likes.add(like);
         like.setItem(this);
+    }
+
+    public void addProduct(Product product) {
+        this.products.add(product);
+        product.setItem(this);
     }
 
 }

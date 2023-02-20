@@ -3,10 +3,7 @@ package com.rabbit.dayfilm.item.service;
 import com.amazonaws.util.CollectionUtils;
 import com.rabbit.dayfilm.exception.CustomException;
 import com.rabbit.dayfilm.item.dto.*;
-import com.rabbit.dayfilm.item.entity.Category;
-import com.rabbit.dayfilm.item.entity.Item;
-import com.rabbit.dayfilm.item.entity.ItemImage;
-import com.rabbit.dayfilm.item.entity.Like;
+import com.rabbit.dayfilm.item.entity.*;
 import com.rabbit.dayfilm.item.repository.ItemImageRepository;
 import com.rabbit.dayfilm.item.repository.ItemRepository;
 import com.rabbit.dayfilm.item.repository.LikeRepository;
@@ -67,11 +64,19 @@ public class ItemServiceImpl implements ItemSerivce {
                     .use_yn(Boolean.TRUE)
                     .quantity(dto.getQuantity())
                     .itemImages(new ArrayList<>())
+                    .products(new ArrayList<>())
                     .createdDate(LocalDateTime.now())
                     .modifiedDate(LocalDateTime.now())
                     .build(); //아이템 엔티티 먼저 생성
 
             item.checkQuantity(item.getQuantity()); // 시작 재고가 0이 아닌지 체크
+
+            for (int i = 0; i < item.getQuantity(); i++) {
+                Product product = Product.builder()
+                        .productStatus(ProductStatus.AVAILABLE)
+                        .build();
+                item.addProduct(product);
+            }
 
             if (!CollectionUtils.isNullOrEmpty(images)) {
                 int count = 1;
