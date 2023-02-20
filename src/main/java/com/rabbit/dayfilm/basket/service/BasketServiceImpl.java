@@ -1,6 +1,8 @@
 package com.rabbit.dayfilm.basket.service;
 
+import com.rabbit.dayfilm.basket.dto.BasketCond;
 import com.rabbit.dayfilm.basket.dto.BasketCreateDto;
+import com.rabbit.dayfilm.basket.dto.BasketReqDto;
 import com.rabbit.dayfilm.basket.dto.BasketResDto;
 import com.rabbit.dayfilm.basket.entity.Basket;
 import com.rabbit.dayfilm.basket.repository.BasketRepository;
@@ -9,6 +11,7 @@ import com.rabbit.dayfilm.item.repository.ItemRepository;
 import com.rabbit.dayfilm.user.User;
 import com.rabbit.dayfilm.user.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,7 +32,6 @@ public class BasketServiceImpl implements BasketService {
     public void createBasket(BasketCreateDto request) {
         LocalDateTime started = request.getStarted();
         LocalDateTime ended = request.getEnded();
-
         if (started.isBefore(LocalDateTime.now()) || ended.isBefore(LocalDateTime.now()) || started.isAfter(ended))
             throw new CustomException("대여 시간이 올바르지 않습니다.");
 
@@ -47,7 +49,7 @@ public class BasketServiceImpl implements BasketService {
     @Override
     public List<BasketResDto> findAllBasket(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new CustomException("회원이 존재하지 않습니다."));
-        List<BasketResDto.BasketQueryDto> basketList = basketRepository.findBasket(user);
+        List<BasketResDto.BasketQueryDto> basketList = basketRepository.findBasket(new BasketCond(user));
 
         List<BasketResDto> result = new ArrayList<>();
         for (BasketResDto.BasketQueryDto basket : basketList) {
@@ -70,5 +72,18 @@ public class BasketServiceImpl implements BasketService {
             );
         }
         return result;
+    }
+
+    @Override
+    public void deleteBaskets(BasketReqDto.DeleteBaskets request) {
+        List<Long> ids = request.getBasketIds();
+        if (ids.size() == 0) throw new CustomException("삭제할 장바구니가 없습니다.");
+        else {
+            try {
+                basketRepository.deleteAllById(ids);
+            } catch (EmptyResultDataAccessException e) {
+                throw new CustomException("장바구니 번호가 올바르지 않습니다.");
+            }
+        }
     }
 }

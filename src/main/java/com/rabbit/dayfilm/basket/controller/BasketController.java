@@ -1,6 +1,7 @@
 package com.rabbit.dayfilm.basket.controller;
 
 import com.rabbit.dayfilm.basket.dto.BasketCreateDto;
+import com.rabbit.dayfilm.basket.dto.BasketReqDto;
 import com.rabbit.dayfilm.basket.dto.BasketResDto;
 import com.rabbit.dayfilm.basket.service.BasketService;
 import com.rabbit.dayfilm.common.CodeSet;
@@ -35,4 +36,10 @@ public class BasketController {
         return ResponseEntity.ok(basketService.findAllBasket(userId));
     }
 
+    @PostMapping(EndPoint.DELETE)
+    @Operation(summary = "장바구니 삭제", description = "장바구니 삭제입니다.\n개수에 상관없이 리스트에 담아주시면 됩니다.\n존재하지 않는 장바구니가 있는 경우, 있는 장바구니도 삭제되지 않고 예외를 반환합니다.")
+    public ResponseEntity<SuccessResponse> deleteBaskets(@RequestBody BasketReqDto.DeleteBaskets request) {
+        basketService.deleteBaskets(request);
+        return ResponseEntity.ok().body(new SuccessResponse(CodeSet.OK));
+    }
 }
