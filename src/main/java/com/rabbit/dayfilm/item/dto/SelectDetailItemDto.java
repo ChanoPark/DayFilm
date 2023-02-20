@@ -7,12 +7,13 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
 import java.util.List;
 
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class SelectDetailItemDto {
+public class SelectDetailItemDto implements Serializable {
     @ApiModelProperty(value="게시글 제목", example="캐논 ~카메라")
     private String title;
 

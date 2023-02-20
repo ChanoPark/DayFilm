@@ -6,15 +6,21 @@ import com.rabbit.dayfilm.item.dto.*;
 import com.rabbit.dayfilm.item.entity.Category;
 import com.rabbit.dayfilm.item.entity.Item;
 import com.rabbit.dayfilm.item.entity.ItemImage;
+import com.rabbit.dayfilm.item.entity.Like;
 import com.rabbit.dayfilm.item.repository.ItemImageRepository;
 import com.rabbit.dayfilm.item.repository.ItemRepository;
+import com.rabbit.dayfilm.item.repository.LikeRepository;
 import com.rabbit.dayfilm.store.entity.Store;
 import com.rabbit.dayfilm.store.repository.StoreRepository;
+import com.rabbit.dayfilm.user.User;
+import com.rabbit.dayfilm.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -29,12 +35,14 @@ import java.util.*;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class ItemServiceImpl implements ItemSerivce{
+public class ItemServiceImpl implements ItemSerivce {
     private final S3UploadService s3UploadService;
+    private final UserRepository userRepository;
     private final StoreRepository storeRepository;
-
     private final ItemRepository itemRepository;
     private final ItemImageRepository itemImageRepository;
+
+    private final LikeRepository likeRepository;
 
     @Override
     @Transactional
@@ -65,9 +73,9 @@ public class ItemServiceImpl implements ItemSerivce{
 
             item.checkQuantity(item.getQuantity()); // 시작 재고가 0이 아닌지 체크
 
-            if(!CollectionUtils.isNullOrEmpty(images)) {
+            if (!CollectionUtils.isNullOrEmpty(images)) {
                 int count = 1;
-                for(MultipartFile image : images) {
+                for (MultipartFile image : images) {
                     //개수 제한을 걸 경우, 조건문으로 예외 터트리면 됨.
                     String filename = store.getStoreName() + "/" + dto.getModelName() + count;
                     ImageInfoDto imageInfoDto = s3UploadService.uploadFile(image, filename);
@@ -77,7 +85,7 @@ public class ItemServiceImpl implements ItemSerivce{
                             .orderNumber(count)
                             .build();
                     item.addItemImage(itemImage);
-                    count ++;
+                    count++;
                 }
             }
 
@@ -98,6 +106,7 @@ public class ItemServiceImpl implements ItemSerivce{
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = "item-detail", key="#id", cacheManager = "cacheManager", unless="#result == null")
     public SelectDetailItemDto selectDetailItem(Long id) {
         return itemRepository.selectItem(id);
     }
@@ -110,8 +119,9 @@ public class ItemServiceImpl implements ItemSerivce{
 
     @Override
     @Transactional
+    @CachePut(value = "item-detail", key="#itemId", cacheManager = "cacheManager", unless="#result == null")
     public void modifyItem(Long itemId, List<MultipartFile> images, ModifyItemRequestDto dto) {
-        try{
+        try {
             Item item = itemRepository.findById(itemId)
                     .orElseThrow(() -> new CustomException("해당 번호 아이템이 존재하지 않습니다."));
 
@@ -129,9 +139,9 @@ public class ItemServiceImpl implements ItemSerivce{
 
             //이미지 새롭게 업로드
             String storeName = item.getStoreName();
-            if(!CollectionUtils.isNullOrEmpty(images)) {
+            if (!CollectionUtils.isNullOrEmpty(images)) {
                 int count = 1;
-                for(MultipartFile image : images) {
+                for (MultipartFile image : images) {
                     //개수 제한을 걸 경우, 조건문으로 예외 터트리면 됨.
                     String filename = storeName + "/" + dto.getModelName() + count;
                     ImageInfoDto imageInfoDto = s3UploadService.uploadFile(image, filename);
@@ -141,7 +151,7 @@ public class ItemServiceImpl implements ItemSerivce{
                             .orderNumber(count)
                             .build();
                     item.addItemImage(itemImage);
-                    count ++;
+                    count++;
                 }
             }
 
@@ -153,17 +163,34 @@ public class ItemServiceImpl implements ItemSerivce{
         }
 
 
-
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<SelectAllItemsDto> selectLikeItems(Category category, Long userId, Pageable pageable) {
         return itemRepository.selectLikeItems(category, userId, pageable);
     }
 
     @Override
-    public void modifyLikeItem(ModifyLikeRequestDto dto) {
+    @Transactional
+    public void likeItem(LikeItemRequestDto dto) {
+
+        User findUser = userRepository.findById(dto.getUserId())
+                .orElseThrow(() -> new CustomException("해당 번호 유저가 존재하지 않습니다."));
+
+        Item findItem = itemRepository.findById(dto.getItemId())
+                .orElseThrow(() -> new CustomException("해당 번호 아이템이 존재하지 않습니다."));
+
+        //좋아요 객체 생성
+        Like like = new Like();
+
+        //연관관계 추가 : 변경감지로 인해 자동 업데이트
+        findUser.addLike(like);
+        findItem.addLike(like);
+
+        likeRepository.save(like);
     }
+
 
     private static String[] getNullPropertyNames(Object source) {
         // 소스 객체에 대한 BeanWrapper 객체 생성

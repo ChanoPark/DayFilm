@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.Cacheable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -49,7 +50,7 @@ class ItemServiceImplTest {
         ItemImage itemImages2 = ItemImage.builder()
                 .imageName("testImage2")
                 .imagePath("/test/a")
-                .orderNumber(1).build();
+                .orderNumber(2).build();
 
         items.addItemImage(itemImages1);
         items.addItemImage(itemImages2);
@@ -59,4 +60,5 @@ class ItemServiceImplTest {
         itemImageRepository.save(itemImages1);
         itemImageRepository.save(itemImages2);
     }
+
 }

@@ -17,5 +17,5 @@ public interface ItemSerivce {
     public void modifyItem(Long itemId, List<MultipartFile> images, ModifyItemRequestDto dto);
 
     public Page<SelectAllItemsDto> selectLikeItems(Category category, Long userId, Pageable pageable);
-    public void modifyLikeItem(ModifyLikeRequestDto dto);
+    public void likeItem(LikeItemRequestDto dto);
 }
