@@ -35,6 +35,8 @@ dependencies {
 	implementation 'com.auth0:java-jwt:3.16.0'
 	implementation 'com.google.code.gson:gson:2.9.0'
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+	//cache
+	implementation 'org.springframework.boot:spring-boot-starter-cache'
 	implementation 'io.springfox:springfox-boot-starter:3.0.0'
 	//QueryDSL
 	implementation "com.querydsl:querydsl-jpa:${queryDslVersion}"

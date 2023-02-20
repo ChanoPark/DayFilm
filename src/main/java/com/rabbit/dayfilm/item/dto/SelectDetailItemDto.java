@@ -1,20 +1,19 @@
 package com.rabbit.dayfilm.item.dto;
 
 import com.rabbit.dayfilm.item.entity.Category;
-import com.rabbit.dayfilm.item.entity.ItemStatus;
 import com.rabbit.dayfilm.item.entity.Method;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
+import java.io.Serializable;
 import java.util.List;
 
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class SelectDetailItemDto {
+public class SelectDetailItemDto implements Serializable {
     @ApiModelProperty(value="게시글 제목", example="캐논 ~카메라")
     private String title;
 

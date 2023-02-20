@@ -1,9 +1,11 @@
 package com.rabbit.dayfilm.user;
 
 import com.rabbit.dayfilm.auth.Role;
+import com.rabbit.dayfilm.item.entity.Like;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Builder
@@ -33,5 +35,13 @@ public class User {
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false)
     private Role role;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    private List<Like> likes;
+
+    public void addLike(Like like) {
+        this.likes.add(like);
+        like.setUser(this);
+    }
 
 }

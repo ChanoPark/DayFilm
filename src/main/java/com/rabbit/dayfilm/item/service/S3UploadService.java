@@ -37,9 +37,9 @@ public class S3UploadService {
             amazonS3Client.putObject(new PutObjectRequest(bucket, fileName, multipartFile.getInputStream(), metadata)
                     .withCannedAcl(CannedAccessControlList.PublicRead));
         } catch (AmazonServiceException e) {
-            e.printStackTrace();
+            log.info("error message : {}", e.getMessage());
         } catch (SdkClientException e) {
-            e.printStackTrace();
+            log.info("error message : {}", e.getMessage());
         }
         return new ImageInfoDto(imagePath, fileName);
     }
