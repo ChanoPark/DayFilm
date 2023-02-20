@@ -18,7 +18,7 @@ public class SelectAllItemsDto {
     @ApiModelProperty(value="게시글 제목", example="캐논 ~카메라", required = true)
     private String title;
 
-    @ApiModelProperty(value="대여 방법", example="method:{value:'방문수령'}", required = true)
+    @ApiModelProperty(value="대여 방법", example="PARCEL", required = true)
     private Method method;
 
     @ApiModelProperty(value="하루 렌탈가격(1일)", example="10000", required = true)

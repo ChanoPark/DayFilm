@@ -17,7 +17,7 @@ public class SelectDetailItemDto implements Serializable {
     @ApiModelProperty(value="게시글 제목", example="캐논 ~카메라")
     private String title;
 
-    @ApiModelProperty(value="카테고리(json)", example="category:{value:'카메라'}")
+    @ApiModelProperty(value="카테고리(json)", example="CAMERA")
     private Category category;
 
     @ApiModelProperty(value="게시글 상세 설명", example="캐논 ~카메라는 ~~")
@@ -38,12 +38,12 @@ public class SelectDetailItemDto implements Serializable {
     @ApiModelProperty(value="상품 모델 명", example="오토보이 S2")
     private String modelName;
 
-    @ApiModelProperty(value="대여 방법", example="method:{value:'방문수령'}")
+    @ApiModelProperty(value="대여 방법", example="PARCEL")
     private Method method;
 
     @ApiModelProperty(value="재고", example="5")
     private Integer quantity;
 
-    @ApiModelProperty(value="images:{}")
+    @ApiModelProperty(value="이미지 정보들")
     private List<SelectDetailImageDto> images;
 }

@@ -36,7 +36,7 @@ public class User {
     @Column(name = "role", nullable = false)
     private Role role;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.REMOVE)
     private List<Like> likes;
 
     public void addLike(Like like) {

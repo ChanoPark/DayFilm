@@ -9,6 +9,9 @@ import com.rabbit.dayfilm.item.response.SelectAllItemsResponse;
 import com.rabbit.dayfilm.item.response.SelectDetailItemResponse;
 import com.rabbit.dayfilm.item.service.ItemSerivce;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -73,7 +76,11 @@ public class ItemController {
     }
 
     @PostMapping(value = "/store-write", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @Operation(summary = "상품 등록", description = "상품 등록입니다.\n ContentType 확인해서 보내주세요")
+    @ApiOperation(value = "상품 등록", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @ApiImplicitParams(value = {
+            @ApiImplicitParam(name = "data", value = "Item 정보들", required = true, dataTypeClass = InsertItemRequestDto.class, paramType = "form"),
+            @ApiImplicitParam(name = "images", value = "Image files", required = true, dataType = "MultipartFile", paramType = "form")
+    })
     public ResponseEntity<SuccessResponse> createItem(@RequestPart List<MultipartFile> images, @RequestPart InsertItemRequestDto data) {
         itemSerivce.createItem(images, data);
         return ResponseEntity.status(HttpStatus.OK)
@@ -82,7 +89,11 @@ public class ItemController {
 
 
     @PutMapping(value = "/store-write/{itemId}",  consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @Operation(summary = "상품 수정", description = "상품 수정입니다.")
+    @ApiOperation(value = "상품 수정", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @ApiImplicitParams(value = {
+            @ApiImplicitParam(name = "data", value = "Item 정보들", required = true, dataTypeClass = ModifyItemRequestDto.class, paramType = "form"),
+            @ApiImplicitParam(name = "images", value = "Image files", required = true, dataType = "MultipartFile", paramType = "form")
+    })
     public ResponseEntity<SuccessResponse> modifyItem(@PathVariable Long itemId, @RequestPart List<MultipartFile> images, @RequestPart ModifyItemRequestDto data) {
         itemSerivce.modifyItem(itemId, images, data);
         return ResponseEntity.status(HttpStatus.OK)

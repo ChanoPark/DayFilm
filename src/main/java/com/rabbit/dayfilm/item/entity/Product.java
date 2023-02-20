@@ -12,7 +12,7 @@ import java.time.LocalDate;
 @Getter @Setter
 public class Product {
     @Id @GeneratedValue
-    @Column(name = "rental_date_id")
+    @Column(name = "product_id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
