@@ -3,15 +3,10 @@ package com.rabbit.dayfilm.item.dto;
 import com.rabbit.dayfilm.item.entity.Category;
 import com.rabbit.dayfilm.item.entity.Method;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
-@AllArgsConstructor
-public class InsertItemRequestDto {
-    @ApiModelProperty(value="판매자 고유값(pk)", example="1L", required = true)
-    private Long storeId;
-
+public class ModifyItemRequestDto {
     @ApiModelProperty(value="게시글 제목", example="캐논 ~카메라", required = true)
     private String title;
 
@@ -41,5 +36,4 @@ public class InsertItemRequestDto {
 
     @ApiModelProperty(value="재고", example="5", required = true)
     private Integer quantity;
-
 }

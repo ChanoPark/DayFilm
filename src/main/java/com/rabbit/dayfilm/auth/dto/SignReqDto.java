@@ -2,11 +2,16 @@ package com.rabbit.dayfilm.auth.dto;
 
 import com.rabbit.dayfilm.common.Bank;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+
 @Getter
 public class SignReqDto {
 
     @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class SignStore {
 
         @ApiModelProperty(value="아이디(이메일)", example="test@gmail.com", required = true)
@@ -51,6 +56,8 @@ public class SignReqDto {
     }
 
     @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class SignUser {
         @ApiModelProperty(value="아이디(이메일)", example="test@gmail.com", required = true)
         private String email;

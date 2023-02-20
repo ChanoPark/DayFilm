@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.Cacheable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -37,7 +38,6 @@ class ItemServiceImplTest {
                 .modelName("testModel")
                 .method(Method.VISIT)
                 .itemImages(new ArrayList<>())
-                .itemStatus(ItemStatus.AVERAGE)
                 .use_yn(Boolean.TRUE)
                 .quantity(3)
                 .build();
@@ -50,7 +50,7 @@ class ItemServiceImplTest {
         ItemImage itemImages2 = ItemImage.builder()
                 .imageName("testImage2")
                 .imagePath("/test/a")
-                .orderNumber(1).build();
+                .orderNumber(2).build();
 
         items.addItemImage(itemImages1);
         items.addItemImage(itemImages2);
@@ -61,12 +61,4 @@ class ItemServiceImplTest {
         itemImageRepository.save(itemImages2);
     }
 
-    @Test
-    void 아이템_수정() {
-        Optional<Item> findItem = itemRepository.findByTitle("item1");
-        List<ItemImage> images = new ArrayList<>();
-        if (findItem.isPresent()) {
-            images = findItem.get().getItemImages();
-        }
-    }
 }

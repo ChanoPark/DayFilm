@@ -14,13 +14,4 @@ public enum Method {
         this.value = value;
     }
 
-    @JsonCreator
-    public static Method get(@JsonProperty("value") String value) {
-        for (Method m : Method.values()) {
-            if(m.getValue().equals(value)) {
-                return m;
-            }
-        }
-        return null;
-    }
 }
