@@ -32,7 +32,7 @@ import java.util.*;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class ItemServiceImpl implements ItemSerivce {
+public class ItemServiceImpl implements ItemService {
     private final S3UploadService s3UploadService;
     private final UserRepository userRepository;
     private final StoreRepository storeRepository;

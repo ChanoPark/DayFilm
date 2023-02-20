@@ -8,7 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
-public interface ItemSerivce {
+public interface ItemService {
     public void createItem(List<MultipartFile> images, InsertItemRequestDto dto);
     public Page<SelectAllItemsDto> selectAllItems(Category category, Pageable pageable);
     public SelectDetailItemDto selectDetailItem(Long id);

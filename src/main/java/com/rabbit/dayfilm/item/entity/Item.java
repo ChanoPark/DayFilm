@@ -1,5 +1,6 @@
 package com.rabbit.dayfilm.item.entity;
 
+import com.rabbit.dayfilm.review.entity.Review;
 import com.rabbit.dayfilm.store.entity.Store;
 import lombok.*;
 
@@ -73,6 +74,9 @@ public class Item {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "item", cascade = CascadeType.REMOVE)
     private List<Like> likes;
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "item", cascade = CascadeType.REMOVE)
+    private List<Review> reviews;
+
 
     private LocalDateTime createdDate;
 
@@ -101,6 +105,11 @@ public class Item {
     public void addProduct(Product product) {
         this.products.add(product);
         product.setItem(this);
+    }
+
+    public void addReview(Review review) {
+        this.reviews.add(review);
+        review.setItem(this);
     }
 
 }

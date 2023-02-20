@@ -10,6 +10,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter @Setter
+@Table(name = "PRODUCT_TABLE")
 public class Product {
     @Id @GeneratedValue
     @Column(name = "product_id")
