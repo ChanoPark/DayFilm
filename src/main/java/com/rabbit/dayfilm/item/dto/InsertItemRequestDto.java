@@ -15,7 +15,7 @@ public class InsertItemRequestDto {
     @ApiModelProperty(value="게시글 제목", example="캐논 ~카메라", required = true)
     private String title;
 
-    @ApiModelProperty(value="카테고리(json)", example="category:{value:'카메라'}", required = true)
+    @ApiModelProperty(value="카테고리(json)", example="CAMERA", required = true)
     private Category category;
 
     @ApiModelProperty(value="게시글 상세 설명", example="캐논 ~카메라는 ~~", required = true)
@@ -36,7 +36,7 @@ public class InsertItemRequestDto {
     @ApiModelProperty(value="상품 모델 명", example="오토보이 S2", required = true)
     private String modelName;
 
-    @ApiModelProperty(value="대여 방법", example="method:{value:'방문수령'}", required = true)
+    @ApiModelProperty(value="대여 방법", example="PARCEL", required = true)
     private Method method;
 
     @ApiModelProperty(value="재고", example="5", required = true)
