@@ -1,5 +1,6 @@
 package com.rabbit.dayfilm.item.entity;
 
+import com.rabbit.dayfilm.review.entity.Review;
 import com.rabbit.dayfilm.store.entity.Store;
 import lombok.*;
 
@@ -61,16 +62,20 @@ public class Item {
     @Column(nullable = false)
     private Integer quantity;
 
+
     @Column(nullable = false)
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "item", cascade = CascadeType.ALL)
     private List<ItemImage> itemImages;
 
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "item")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "item", cascade = CascadeType.ALL)
     private List<Product> products;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "item")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "item", cascade = CascadeType.REMOVE)
     private List<Like> likes;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "item", cascade = CascadeType.REMOVE)
+    private List<Review> reviews;
 
 
     private LocalDateTime createdDate;
@@ -95,6 +100,16 @@ public class Item {
     public void addLike(Like like) {
         this.likes.add(like);
         like.setItem(this);
+    }
+
+    public void addProduct(Product product) {
+        this.products.add(product);
+        product.setItem(this);
+    }
+
+    public void addReview(Review review) {
+        this.reviews.add(review);
+        review.setItem(this);
     }
 
 }

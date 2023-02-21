@@ -2,6 +2,7 @@ package com.rabbit.dayfilm.user;
 
 import com.rabbit.dayfilm.auth.Role;
 import com.rabbit.dayfilm.item.entity.Like;
+import com.rabbit.dayfilm.review.entity.Review;
 import lombok.*;
 
 import javax.persistence.*;
@@ -36,12 +37,20 @@ public class User {
     @Column(name = "role", nullable = false)
     private Role role;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.REMOVE)
     private List<Like> likes;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.REMOVE)
+    private List<Review> reviews;
 
     public void addLike(Like like) {
         this.likes.add(like);
         like.setUser(this);
+    }
+
+    public void addReview(Review review) {
+        this.reviews.add(review);
+        review.setUser(this);
     }
 
 }
