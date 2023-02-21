@@ -23,7 +23,7 @@ import java.util.List;
 @RequestMapping(EndPoint.REVIEW)
 @Api(tags = "리뷰")
 public class ReviewController {
-    private ReviewService reviewService;
+    private final ReviewService reviewService;
 
     @PostMapping("/user-write")
     @Operation(summary = "리뷰 생성", description = "리뷰 작성하기입니다.")

@@ -211,6 +211,7 @@ public class ItemServiceImpl implements ItemService {
 
         // DTO 객체의 null이 아닌 속성을 기존 Item 객체에 복사.
         BeanUtils.copyProperties(dto, findProduct, getNullPropertyNames(dto));
+        productRepository.save(findProduct);
     }
 
 
