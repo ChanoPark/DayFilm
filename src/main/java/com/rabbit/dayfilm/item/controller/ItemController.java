@@ -3,10 +3,12 @@ package com.rabbit.dayfilm.item.controller;
 import com.rabbit.dayfilm.common.CodeSet;
 import com.rabbit.dayfilm.common.EndPoint;
 import com.rabbit.dayfilm.common.response.SuccessResponse;
+import com.rabbit.dayfilm.exception.CustomException;
 import com.rabbit.dayfilm.item.dto.*;
 import com.rabbit.dayfilm.item.entity.Category;
 import com.rabbit.dayfilm.item.response.SelectAllItemsResponse;
 import com.rabbit.dayfilm.item.response.SelectDetailItemResponse;
+import com.rabbit.dayfilm.item.response.SelectProductResponse;
 import com.rabbit.dayfilm.item.service.ItemService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -49,7 +51,6 @@ import java.util.List;
 public class ItemController {
 
     private final ItemService itemService;
-
 
     @GetMapping("/all")
     @Operation(summary = "전체 상품 조회", description = "전체 상품 조회입니다. \n 쿼리파라미터 형식으로 ?category=CAMERA&page=1&size=9 보내주시면 됩니다. size는 후에 9로 default 처리 해놓을게요. page 가 0부터 시작해서 -1 해서 보내주시면 됩니다.")
@@ -116,8 +117,16 @@ public class ItemController {
                 .body(new SelectAllItemsResponse(CodeSet.OK, dto));
     }
 
-//    @GetMapping("/schedule/{itemId}")
-//    @Operation(summary = "상품 일정 관리", description = "상품에 대해 각 제품 일정과 상태를 반환합니다.")
+    @GetMapping("/product/{itemId}")
+    @Operation(summary = "상품 일정 관리", description = "상품에 대해 각 제품 일정과 상태를 반환합니다.")
+    public ResponseEntity<SelectProductResponse> getProducts(@PathVariable Long itemId) {
+        List<SelectProductsDto> dto = itemService.selectProducts(itemId);
+        if (dto == null) {
+            throw new CustomException("해당 상품에 대한 제품 리스트가 존재하지 않습니다. 관리자에게 문의하세요.");
+        }
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(new SelectProductResponse(CodeSet.OK, dto));
+    }
 
 
 }
