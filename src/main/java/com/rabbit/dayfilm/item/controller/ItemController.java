@@ -117,7 +117,7 @@ public class ItemController {
                 .body(new SelectAllItemsResponse(CodeSet.OK, dto));
     }
 
-    @GetMapping("/product/{itemId}")
+    @GetMapping("/products/{itemId}")
     @Operation(summary = "상품 일정 관리", description = "상품에 대해 각 제품 일정과 상태를 반환합니다.")
     public ResponseEntity<SelectProductResponse> getProducts(@PathVariable Long itemId) {
         List<SelectProductsDto> dto = itemService.selectProducts(itemId);
@@ -126,6 +126,14 @@ public class ItemController {
         }
         return ResponseEntity.status(HttpStatus.OK)
                 .body(new SelectProductResponse(CodeSet.OK, dto));
+    }
+
+    @PutMapping("/products/{productId}")
+    @Operation(summary = "상품 일정 수정", description = "상품에 대해 제품 일정과 상태를 수정합니다.")
+    public ResponseEntity<SuccessResponse> changeProductStatus(@PathVariable Long productId, @RequestBody ModifyProductRequestDto data) {
+        itemService.modifyProduct(productId, data);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(new SuccessResponse(CodeSet.OK));
     }
 
 

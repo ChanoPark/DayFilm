@@ -204,6 +204,15 @@ public class ItemServiceImpl implements ItemService {
         return productRepository.selectProduct(itemId);
     }
 
+    @Override
+    public void modifyProduct(Long productId, ModifyProductRequestDto dto) {
+        Product findProduct = productRepository.findById(productId)
+                .orElseThrow(() -> new CustomException("해당하는 제품을 찾을 수 없습니다."));
+
+        // DTO 객체의 null이 아닌 속성을 기존 Item 객체에 복사.
+        BeanUtils.copyProperties(dto, findProduct, getNullPropertyNames(dto));
+    }
+
 
     private static String[] getNullPropertyNames(Object source) {
         // 소스 객체에 대한 BeanWrapper 객체 생성
