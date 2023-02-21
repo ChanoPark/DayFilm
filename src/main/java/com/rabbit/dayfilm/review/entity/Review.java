@@ -5,6 +5,7 @@ import com.rabbit.dayfilm.user.User;
 import lombok.*;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Getter @Setter
 @Entity
@@ -30,4 +31,8 @@ public class Review {
 
     @Column(nullable = false)
     private Integer star;
+
+    private LocalDateTime createdDate;
+
+    private LocalDateTime modifiedDate;
 }
