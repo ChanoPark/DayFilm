@@ -10,4 +10,7 @@ public class EndPoint {
     public static final String REVIEW = "/reviews";
 
 
+    public static final String BASKET = "/basket";
+    public static final String ALL = "/all";
+    public static final String DELETE = "/delete";
 }
