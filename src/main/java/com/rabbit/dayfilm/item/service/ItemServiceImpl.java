@@ -7,6 +7,7 @@ import com.rabbit.dayfilm.item.entity.*;
 import com.rabbit.dayfilm.item.repository.ItemImageRepository;
 import com.rabbit.dayfilm.item.repository.ItemRepository;
 import com.rabbit.dayfilm.item.repository.LikeRepository;
+import com.rabbit.dayfilm.item.repository.ProductRepository;
 import com.rabbit.dayfilm.store.entity.Store;
 import com.rabbit.dayfilm.store.repository.StoreRepository;
 import com.rabbit.dayfilm.user.User;
@@ -40,6 +41,8 @@ public class ItemServiceImpl implements ItemService {
     private final ItemImageRepository itemImageRepository;
 
     private final LikeRepository likeRepository;
+
+    private final ProductRepository productRepository;
 
     @Override
     @Transactional
@@ -194,6 +197,21 @@ public class ItemServiceImpl implements ItemService {
         findItem.addLike(like);
 
         likeRepository.save(like);
+    }
+
+    @Override
+    public List<SelectProductsDto> selectProducts(Long itemId) {
+        return productRepository.selectProduct(itemId);
+    }
+
+    @Override
+    public void modifyProduct(Long productId, ModifyProductRequestDto dto) {
+        Product findProduct = productRepository.findById(productId)
+                .orElseThrow(() -> new CustomException("해당하는 제품을 찾을 수 없습니다."));
+
+        // DTO 객체의 null이 아닌 속성을 기존 Item 객체에 복사.
+        BeanUtils.copyProperties(dto, findProduct, getNullPropertyNames(dto));
+        productRepository.save(findProduct);
     }
 
 

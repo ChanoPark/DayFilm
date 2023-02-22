@@ -18,4 +18,6 @@ public interface ItemService {
 
     public Page<SelectAllItemsDto> selectLikeItems(Category category, Long userId, Pageable pageable);
     public void likeItem(LikeItemRequestDto dto);
+    public List<SelectProductsDto> selectProducts(Long itemId);
+    public void modifyProduct(Long productId, ModifyProductRequestDto dto);
 }
