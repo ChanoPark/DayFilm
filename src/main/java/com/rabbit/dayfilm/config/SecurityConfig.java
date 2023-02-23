@@ -4,7 +4,7 @@ import com.rabbit.dayfilm.auth.filter.*;
 import com.rabbit.dayfilm.auth.service.AuthService;
 import com.rabbit.dayfilm.auth.repository.AuthRedisRepository;
 import com.rabbit.dayfilm.store.repository.StoreRepository;
-import com.rabbit.dayfilm.user.UserRepository;
+import com.rabbit.dayfilm.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -72,6 +72,7 @@ public class SecurityConfig {
     public WebSecurityCustomizer webSecurityCustomizer() {
         return (web) -> web.ignoring()
                 .antMatchers("/doc", "/swagger*/**", "/favicon*/**", "/v2/api-docs")
+                .antMatchers("/check/nickname")
                 .antMatchers("/items/**", "/reviews/**");
     }
 }

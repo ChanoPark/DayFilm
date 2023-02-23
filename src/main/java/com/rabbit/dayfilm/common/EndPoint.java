@@ -4,6 +4,8 @@ public class EndPoint {
     public static final String AUTH = "/auth";
     public static final String AUTH_LOGIN = AUTH + "/login";
     public static final String AUTH_REFRESH = AUTH + "/refresh";
+    public static final String CHECK = "/check";
+    public static final String CHECK_NICKNAME = CHECK + "/nickname";
 
     public static final String ITEM = "/items";
     public static final String LIKE = "/likes";

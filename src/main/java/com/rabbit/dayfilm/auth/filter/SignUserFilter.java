@@ -10,7 +10,7 @@ import com.rabbit.dayfilm.auth.repository.AuthRedisRepository;
 import com.rabbit.dayfilm.auth.service.AuthService;
 import com.rabbit.dayfilm.common.CodeSet;
 import com.rabbit.dayfilm.exception.FilterException;
-import com.rabbit.dayfilm.user.UserRepository;
+import com.rabbit.dayfilm.user.repository.UserRepository;
 import org.apache.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;

@@ -1,6 +1,6 @@
 package com.rabbit.dayfilm.item.entity;
 
-import com.rabbit.dayfilm.user.User;
+import com.rabbit.dayfilm.user.entity.User;
 import lombok.*;
 
 import javax.persistence.*;

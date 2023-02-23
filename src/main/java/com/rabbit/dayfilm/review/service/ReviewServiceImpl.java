@@ -6,14 +6,13 @@ import com.rabbit.dayfilm.item.repository.ItemRepository;
 import com.rabbit.dayfilm.review.dto.InsertReviewRequestDto;
 import com.rabbit.dayfilm.review.entity.Review;
 import com.rabbit.dayfilm.review.repository.ReviewRepository;
-import com.rabbit.dayfilm.user.User;
-import com.rabbit.dayfilm.user.UserRepository;
+import com.rabbit.dayfilm.user.entity.User;
+import com.rabbit.dayfilm.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 @Service
 @Slf4j

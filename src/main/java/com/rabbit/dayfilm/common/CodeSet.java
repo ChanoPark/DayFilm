@@ -13,6 +13,8 @@ public enum CodeSet {
     REFRESH_TOKEN_INVALID("2006", "리프레시 토큰이 유효하지 않습니다."),
     TOKEN_INVALID("2007", "토큰이 유효하지 않습니다."),
     FAIL_AUTHORIZATION("2008", "인증에 실패했습니다."),
+    NOT_FOUND_USER("2009", "회원이 존재하지 않습니다."),
+    DUPLICATE_NICKNAME("3000", "중복된 닉네임입니다."),
     INTERNAL_SERVER_ERROR("9000", "서버 동작 중 문제가 발생했습니다."),
     INVALID_ALGORITHM("9001", "알고리즘이 유효하지 않습니다."),
     INVALID_KEY("9002", "키 값이 유효하지 않습니다.");
