@@ -72,6 +72,6 @@ public class SecurityConfig {
     public WebSecurityCustomizer webSecurityCustomizer() {
         return (web) -> web.ignoring()
                 .antMatchers("/doc", "/swagger*/**", "/favicon*/**", "/v2/api-docs")
-                .antMatchers("/items/**");
+                .antMatchers("/items/**", "/reviews/**");
     }
 }
