@@ -2,7 +2,7 @@ package com.rabbit.dayfilm.item.dto;
 
 import com.rabbit.dayfilm.item.entity.Category;
 import com.rabbit.dayfilm.store.entity.Store;
-import com.rabbit.dayfilm.user.User;
+import com.rabbit.dayfilm.user.entity.User;
 import lombok.Data;
 
 @Data

@@ -1,4 +1,4 @@
-package com.rabbit.dayfilm.user;
+package com.rabbit.dayfilm.user.entity;
 
 import com.rabbit.dayfilm.auth.Role;
 import com.rabbit.dayfilm.item.entity.Like;

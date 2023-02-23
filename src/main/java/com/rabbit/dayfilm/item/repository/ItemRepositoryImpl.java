@@ -1,19 +1,13 @@
 package com.rabbit.dayfilm.item.repository;
 
-import com.querydsl.core.Tuple;
-import com.querydsl.core.types.ExpressionUtils;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.rabbit.dayfilm.item.dto.ItemSearchCondition;
 import com.rabbit.dayfilm.item.dto.SelectAllItemsDto;
 import com.rabbit.dayfilm.item.dto.SelectDetailImageDto;
 import com.rabbit.dayfilm.item.dto.SelectDetailItemDto;
 import com.rabbit.dayfilm.item.entity.*;
-import com.rabbit.dayfilm.store.entity.Store;
-import com.rabbit.dayfilm.user.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
