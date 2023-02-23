@@ -24,13 +24,13 @@ public class AuthController {
         return null;
     }
 
-    @PostMapping("/login")
+    @PostMapping("/login-example")
     @Operation(summary = "로그인", description = "로그인 모델입니다.\n로그인을 하게 되면 토큰이 새로 발급됩니다.\n엔드포인트 뒤에 '-example' 떼고 요청하셔야해요.")
     public AuthResDto exampleLogin(@RequestBody LoginInfo request) {
         return null;
     }
 
-    @PostMapping("/reissue")
+    @PostMapping("/reissue-example")
     @Operation(summary = "토큰 재발급", description = "토큰 재발급 모델입니다.\nRequest header의 Refresh-Token 키 값에 리프레시 토큰 넣어주시면 됩니다.\nResponse도 헤더의 Authorization에 엑세스 토큰, Refresh-Token에 리프레시 토큰이 들어갑니다.\n엔드포인트 뒤에 '-example' 떼고 요청하셔야해요.")
     public void exampleReissue() {
 

@@ -1,5 +1,6 @@
-package com.rabbit.dayfilm.user;
+package com.rabbit.dayfilm.user.repository;
 
+import com.rabbit.dayfilm.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,4 +12,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Transactional
     void deleteUserByEmail(@Param("email") String email);
+    long countUserByNickname(@Param("nickname") String nickname);
 }
