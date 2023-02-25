@@ -15,4 +15,12 @@ public class EndPoint {
     public static final String BASKET = "/basket";
     public static final String ALL = "/all";
     public static final String DELETE = "/delete";
+
+    public static final String ORDER = "/order";
+    public static final String RESERVE = "/reserve";
+    public static final String INFO = "/info";
+    public static final String ORDER_INFO = ORDER + INFO;
+
+    public static final String TOSS = "/toss";
+    public static final String CREATE = "/create";
 }

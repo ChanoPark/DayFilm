@@ -4,8 +4,10 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.rabbit.dayfilm.basket.dto.BasketInfo;
 import com.rabbit.dayfilm.basket.dto.BasketResDto;
 import com.rabbit.dayfilm.basket.dto.BasketCond;
+import com.rabbit.dayfilm.basket.dto.QBasketInfo;
 import com.rabbit.dayfilm.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -64,6 +66,24 @@ public class BasketQueryRepositoryImpl implements BasketQueryRepository {
                 );
 
         return PageableExecutionUtils.getPage(content, condition.getPageable(), countQuery::fetchOne);
+    }
+
+    @Override
+    public List<BasketInfo> findBaskets(BasketCond condition) {
+        return queryFactory
+                .select(
+                        new QBasketInfo(
+                                basket.product,
+                                basket.started,
+                                basket.ended,
+                                basket.product.item.title,
+                                basket.product.item.pricePerOne,
+                                basket.product.item.pricePerFive,
+                                basket.product.item.pricePerTen)
+                )
+                .from(basket)
+                .where(basket.id.in(condition.getBasketIds()))
+                .fetch();
     }
 
     @Override

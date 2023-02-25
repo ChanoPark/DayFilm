@@ -23,6 +23,9 @@ public class BasketCond {
     public BasketCond(Long itemId) {
         this.itemId = itemId;
     }
+    public BasketCond(List<Long> basketIds) {
+        this.basketIds = basketIds;
+    }
 
     public BasketCond(User user, Long itemId) {
         this.user = user;
