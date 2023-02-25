@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 public class BasketInfo {
+    private Long basketId;
     private Product product;
     private LocalDateTime started;
     private LocalDateTime ended;
@@ -19,8 +20,9 @@ public class BasketInfo {
     private Integer pricePerTen;
 
     @QueryProjection
-    public BasketInfo(Product product, LocalDateTime started, LocalDateTime ended, String title,
+    public BasketInfo(Long basketId, Product product, LocalDateTime started, LocalDateTime ended, String title,
                       Integer pricePerOne, Integer pricePerFive, Integer pricePerTen) {
+        this.basketId = basketId;
         this.product = product;
         this.started = started;
         this.ended = ended;

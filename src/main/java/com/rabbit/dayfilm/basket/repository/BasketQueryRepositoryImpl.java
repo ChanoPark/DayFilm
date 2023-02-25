@@ -73,6 +73,7 @@ public class BasketQueryRepositoryImpl implements BasketQueryRepository {
         return queryFactory
                 .select(
                         new QBasketInfo(
+                                basket.id,
                                 basket.product,
                                 basket.started,
                                 basket.ended,

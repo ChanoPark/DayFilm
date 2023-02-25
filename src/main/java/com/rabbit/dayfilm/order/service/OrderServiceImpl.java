@@ -41,9 +41,10 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public TossPaymentForm createOrder(OrderCreateReqDto request) {
-        List<BasketInfo> baskets = basketRepository.findBaskets(new BasketCond(request.getBasketIds()));
+        List<Long> basketIds = request.getBasketIds();
+        List<BasketInfo> baskets = basketRepository.findBaskets(new BasketCond(basketIds));
         if (baskets.size() == 0) throw new CustomException("주문한 상품이 올바르지 않습니다.");
-        else if (baskets.size() != request.getBasketIds().size()) throw new CustomException("장바구니 정보가 올바르지 않습니다.");
+        else if (baskets.size() != basketIds.size()) throw new CustomException("장바구니 정보가 올바르지 않습니다.");
 
         //create orderID
         User user = userRepository.findById(request.getUserId()).orElseThrow(() -> new CustomException("회원이 존재하지 않습니다."));
@@ -57,12 +58,14 @@ public class OrderServiceImpl implements OrderService {
         //calculate amount
         int amount = 0;
         for (BasketInfo basket : baskets) {
-
+            basketIds.remove(basket.getBasketId());
             long rentDays = ChronoUnit.DAYS.between(basket.getStarted(), basket.getEnded());
+
             if (rentDays >= 5 && rentDays < 10) amount += basket.getPricePerFive();
             else if (rentDays >= 10) amount += basket.getPricePerTen();
             else amount += basket.getPricePerOne();
         }
+        if (!basketIds.isEmpty()) throw new CustomException("장바구니 정보가 올바르지 않습니다.");
         return new TossPaymentForm(request.getMethod(), amount, orderId, orderName);
     }
 }
