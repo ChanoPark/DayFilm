@@ -2,14 +2,16 @@ package com.rabbit.dayfilm.basket.dto;
 
 import com.rabbit.dayfilm.item.entity.Method;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
 
 @Getter
+@AllArgsConstructor
 public class BasketCreateDto {
-    @ApiModelProperty(value="상품 번호", example="1", required = true)
-    private Long itemId;
+    @ApiModelProperty(value="실제 상품(Product) 번호", example="1", required = true)
+    private Long productId;
     @ApiModelProperty(value="유저 번호", example="1", required = true)
     private Long userId;
     @ApiModelProperty(value="배송 방법", example="택배수령", required = true)

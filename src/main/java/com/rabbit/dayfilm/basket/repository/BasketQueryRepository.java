@@ -2,10 +2,9 @@ package com.rabbit.dayfilm.basket.repository;
 
 import com.rabbit.dayfilm.basket.dto.BasketCond;
 import com.rabbit.dayfilm.basket.dto.BasketResDto;
-
-import java.util.List;
+import org.springframework.data.domain.Page;
 
 public interface BasketQueryRepository {
-    List<BasketResDto.BasketQueryDto> findBasket(BasketCond condition);
+    Page<BasketResDto.BasketQueryDto> findBasketAll(BasketCond condition);
     Long countBaskets(BasketCond condition);
 }

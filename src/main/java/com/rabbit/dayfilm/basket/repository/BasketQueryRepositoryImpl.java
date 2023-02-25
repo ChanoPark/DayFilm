@@ -2,12 +2,15 @@ package com.rabbit.dayfilm.basket.repository;
 
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.rabbit.dayfilm.basket.dto.BasketResDto;
 import com.rabbit.dayfilm.basket.dto.BasketCond;
-import com.rabbit.dayfilm.user.User;
+import com.rabbit.dayfilm.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.support.PageableExecutionUtils;
 
 import java.util.List;
 
@@ -22,8 +25,8 @@ public class BasketQueryRepositoryImpl implements BasketQueryRepository {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public List<BasketResDto.BasketQueryDto> findBasket(BasketCond condition) {
-        return queryFactory
+    public Page<BasketResDto.BasketQueryDto> findBasketAll(BasketCond condition) {
+        List<BasketResDto.BasketQueryDto> content = queryFactory
                 .select(Projections.constructor(BasketResDto.BasketQueryDto.class,
                                 basket.id,
                                 itemImage.imagePath,
@@ -39,14 +42,28 @@ public class BasketQueryRepositoryImpl implements BasketQueryRepository {
                 .from(basket)
                 .innerJoin(item)
                 .on(
-                        item.eq(basket.item),
+                        item.eq(basket.product.item),
                         eqUser(condition.getUser())
                 )
                 .leftJoin(itemImage)
                 .on(
                         itemImage.item.eq(item)
                 )
+                .offset(condition.getPageable().getOffset())
+                .limit(condition.getPageable().getPageSize())
+                .orderBy(basket.id.asc())
                 .fetch();
+
+        JPAQuery<Long> countQuery = queryFactory
+                .select(basket.count())
+                .from(basket)
+                .innerJoin(item)
+                .on(
+                        item.eq(basket.product.item),
+                        eqUser(condition.getUser())
+                );
+
+        return PageableExecutionUtils.getPage(content, condition.getPageable(), countQuery::fetchOne);
     }
 
     @Override
@@ -56,7 +73,6 @@ public class BasketQueryRepositoryImpl implements BasketQueryRepository {
                 .from(basket)
                 .where(
                         eqUser(condition.getUser()),
-                        eqItemId(condition.getItemId()),
                         inBasketIds(condition.getBasketIds())
                 )
                 .fetchOne();
@@ -70,7 +86,4 @@ public class BasketQueryRepositoryImpl implements BasketQueryRepository {
         return basketIds != null ? (basketIds.size() > 0 ? basket.id.in(basketIds) : null) : null;
     }
 
-    private BooleanExpression eqItemId(Long itemId) {
-        return itemId != null ? basket.item.id.eq(itemId) : null;
-    }
 }

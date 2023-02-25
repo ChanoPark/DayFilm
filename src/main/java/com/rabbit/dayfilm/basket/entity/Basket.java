@@ -1,8 +1,8 @@
 package com.rabbit.dayfilm.basket.entity;
 
-import com.rabbit.dayfilm.item.entity.Item;
 import com.rabbit.dayfilm.item.entity.Method;
-import com.rabbit.dayfilm.user.User;
+import com.rabbit.dayfilm.item.entity.Product;
+import com.rabbit.dayfilm.user.entity.User;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -25,8 +25,8 @@ public class Basket {
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "item_id", nullable = false)
-    private Item item;
+    @JoinColumn(name = "product_id", nullable = false)
+    private Product product;
 
     @Column(nullable = false)
     private LocalDateTime started;
