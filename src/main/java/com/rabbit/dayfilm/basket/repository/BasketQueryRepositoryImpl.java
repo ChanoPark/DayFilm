@@ -80,9 +80,13 @@ public class BasketQueryRepositoryImpl implements BasketQueryRepository {
                                 basket.product.item.title,
                                 basket.product.item.pricePerOne,
                                 basket.product.item.pricePerFive,
-                                basket.product.item.pricePerTen)
+                                basket.product.item.pricePerTen,
+                                basket.method,
+                                item.store.address)
                 )
                 .from(basket)
+                .innerJoin(item)
+                .on(basket.product.item.eq(item))
                 .where(basket.id.in(condition.getBasketIds()))
                 .fetch();
     }
