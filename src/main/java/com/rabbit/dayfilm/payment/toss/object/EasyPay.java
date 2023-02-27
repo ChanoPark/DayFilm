@@ -7,7 +7,7 @@ import lombok.Data;
  */
 @Data
 public class EasyPay {
-    private String provider;
-    private Long amount;
-    private Long discountAmount;
+    private EasyPayCode provider;
+    private Integer amount;
+    private Integer discountAmount;
 }

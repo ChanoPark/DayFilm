@@ -10,10 +10,10 @@ import javax.persistence.*;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @DiscriminatorValue("card")
-public class CardPay extends PayInformation {
-    public CardPay(PayInformation payInformation, String orderId, TossCardCode issuerCode, TossCardCode acquirerCode,
-                   String number, Integer installmentPlanMonths, String approveNo, Boolean useCardPoint, String cardType,
-                   String ownerType, Boolean isInterestFree, String interestPayer) {
+public class CardPayment extends PayInformation {
+    public CardPayment(PayInformation payInformation, String orderId, TossCardCode issuerCode, TossCardCode acquirerCode,
+                       String number, Integer installmentPlanMonths, String approveNo, Boolean useCardPoint, String cardType,
+                       String ownerType, Boolean isInterestFree, String interestPayer) {
         super(payInformation);
         this.orderId = orderId;
         this.issuerCode = issuerCode;

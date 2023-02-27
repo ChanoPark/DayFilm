@@ -32,14 +32,14 @@ public enum TossCardCode {
     NONGHYEOP("91", "농협", "NH농협카드"),
     SUHYEOP("34", "수협", "SUHYEOP");
 
-    private String code;
-    private String kor;
-    private String fullName;
+    private final String code;
+    private final String kor;
+    private final String fullName;
 
     @JsonCreator
-    public static TossCardCode fromString(String code) {
+    public static TossCardCode fromString(String param) {
         for (TossCardCode t : TossCardCode.values()) {
-            if (t.getCode().equals(code)) {
+            if (t.getCode().equals(param) || t.getKor().equals(param) || t.getFullName().equals(param)) {
                 return t;
             }
         }
