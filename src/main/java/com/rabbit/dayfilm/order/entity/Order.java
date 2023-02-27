@@ -47,4 +47,8 @@ public class Order {
     @Embedded
     @Column(name = "address", nullable = false)
     private Address address;
+
+    public void updateStatus(OrderStatus status) {
+        this.status = status;
+    }
 }

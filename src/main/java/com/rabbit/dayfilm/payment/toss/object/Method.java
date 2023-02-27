@@ -1,7 +1,6 @@
 package com.rabbit.dayfilm.payment.toss.object;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.rabbit.dayfilm.exception.CustomException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -1,8 +1,10 @@
 package com.rabbit.dayfilm.payment.toss.object;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 
 import javax.annotation.Nullable;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @ToString
@@ -27,15 +29,17 @@ public class Payment {
 
     private Method method;
 
-    private String totalAmount;
+    private Integer totalAmount;
 
-    private String balanceAmount;
+    private Integer balanceAmount;
 
     private PayStatus status;
 
-    private String requestedAt;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ssXXX")
+    private LocalDateTime requestedAt;
 
-    private String approvedAt;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ssXXX")
+    private LocalDateTime approvedAt;
 
     private String useEscrow;
 
@@ -43,13 +47,14 @@ public class Payment {
 
     private String lastTransactionKey;
 
-    private Long suppliedAmount;
+    private Integer suppliedAmount;
 
-    private Long vat;
+    private Integer vat;
 
     private Boolean cultureExpense;
 
     private Long taxFreeAmount;
+
     private Integer taxExemptionAmount;
 
     @Nullable

@@ -7,5 +7,4 @@ import com.rabbit.dayfilm.payment.toss.dto.TossPaymentForm;
 public interface OrderService {
     Long createReservation(BasketCreateDto requestDto);
     TossPaymentForm createOrder(OrderCreateReqDto request);
-    void paymentConfirm(String paymentKey, String orderId, Integer amount);
 }

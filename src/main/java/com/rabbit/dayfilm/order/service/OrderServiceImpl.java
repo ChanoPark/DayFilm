@@ -14,21 +14,20 @@ import com.rabbit.dayfilm.order.dto.OrderCreateReqDto;
 import com.rabbit.dayfilm.order.entity.Order;
 import com.rabbit.dayfilm.order.entity.OrderStatus;
 import com.rabbit.dayfilm.order.repository.OrderRepository;
+import com.rabbit.dayfilm.payment.entity.PayInformation;
+import com.rabbit.dayfilm.payment.repository.PayInformationRepository;
+import com.rabbit.dayfilm.payment.repository.PayPerMethodRepository;
 import com.rabbit.dayfilm.payment.toss.dto.TossPaymentForm;
-import com.rabbit.dayfilm.payment.toss.object.Payment;
 import com.rabbit.dayfilm.store.entity.Address;
 import com.rabbit.dayfilm.user.entity.User;
 import com.rabbit.dayfilm.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
 
 import javax.annotation.PostConstruct;
 import java.nio.charset.StandardCharsets;
@@ -47,6 +46,7 @@ public class OrderServiceImpl implements OrderService {
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
     private final OrderRepository orderRepository;
+    private final PayPerMethodRepository<? super PayInformation> payPerMethodRepository;
 
     @Value("${tosspay.test.secretKey}")
     private String secretKey;
@@ -93,7 +93,7 @@ public class OrderServiceImpl implements OrderService {
 
         //create orderName
         String orderName = baskets.get(0).getTitle();
-        if (baskets.size() > 1) orderName += " 외 " + (baskets.size()-1) + "건";
+        if (baskets.size() > 1) orderName += " 외 " + (baskets.size() - 1) + "건";
 
         int amount = 0;
         for (BasketInfo basket : baskets) {
@@ -111,7 +111,7 @@ public class OrderServiceImpl implements OrderService {
             //주문 정보 생성
             Address address;
             if (basket.getMethod().equals(Method.PARCEL)) address = request.getAddress();
-            else if(basket.getMethod().equals(Method.VISIT)) address = basket.getAddress();
+            else if (basket.getMethod().equals(Method.VISIT)) address = basket.getAddress();
             else throw new CustomException("주소 정보가 올바르지 않습니다.");
 
             orderRepository.save(
@@ -133,28 +133,5 @@ public class OrderServiceImpl implements OrderService {
         else basketRepository.deleteAllById(orderedBasketIds);
 
         return new TossPaymentForm(request.getPayMethod().getMethod(), amount, orderId, orderName);
-    }
-
-    @Override
-    public void paymentConfirm(String paymentKey, String orderId, Integer amount) {
-        ObjectNode data = mapper.createObjectNode();
-        data.put("paymentKey", paymentKey);
-        data.put("orderId", orderId);
-        data.put("amount", amount);
-
-        Payment result = webClient.post()
-                .uri("https://api.tosspayments.com/v1/payments/confirm")
-                .body(BodyInserters.fromValue(data))
-                .retrieve()
-                .onStatus(HttpStatus::is4xxClientError, response -> Mono.error(new CustomException("결제 정보가 올바르지 않습니다.")))
-                .onStatus(HttpStatus::is5xxServerError, response -> Mono.error(new CustomException("결제를 진행할 수 없습니다.")))
-                .bodyToMono(Payment.class)
-                .block();
-
-        /**
-         * 1. 주문 상태 변경
-         * 2. 결제 엔티티 생성
-         */
-
     }
 }

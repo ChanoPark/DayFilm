@@ -1,8 +1,14 @@
 package com.rabbit.dayfilm.payment.toss.object;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.rabbit.dayfilm.exception.CustomException;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.ToString;
 
 @AllArgsConstructor
+@Getter
+@ToString
 public enum TossCardCode {
     IBK_BC("3K", "기업비씨", "기업 비씨"),
     GWANGJUBANK("46", "광주", "광주은행"),
@@ -29,4 +35,14 @@ public enum TossCardCode {
     private String code;
     private String kor;
     private String fullName;
+
+    @JsonCreator
+    public static TossCardCode fromString(String code) {
+        for (TossCardCode t : TossCardCode.values()) {
+            if (t.getCode().equals(code)) {
+                return t;
+            }
+        }
+        throw new CustomException("카드 정보가 올바르지 않습니다.");
+    }
 }

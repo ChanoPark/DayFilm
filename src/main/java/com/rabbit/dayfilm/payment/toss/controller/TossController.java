@@ -4,6 +4,7 @@ import com.rabbit.dayfilm.common.EndPoint;
 import com.rabbit.dayfilm.order.dto.OrderCreateReqDto;
 import com.rabbit.dayfilm.order.service.OrderService;
 import com.rabbit.dayfilm.payment.toss.dto.TossPaymentForm;
+import com.rabbit.dayfilm.payment.toss.service.TossService;
 import io.swagger.annotations.Api;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +19,8 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 public class TossController {
     private final OrderService orderService;
+    private final TossService tossService;
+
     @PostMapping(EndPoint.CREATE)
     @Operation(summary = "토스 결제 생성 시 필요한 객체 만들기", description = "회원 정보와 장바구니 정보를 토대로 결제 정보를 생성합니다. 해당 객체를 갖고 결제 생성 API를 호출해주시면 됩니다.")
     public ResponseEntity<TossPaymentForm> createOrder(@RequestBody OrderCreateReqDto request) {
@@ -30,9 +33,12 @@ public class TossController {
                                    @RequestParam("orderId") String orderId,
                                    @RequestParam("amount") Integer amount) {
 
-        orderService.paymentConfirm(paymentKey, orderId, amount);
+        if (tossService.paymentConfirm(paymentKey, orderId, amount)) {
+            return ResponseEntity.ok("승인");
+        } else {
+            return ResponseEntity.ok("취소");
+        }
 
-        return ResponseEntity.ok("승인");
     }
 
     @GetMapping(EndPoint.REDIRECT_FAIL)
