@@ -27,12 +27,6 @@ public class User {
     @Column(name = "nickname", nullable = false, unique = true)
     private String nickname;
 
-    @Column(name = "profile_path")
-    private String profilePath;
-
-    @Column(name = "profile_name")
-    private String profileName;
-
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false)
     private Role role;
@@ -43,6 +37,9 @@ public class User {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.REMOVE)
     private List<Review> reviews;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
+    private List<UserAddress> addresses;
+
     public void addLike(Like like) {
         this.likes.add(like);
         like.setUser(this);
@@ -51,6 +48,10 @@ public class User {
     public void addReview(Review review) {
         this.reviews.add(review);
         review.setUser(this);
+    }
+
+    public void addAddress(UserAddress userAddress) {
+        this.addresses.add(userAddress);
     }
 
 }
