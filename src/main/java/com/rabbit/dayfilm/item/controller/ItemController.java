@@ -9,6 +9,7 @@ import com.rabbit.dayfilm.item.entity.Category;
 import com.rabbit.dayfilm.item.response.SelectAllItemsResponse;
 import com.rabbit.dayfilm.item.response.SelectDetailItemResponse;
 import com.rabbit.dayfilm.item.response.SelectProductResponse;
+import com.rabbit.dayfilm.item.response.SelectSearchItemResponse;
 import com.rabbit.dayfilm.item.service.ItemService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -54,10 +55,10 @@ public class ItemController {
 
     @GetMapping("/all")
     @Operation(summary = "전체 상품 조회", description = "전체 상품 조회입니다. \n 쿼리파라미터 형식으로 ?category=CAMERA&page=1&size=9 보내주시면 됩니다. size는 후에 9로 default 처리 해놓을게요. page 가 0부터 시작해서 -1 해서 보내주시면 됩니다.")
-    public ResponseEntity<SelectAllItemsResponse> getAllItems(@RequestParam(required = false) Category category, Pageable pageable) {
-        Page<SelectAllItemsDto> dto = itemService.selectAllItems(category, pageable);
+    public ResponseEntity<SelectSearchItemResponse> getAllItems(@RequestParam(required = false) String keyword, Pageable pageable) {
+        List<SelectSearchItemsDto> dto = itemService.selectAllItems(keyword, pageable);
         return ResponseEntity.status(HttpStatus.OK)
-                .body(new SelectAllItemsResponse(CodeSet.OK, dto));
+                .body(new SelectSearchItemResponse(CodeSet.OK, dto));
     }
 
     @GetMapping("/{itemId}")

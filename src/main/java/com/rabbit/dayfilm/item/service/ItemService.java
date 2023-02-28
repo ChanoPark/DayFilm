@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface ItemService {
     public void createItem(List<MultipartFile> images, InsertItemRequestDto dto);
-    public Page<SelectAllItemsDto> selectAllItems(Category category, Pageable pageable);
+    public List<SelectSearchItemsDto> selectAllItems(String keyword, Pageable pageable);
     public SelectDetailItemDto selectDetailItem(Long id);
 
     public Page<SelectAllItemsDto> selectWriteItems(Category category, Long storeId, Pageable pageable);

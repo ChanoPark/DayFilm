@@ -5,7 +5,7 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.rabbit.dayfilm.basket.dto.BasketResDto;
 import com.rabbit.dayfilm.basket.dto.BasketCond;
-import com.rabbit.dayfilm.user.User;
+import com.rabbit.dayfilm.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 

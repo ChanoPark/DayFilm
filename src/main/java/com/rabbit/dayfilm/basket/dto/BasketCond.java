@@ -1,6 +1,6 @@
 package com.rabbit.dayfilm.basket.dto;
 
-import com.rabbit.dayfilm.user.User;
+import com.rabbit.dayfilm.user.entity.User;
 import lombok.Getter;
 import lombok.Setter;
 
