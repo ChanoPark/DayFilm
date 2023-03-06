@@ -48,13 +48,13 @@ public class UserServiceImpl implements UserService {
         }
 
 
-        UserAddress address = new UserAddress(user, addressCreateDto.getAddress(), isDefault);
+        UserAddress address = new UserAddress(user, addressCreateDto.getAddress(), isDefault, addressCreateDto.getNickname());
         user.addAddress(address);
         userAddressRepository.save(address);
 
         List<AddressDto> response = new ArrayList<>();
         for (UserAddress userAddress : user.getAddresses()) {
-            response.add(new AddressDto(userAddress.getAddress(), userAddress.getIsDefault()));
+            response.add(new AddressDto(userAddress.getAddress(), userAddress.getIsDefault(), userAddress.getNickname()));
         }
         return response;
     }
@@ -63,5 +63,14 @@ public class UserServiceImpl implements UserService {
     public List<AddressDto> getAddresses(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new CustomException("회원 정보가 올바르지 않습니다."));
         return userAddressRepository.findAllByUser(user);
+    }
+
+    @Override
+    @Transactional
+    public void deleteAddress(Long addressId) {
+        UserAddress address = userAddressRepository.findById(addressId).orElseThrow(() -> new CustomException("주소 정보가 존재하지 않습니다."));
+
+        if (address.getIsDefault()) throw new CustomException("기본 배송지는 삭제할 수 없습니다.");
+        userAddressRepository.delete(address);
     }
 }
