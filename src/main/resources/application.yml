@@ -42,3 +42,8 @@ secure:
   jwt:
     secretKey: ${secure.jwt.secretKey}
     issuer: ${secure.jwt.issuer}
+
+tosspay:
+  test:
+    clientKey: ${tosspay.test.clientKey}
+    secretKey: ${tosspay.test.secretKey}
