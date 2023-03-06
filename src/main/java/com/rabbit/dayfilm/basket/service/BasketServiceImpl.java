@@ -61,7 +61,7 @@ public class BasketServiceImpl implements BasketService {
     @Override
     public List<BasketResDto> findAllBasket(Long userId, Pageable pageable) {
         User user = userRepository.findById(userId).orElseThrow(() -> new CustomException("회원이 존재하지 않습니다."));
-        Page<BasketResDto.BasketQueryDto> basketList = basketRepository.findBasketAll(new BasketCond(user, pageable));
+        Page<BasketResDto.BasketQueryDto> basketList = basketRepository.findBasketWithPaging(new BasketCond(user, pageable));
 
         List<BasketResDto> result = new ArrayList<>();
         for (BasketResDto.BasketQueryDto basket : basketList) {
