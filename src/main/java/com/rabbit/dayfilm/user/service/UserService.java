@@ -10,4 +10,6 @@ public interface UserService {
     CodeSet checkNickname(String nickname);
 
     List<AddressDto> createAddress(AddressCreateDto addressCreateDto);
+
+    List<AddressDto> getAddresses(Long userId);
 }

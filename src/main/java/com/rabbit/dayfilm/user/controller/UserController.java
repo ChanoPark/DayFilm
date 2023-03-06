@@ -31,4 +31,10 @@ public class UserController {
     public ResponseEntity<List<AddressDto>> addAddress(@RequestBody AddressCreateDto addressCreateDto) {
         return ResponseEntity.ok(userService.createAddress(addressCreateDto));
     }
+
+    @GetMapping(EndPoint.ADDRESS)
+    @Operation(summary = "회원 주소 목록 조회", description = "회원의 주소 목록 반환")
+    public ResponseEntity<List<AddressDto>> getAddresses(@RequestParam("userId") Long userId) {
+        return ResponseEntity.ok().body(userService.getAddresses(userId));
+    }
 }

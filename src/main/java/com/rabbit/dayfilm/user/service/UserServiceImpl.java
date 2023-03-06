@@ -58,4 +58,10 @@ public class UserServiceImpl implements UserService {
         }
         return response;
     }
+
+    @Override
+    public List<AddressDto> getAddresses(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new CustomException("회원 정보가 올바르지 않습니다."));
+        return userAddressRepository.findAllByUser(user);
+    }
 }
