@@ -31,4 +31,9 @@ public class BasketCond {
         this.user = user;
         this.itemId = itemId;
     }
+
+    public BasketCond(User user, List<Long> basketIds) {
+        this.user = user;
+        this.basketIds = basketIds;
+    }
 }

@@ -27,7 +27,7 @@ public class BasketQueryRepositoryImpl implements BasketQueryRepository {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public Page<BasketResDto.BasketQueryDto> findBasketAll(BasketCond condition) {
+    public Page<BasketResDto.BasketQueryDto> findBasketWithPaging(BasketCond condition) {
         List<BasketResDto.BasketQueryDto> content = queryFactory
                 .select(Projections.constructor(BasketResDto.BasketQueryDto.class,
                                 basket.id,
@@ -69,7 +69,37 @@ public class BasketQueryRepositoryImpl implements BasketQueryRepository {
     }
 
     @Override
-    public List<BasketInfo> findBaskets(BasketCond condition) {
+    public List<BasketResDto.BasketQueryDto> findBaskets(BasketCond condition) {
+        return queryFactory
+                .select(Projections.constructor(BasketResDto.BasketQueryDto.class,
+                                basket.id,
+                                itemImage.imagePath,
+                                item.title,
+                                basket.started,
+                                basket.ended,
+                                item.pricePerOne,
+                                item.pricePerFive,
+                                item.pricePerTen,
+                                basket.method
+                        )
+                )
+                .from(basket)
+                .innerJoin(item)
+                .on(
+                        item.eq(basket.product.item),
+                        eqUser(condition.getUser())
+                )
+                .leftJoin(itemImage)
+                .on(
+                        itemImage.item.eq(item)
+                )
+                .where(basket.id.in(condition.getBasketIds()))
+                .orderBy(basket.id.asc())
+                .fetch();
+    }
+
+    @Override
+    public List<BasketInfo> findBasketInfos(BasketCond condition) {
         return queryFactory
                 .select(
                         new QBasketInfo(

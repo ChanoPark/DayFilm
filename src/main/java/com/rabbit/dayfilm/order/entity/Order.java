@@ -48,6 +48,9 @@ public class Order {
     @Column(name = "address", nullable = false)
     private Address address;
 
+    @Column(name = "shipment_required")
+    private String shipmentRequired;
+
     public void updateStatus(OrderStatus status) {
         this.status = status;
     }

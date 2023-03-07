@@ -4,7 +4,8 @@ import com.rabbit.dayfilm.basket.dto.BasketCreateDto;
 import com.rabbit.dayfilm.common.CodeSet;
 import com.rabbit.dayfilm.common.EndPoint;
 import com.rabbit.dayfilm.common.response.SuccessResponse;
-import com.rabbit.dayfilm.order.dto.OrderCreateReqDto;
+import com.rabbit.dayfilm.order.dto.OrderInfoReqDto;
+import com.rabbit.dayfilm.order.dto.OrderInfoResDto;
 import com.rabbit.dayfilm.order.service.OrderService;
 import io.swagger.annotations.Api;
 import io.swagger.v3.oas.annotations.Operation;
@@ -40,10 +41,8 @@ public class OrderController {
     }
 
     @GetMapping(EndPoint.INFO)
-    public void getOrderInfo(@ModelAttribute OrderCreateReqDto request) {
-        /**
-         * 단순히 데이터만 넘겨주면 될지? -> 주소 정보 등 필요한 정보를 취합한 뒤 개발 예정.
-         */
+    @Operation(summary = "주문 정보 확인(결제페이지)", description = "기본 주소가 있으면 address에 포함되고, 없으면 null입니다!\nisAllVisit이 true이면 전체 상품이 픽업인 경우입니다.")
+    public ResponseEntity<OrderInfoResDto> getOrderInfo(@ModelAttribute OrderInfoReqDto request) {
+        return ResponseEntity.ok().body(orderService.getOrderInfo(request));
     }
-
 }

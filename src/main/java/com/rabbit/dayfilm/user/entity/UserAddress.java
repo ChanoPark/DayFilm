@@ -10,10 +10,11 @@ import javax.persistence.*;
 @Getter
 @NoArgsConstructor
 public class UserAddress {
-    public UserAddress(User user, Address address, boolean isDefault) {
+    public UserAddress(User user, Address address, boolean isDefault, String nickname) {
         this.user = user;
         this.address = address;
         this.isDefault = isDefault;
+        this.nickname = nickname;
     }
     @Id @GeneratedValue
     private Long id;
@@ -25,6 +26,8 @@ public class UserAddress {
     private Address address;
 
     private Boolean isDefault;
+
+    private String nickname;
 
     public void changeDefault() {
         this.isDefault = !this.isDefault;

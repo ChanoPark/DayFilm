@@ -1,5 +1,6 @@
 package com.rabbit.dayfilm.user.controller;
 
+import com.rabbit.dayfilm.common.CodeSet;
 import com.rabbit.dayfilm.user.dto.AddressCreateDto;
 import com.rabbit.dayfilm.user.dto.AddressDto;
 import com.rabbit.dayfilm.user.service.UserService;
@@ -30,5 +31,18 @@ public class UserController {
     @Operation(summary = "회원 주소 추가", description = "회원의 주소를 추가합니다.\n첫 번째 주소는 무조건 default이고, 그 다음부터는 isDefault가 true인 경우에 기본 선택된 주소가 됩니다.")
     public ResponseEntity<List<AddressDto>> addAddress(@RequestBody AddressCreateDto addressCreateDto) {
         return ResponseEntity.ok(userService.createAddress(addressCreateDto));
+    }
+
+    @GetMapping(EndPoint.ADDRESS)
+    @Operation(summary = "회원 주소 목록 조회", description = "회원의 주소 목록 반환")
+    public ResponseEntity<List<AddressDto>> getAddresses(@RequestParam("userId") Long userId) {
+        return ResponseEntity.ok().body(userService.getAddresses(userId));
+    }
+
+    @PostMapping(EndPoint.ADDRESS_DELETE)
+    @Operation(summary = "회원 주소 삭제", description = "기본 배송지는 삭제할 수 없습니다.")
+    public ResponseEntity<SuccessResponse> deleteAddress(@RequestParam("addressId") Long addressId) {
+        userService.deleteAddress(addressId);
+        return ResponseEntity.ok().body(new SuccessResponse(CodeSet.OK));
     }
 }
