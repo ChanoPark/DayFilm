@@ -18,7 +18,6 @@ import com.rabbit.dayfilm.order.repository.OrderRepository;
 import com.rabbit.dayfilm.payment.toss.dto.TossPaymentForm;
 import com.rabbit.dayfilm.store.entity.Address;
 import com.rabbit.dayfilm.user.entity.User;
-import com.rabbit.dayfilm.user.entity.UserAddress;
 import com.rabbit.dayfilm.user.repository.UserAddressRepository;
 import com.rabbit.dayfilm.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -61,7 +60,7 @@ public class OrderServiceImpl implements OrderService {
         List<Long> basketIds = request.getBasketIds();
         List<Long> orderedBasketIds = new ArrayList<>();
         List<BasketInfo> baskets = basketRepository.findBasketInfos(new BasketCond(basketIds));
-        if (baskets.size() == 0) throw new CustomException("주문한 상품이 올바르지 않습니다.");
+        if (baskets.size() == 0) throw new CustomException("장바구니 정보가 올바르지 않습니다.");
         else if (baskets.size() != basketIds.size()) throw new CustomException("장바구니 정보가 올바르지 않습니다.");
 
         //create orderID

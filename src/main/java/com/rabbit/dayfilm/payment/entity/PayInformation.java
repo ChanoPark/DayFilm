@@ -27,6 +27,7 @@ public class PayInformation {
         this.vat = payInformation.getVat();
         this.type = payInformation.getType();
     }
+
     @Id
     private String orderId;
     private String transactionKey;
