@@ -1,6 +1,6 @@
 package com.rabbit.dayfilm;
 
-import com.rabbit.dayfilm.item.repository.ItemElasticsearchRepository;
+import com.rabbit.dayfilm.elastic.repository.ItemElasticsearchRepository;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
@@ -12,8 +12,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @SpringBootApplication
 @EnableCaching
 @EnableJpaRepositories(excludeFilters = @ComponentScan.Filter(
-		type = FilterType.ASSIGNABLE_TYPE,
-		classes = com.rabbit.dayfilm.item.repository.ItemElasticsearchRepository.class))
+		type = FilterType.ASSIGNABLE_TYPE, classes = ItemElasticsearchRepository.class))
+@EnableElasticsearchRepositories("com.rabbit.dayfilm.elastic.repository")
 public class DayfilmApplication {
 
 	public static void main(String[] args) {

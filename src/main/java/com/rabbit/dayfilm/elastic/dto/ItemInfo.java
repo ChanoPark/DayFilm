@@ -1,5 +1,7 @@
-package com.rabbit.dayfilm.item.entity;
+package com.rabbit.dayfilm.elastic.dto;
 
+import com.rabbit.dayfilm.item.entity.Category;
+import com.rabbit.dayfilm.item.entity.Method;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -1,6 +1,6 @@
-package com.rabbit.dayfilm.item.repository;
+package com.rabbit.dayfilm.elastic.repository;
 
-import com.rabbit.dayfilm.item.entity.ItemInfo;
+import com.rabbit.dayfilm.elastic.dto.ItemInfo;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;

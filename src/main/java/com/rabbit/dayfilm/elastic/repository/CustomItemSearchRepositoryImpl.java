@@ -1,6 +1,7 @@
-package com.rabbit.dayfilm.item.repository;
+package com.rabbit.dayfilm.elastic.repository;
 
-import com.rabbit.dayfilm.item.entity.ItemInfo;
+import com.rabbit.dayfilm.elastic.dto.ItemInfo;
+import com.rabbit.dayfilm.elastic.repository.CustomItemSearchRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
@@ -16,7 +17,7 @@ import java.util.stream.Collectors;
 
 @Repository
 @RequiredArgsConstructor
-public class CustomItemSearchRepositoryImpl implements CustomItemSearchRepository{
+public class CustomItemSearchRepositoryImpl implements CustomItemSearchRepository {
 
     private final ElasticsearchOperations elasticsearchOperations;
     @Override

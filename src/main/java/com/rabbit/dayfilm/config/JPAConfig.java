@@ -1,7 +1,7 @@
 package com.rabbit.dayfilm.config;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.rabbit.dayfilm.item.repository.ItemElasticsearchRepository;
+import com.rabbit.dayfilm.elastic.repository.ItemElasticsearchRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
