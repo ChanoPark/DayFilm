@@ -1,14 +1,18 @@
 package com.rabbit.dayfilm.payment.toss.object;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
 
 /**
  * 가상계좌 결제 정보
  */
-@Data
+@Getter
+@AllArgsConstructor
+@ToString
 public class VirtualAccount {
     private String accountType;
     private String accountNumber;

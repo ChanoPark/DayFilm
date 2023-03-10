@@ -1,21 +1,27 @@
 package com.rabbit.dayfilm.payment.toss.object;
 
-import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.ToString;
 
 import javax.annotation.Nullable;
+import java.time.LocalDateTime;
 
 /**
  * 결제 취소 이력
  */
-@Data
+@Getter
+@AllArgsConstructor
+@ToString
 public class Cancels {
-    private Long cancelAmount;
+    private Integer cancelAmount;
     private String cancelReason;
-    private Long taxFreeAmount;
+    private Integer taxFreeAmount;
     @Nullable
     private Long taxAmount;
-    private Long refundableAmount;
-    private Long easyPayDiscountAmount;
-    private String canceledAt;
+    private Integer refundableAmount;
+    private Integer easyPayDiscountAmount;
+    private LocalDateTime canceledAt;
     private String transactionKey;
+    private Integer taxExemptionAmount;
 }

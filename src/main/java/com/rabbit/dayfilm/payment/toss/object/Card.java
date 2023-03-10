@@ -1,11 +1,15 @@
 package com.rabbit.dayfilm.payment.toss.object;
 
-import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.ToString;
 
 /**
  * 카드 결제 정보
  */
-@Data
+@Getter
+@AllArgsConstructor
+@ToString
 public class Card {
     private Long amount;
     private String company;
