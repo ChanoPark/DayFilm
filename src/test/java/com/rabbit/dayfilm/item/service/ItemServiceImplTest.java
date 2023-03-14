@@ -4,17 +4,11 @@ import com.rabbit.dayfilm.item.entity.*;
 import com.rabbit.dayfilm.item.repository.ItemImageRepository;
 import com.rabbit.dayfilm.item.repository.ItemRepository;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.Cacheable;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Transactional
@@ -36,7 +30,7 @@ class ItemServiceImplTest {
                 .pricePerOne(1000)
                 .brandName("testBrand")
                 .modelName("testModel")
-                .method(Method.VISIT)
+                .method(DeliveryMethod.VISIT)
                 .itemImages(new ArrayList<>())
                 .use_yn(Boolean.TRUE)
                 .quantity(3)

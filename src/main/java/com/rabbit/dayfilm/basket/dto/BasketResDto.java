@@ -1,6 +1,6 @@
 package com.rabbit.dayfilm.basket.dto;
 
-import com.rabbit.dayfilm.item.entity.Method;
+import com.rabbit.dayfilm.item.entity.DeliveryMethod;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,7 +27,7 @@ public class BasketResDto {
     @ApiModelProperty(value="가격", example="15000")
     private Integer price;
     @ApiModelProperty(value="배송 방법", example="택배수령", required = true)
-    private Method method;
+    private DeliveryMethod method;
 
     @AllArgsConstructor
     @Setter
@@ -41,6 +41,6 @@ public class BasketResDto {
         private Integer pricePerOne;
         private Integer pricePerFive;
         private Integer pricePerTen;
-        private Method method;
+        private DeliveryMethod method;
     }
 }

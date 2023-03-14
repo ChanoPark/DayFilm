@@ -1,6 +1,6 @@
 package com.rabbit.dayfilm.order.entity;
 
-import com.rabbit.dayfilm.item.entity.Method;
+import com.rabbit.dayfilm.item.entity.DeliveryMethod;
 import com.rabbit.dayfilm.store.entity.Address;
 import lombok.*;
 
@@ -42,7 +42,7 @@ public class Order {
 
     @Column(name = "method", nullable = false)
     @Enumerated(EnumType.STRING)
-    private Method method;
+    private DeliveryMethod method;
 
     @Embedded
     @Column(name = "address", nullable = false)

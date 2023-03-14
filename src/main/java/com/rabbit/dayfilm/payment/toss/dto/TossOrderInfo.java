@@ -1,6 +1,6 @@
 package com.rabbit.dayfilm.payment.toss.dto;
 
-import com.rabbit.dayfilm.item.entity.Method;
+import com.rabbit.dayfilm.item.entity.DeliveryMethod;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -34,6 +34,6 @@ public class TossOrderInfo {
         @ApiModelProperty(value="반납 시간", example="2023-03-15T20:00:00")
         private LocalDateTime ended;
         @ApiModelProperty(value="물건 수령 방법", example="VISIT")
-        private Method deliveryMethod;
+        private DeliveryMethod deliveryMethod;
     }
 }

@@ -1,7 +1,7 @@
 package com.rabbit.dayfilm.item.dto;
 
 import com.rabbit.dayfilm.item.entity.Category;
-import com.rabbit.dayfilm.item.entity.Method;
+import com.rabbit.dayfilm.item.entity.DeliveryMethod;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -39,7 +39,7 @@ public class SelectDetailItemDto implements Serializable {
     private String modelName;
 
     @ApiModelProperty(value="대여 방법", example="PARCEL")
-    private Method method;
+    private DeliveryMethod method;
 
     @ApiModelProperty(value="재고", example="5")
     private Integer quantity;

@@ -7,7 +7,7 @@ import com.rabbit.dayfilm.basket.dto.BasketResDto;
 import com.rabbit.dayfilm.basket.entity.Basket;
 import com.rabbit.dayfilm.basket.repository.BasketRepository;
 import com.rabbit.dayfilm.exception.CustomException;
-import com.rabbit.dayfilm.item.entity.Method;
+import com.rabbit.dayfilm.item.entity.DeliveryMethod;
 import com.rabbit.dayfilm.item.repository.ProductRepository;
 import com.rabbit.dayfilm.order.dto.OrderCreateReqDto;
 import com.rabbit.dayfilm.order.dto.OrderInfoReqDto;
@@ -89,12 +89,12 @@ public class OrderServiceImpl implements OrderService {
             amount += price;
             //주문 정보 생성
             Address address;
-            if (basket.getMethod().equals(Method.PARCEL)) {
+            if (basket.getMethod().equals(DeliveryMethod.PARCEL)) {
                 address = userAddressRepository.findById(request.getAddressId())
                         .orElseThrow(() -> new CustomException("주소 정보가 올바르지 않습니다."))
                         .getAddress();
             }
-            else if (basket.getMethod().equals(Method.VISIT)) address = basket.getAddress();
+            else if (basket.getMethod().equals(DeliveryMethod.VISIT)) address = basket.getAddress();
             else throw new CustomException("주소 정보가 올바르지 않습니다.");
 
             orderRepository.save(
@@ -129,7 +129,7 @@ public class OrderServiceImpl implements OrderService {
 
         List<BasketResDto.BasketQueryDto> baskets = basketRepository.findBaskets(new BasketCond(user, request.getBasketIds()));
         for (BasketResDto.BasketQueryDto basket : baskets) {
-            if (basket.getMethod().equals(Method.PARCEL)) isAllVisit = false;
+            if (basket.getMethod().equals(DeliveryMethod.PARCEL)) isAllVisit = false;
             int price;
 
             long rentDays = ChronoUnit.DAYS.between(basket.getStarted(), basket.getEnded());
