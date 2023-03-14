@@ -12,4 +12,6 @@ public class AddressDto {
     private Address address;
     @ApiModelProperty(value="기본 주소 여부(default)", example="true", required = true)
     private Boolean isDefault;
+    @ApiModelProperty(value="주소지 별칭", example="우리집", required = true)
+    private String nickname;
 }
