@@ -1,5 +1,6 @@
 package com.rabbit.dayfilm.payment.toss.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.rabbit.dayfilm.basket.entity.Basket;
@@ -10,16 +11,13 @@ import com.rabbit.dayfilm.item.repository.ProductRepository;
 import com.rabbit.dayfilm.order.entity.Order;
 import com.rabbit.dayfilm.order.entity.OrderStatus;
 import com.rabbit.dayfilm.order.repository.OrderRepository;
-import com.rabbit.dayfilm.payment.entity.CardPayment;
-import com.rabbit.dayfilm.payment.entity.EasyPayment;
-import com.rabbit.dayfilm.payment.entity.PayInformation;
-import com.rabbit.dayfilm.payment.entity.VirtualAccountPayment;
+import com.rabbit.dayfilm.payment.dto.PaymentCancelReqDto;
+import com.rabbit.dayfilm.payment.dto.PaymentCancelResDto;
+import com.rabbit.dayfilm.payment.entity.*;
 import com.rabbit.dayfilm.payment.repository.PayPerMethodRepository;
+import com.rabbit.dayfilm.payment.repository.PayRepository;
 import com.rabbit.dayfilm.payment.toss.dto.TossOrderInfo;
-import com.rabbit.dayfilm.payment.toss.object.Card;
-import com.rabbit.dayfilm.payment.toss.object.EasyPay;
-import com.rabbit.dayfilm.payment.toss.object.Payment;
-import com.rabbit.dayfilm.payment.toss.object.VirtualAccount;
+import com.rabbit.dayfilm.payment.toss.object.*;
 import com.rabbit.dayfilm.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -45,8 +43,8 @@ public class TossServiceImpl implements TossService {
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
     private final BasketRepository basketRepository;
+    private final PayRepository payRepository;
     private final PayPerMethodRepository<? super PayInformation> payPerMethodRepository;
-    
     private final String INVALID_PAY = "결제 정보가 올바르지 않습니다.";
 
     @Value("${tosspay.test.secretKey}")
@@ -89,8 +87,6 @@ public class TossServiceImpl implements TossService {
                 .bodyToMono(Payment.class)
                 .block();
         Objects.requireNonNull(payment, "결제 승인에 실패했습니다.");
-
-        log.info("결과:{}", payment.toString());
 
         //주문 상태 변경
         List<Order> orders = orderRepository.findAllByOrderId(orderId);
@@ -178,6 +174,73 @@ public class TossServiceImpl implements TossService {
         }
 
         return new TossOrderInfo(user.getNickname(), message, orderId, products);
+    }
+
+
+    @Override
+    @Transactional
+    public PaymentCancelResDto cancelPayment(PaymentCancelReqDto request) {
+        PayInformation payment = payRepository.findById(request.getOrderId()).orElseThrow(() -> new CustomException("결제 내역이 존재하지 않습니다."));
+        ObjectNode data = mapper.createObjectNode();
+
+        List<Order> orders = orderRepository.findAllById(request.getOrderPrimaryId());
+        int price = 0;
+        for (Order order : orders) {
+            price += order.getPrice();
+        }
+
+        if (payPerMethodRepository.findVirtual(request.getOrderId()) != null) {
+            try {
+                String refundInfo = mapper.writeValueAsString(request.getRefundReceiveAccount());
+                data.put("refundReceiveAccount", refundInfo);
+            } catch (JsonProcessingException e) {
+                throw new CustomException("환불 정보가 올바르지 않습니다.");
+            }
+        }
+
+        data.put("cancelReason", request.getReason());
+        data.put("cancelAmount", price);
+
+        Payment cancelPayment = webClient.post()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/v1/payments/{paymentKey}/cancel")
+                        .build(payment.getPaymentKey())
+                )
+                .body(BodyInserters.fromValue(data))
+                .retrieve()
+                .onStatus(HttpStatus::is4xxClientError, response -> Mono.error(new CustomException(INVALID_PAY)))
+                .onStatus(HttpStatus::is5xxServerError, response -> Mono.error(new CustomException("결제 취소를 진행할 수 없습니다.")))
+                .bodyToMono(Payment.class)
+                .block();
+
+        List<Cancels> cancels = cancelPayment.getCancels();
+        Objects.requireNonNull(cancels, "환불 정보가 올바르지 않습니다.");
+
+        List<PaymentCancelResDto.ProductInfo> products = new ArrayList<>();
+
+        for (Order order : orders) {
+            order.updateStatus(OrderStatus.CANCEL);
+            String title = productRepository.selectProductTitle(order.getProductId());
+            products.add(new PaymentCancelResDto.ProductInfo(title, order.getStarted(), order.getEnded(), order.getPrice()));
+        }
+
+        for (Cancels cancel : cancels) {
+            payPerMethodRepository.saveCancelPayment(
+                    CancelPayment.builder()
+                            .orderId(request.getOrderId())
+                            .cancelReason(cancel.getCancelReason())
+                            .canceledAt(cancel.getCanceledAt())
+                            .cancelAmount(cancel.getCancelAmount())
+                            .taxFreeAmount(cancel.getTaxFreeAmount())
+                            .taxExemptionAmount(cancel.getTaxExemptionAmount())
+                            .refundableAmount(cancel.getRefundableAmount())
+                            .easyPayDiscountAmount(cancel.getEasyPayDiscountAmount())
+                            .transactionKey(cancel.getTransactionKey())
+                            .build()
+            );
+        }
+        payment.updateStatus(cancelPayment.getStatus());
+        return new PaymentCancelResDto(request.getOrderId(), products);
     }
 
     private void createVirtualAccount(String orderId, PayInformation payInformation, VirtualAccount virtualAccount) {

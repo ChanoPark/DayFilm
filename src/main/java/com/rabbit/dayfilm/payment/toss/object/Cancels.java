@@ -1,7 +1,9 @@
 package com.rabbit.dayfilm.payment.toss.object;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import javax.annotation.Nullable;
@@ -12,6 +14,7 @@ import java.time.LocalDateTime;
  */
 @Getter
 @AllArgsConstructor
+@NoArgsConstructor
 @ToString
 public class Cancels {
     private Integer cancelAmount;
@@ -21,6 +24,7 @@ public class Cancels {
     private Long taxAmount;
     private Integer refundableAmount;
     private Integer easyPayDiscountAmount;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ssXXX")
     private LocalDateTime canceledAt;
     private String transactionKey;
     private Integer taxExemptionAmount;

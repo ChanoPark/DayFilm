@@ -3,6 +3,8 @@ package com.rabbit.dayfilm.payment.toss.controller;
 import com.rabbit.dayfilm.common.EndPoint;
 import com.rabbit.dayfilm.order.dto.OrderCreateReqDto;
 import com.rabbit.dayfilm.order.service.OrderService;
+import com.rabbit.dayfilm.payment.dto.PaymentCancelReqDto;
+import com.rabbit.dayfilm.payment.dto.PaymentCancelResDto;
 import com.rabbit.dayfilm.payment.toss.dto.TossOrderInfo;
 import com.rabbit.dayfilm.payment.toss.dto.TossPaymentForm;
 import com.rabbit.dayfilm.payment.toss.object.TossErrorCode;
@@ -39,7 +41,6 @@ public class TossController {
             tossService.paymentConfirm(paymentKey, orderId, amount); // 결제 정보 반환 필요 -> 화면 구성 먼저.
             return ResponseEntity.ok("승인");
         } else {
-//            tossService.paymentCancel(paymentKey);
             return ResponseEntity.ok("취소");
         }
 
@@ -51,5 +52,11 @@ public class TossController {
                                                          @RequestParam("message") String message,
                                                          @RequestParam("orderId") String orderId) {
         return ResponseEntity.ok().body(tossService.cancelOrder(orderId, message));
+    }
+
+    @PostMapping(EndPoint.CANCEL)
+    @Operation(summary = "환불", description = "결제가 완료된 상품을 환불합니다.")
+    public ResponseEntity<PaymentCancelResDto> paymentCancel(@RequestBody PaymentCancelReqDto request) {
+        return ResponseEntity.ok().body(tossService.cancelPayment(request));
     }
 }

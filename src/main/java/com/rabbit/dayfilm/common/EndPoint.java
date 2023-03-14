@@ -25,6 +25,7 @@ public class EndPoint {
     public static final String TOSS = "/toss";
     public static final String CREATE = "/create";
     public static final String REDIRECT = "/redirect";
+    public static final String CANCEL = "/cancel";
     public static final String REDIRECT_SUCCESS = REDIRECT + "/success";
     public static final String REDIRECT_FAIL = REDIRECT + "/fail";
 }

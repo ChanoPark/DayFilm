@@ -1,6 +1,8 @@
 package com.rabbit.dayfilm.payment.toss.object;
 
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.rabbit.dayfilm.exception.CustomException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -112,7 +114,15 @@ public enum TossErrorCode {
     //가상 계좌
     INVALID_REGISTRATION_NUMBER_TYPE("유효하지 않은 등록 번호 타입입니다.");
 
-
-
     private final String message;
+
+    @JsonCreator
+    public static TossErrorCode fromString(String param) {
+        for (TossErrorCode t : TossErrorCode.values()) {
+            if (t.getMessage().equals(param)) {
+                return t;
+            }
+        }
+        throw new CustomException("카드 정보가 올바르지 않습니다.");
+    }
 }
