@@ -81,10 +81,12 @@ public class OrderServiceImpl implements OrderService {
 
             long rentDays = ChronoUnit.DAYS.between(basket.getStarted(), basket.getEnded());
 
-            if (rentDays >= 5 && rentDays < 10) amount += basket.getPricePerFive();
-            else if (rentDays >= 10) amount += basket.getPricePerTen();
-            else amount += basket.getPricePerOne();
+            int price;
+            if (rentDays >= 5 && rentDays < 10) price = basket.getPricePerFive();
+            else if (rentDays >= 10) price = basket.getPricePerTen();
+            else price = basket.getPricePerOne();
 
+            amount += price;
             //주문 정보 생성
             Address address;
             if (basket.getMethod().equals(Method.PARCEL)) {
@@ -107,6 +109,7 @@ public class OrderServiceImpl implements OrderService {
                             .address(address)
                             .method(request.getDeliveryMethod())
                             .shipmentRequired(request.getShipmentRequired())
+                            .price(price)
                             .build()
             );
         }

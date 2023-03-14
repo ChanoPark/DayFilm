@@ -51,6 +51,9 @@ public class Order {
     @Column(name = "shipment_required")
     private String shipmentRequired;
 
+    @Column(name ="price", nullable = false)
+    private Integer price;
+
     public void updateStatus(OrderStatus status) {
         this.status = status;
     }
