@@ -54,7 +54,7 @@ public class ItemController {
 
     @GetMapping("/all")
     @Operation(summary = "전체 상품 조회", description = "전체 상품 조회입니다. \n 쿼리파라미터 형식으로 ?category=CAMERA&page=1&size=9 보내주시면 됩니다. size는 후에 9로 default 처리 해놓을게요. page 가 0부터 시작해서 -1 해서 보내주시면 됩니다.")
-    public ResponseEntity<SelectAllItemsResponse> getAllItems(@RequestParam(required = false) Category category, Pageable pageable) {
+    public ResponseEntity<SelectAllItemsResponse> getAllItems(@RequestParam(required = false, name = "category") Category category, Pageable pageable) {
         Page<SelectAllItemsDto> dto = itemService.selectAllItems(category, pageable);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(new SelectAllItemsResponse(CodeSet.OK, dto));
@@ -78,12 +78,8 @@ public class ItemController {
 
     @PostMapping(value = "/store-write", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ApiOperation(value = "상품 등록", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @ApiImplicitParams(value = {
-            @ApiImplicitParam(name = "data", value = "Item 정보들", required = true, dataTypeClass = InsertItemRequestDto.class, paramType = "form"),
-            @ApiImplicitParam(name = "images", value = "Image files", required = true, dataType = "MultipartFile", paramType = "form")
-    })
     public ResponseEntity<SuccessResponse> createItem(@RequestPart List<MultipartFile> images,
-                                                      @RequestPart List<MultipartFile> infoImages,@RequestPart InsertItemRequestDto data) {
+                                                      @RequestPart(required = false) List<MultipartFile> infoImages,@RequestPart InsertItemRequestDto data) {
         itemService.createItem(images, infoImages, data);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(new SuccessResponse(CodeSet.OK));

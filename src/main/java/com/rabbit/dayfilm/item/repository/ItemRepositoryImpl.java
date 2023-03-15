@@ -1,7 +1,9 @@
 package com.rabbit.dayfilm.item.repository;
 
+import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.rabbit.dayfilm.item.dto.SelectAllItemsDto;
@@ -39,14 +41,16 @@ public class ItemRepositoryImpl implements ItemRepositoryCustom {
                         item.method,
                         item.pricePerOne,
                         itemImage.imagePath,
-                        review.count().as("reviewCount"),
-                        review.star.avg().as("starAvg")))
+                        review.count(),
+                        review.star.avg().as("starAvg"),
+                        like.count()))
                 .from(item)
-                .innerJoin(item.itemImages, itemImage)
-                .innerJoin(item.reviews, review)
+                .leftJoin(itemImage).on(item.eq(itemImage.item), imageOrderEqOne(), imageEqProduct())
+                .leftJoin(review).on(item.eq(review.item))
+                .leftJoin(like).on(item.eq(like.item))
                 .where(categoryEq(category),
-                        imageOrderEqOne(),
                         useEqY())
+                .groupBy(item.id, itemImage.imagePath)
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -157,7 +161,9 @@ public class ItemRepositoryImpl implements ItemRepositoryCustom {
     private BooleanExpression storeIdEq(Long storeId) {
         return storeId == null ? null : item.store.id.eq(storeId);
     }
-
+    private BooleanExpression imageEqProduct() {
+        return itemImage.imageType.eq(ImageType.PRODUCT);
+    }
     private BooleanExpression categoryEq(Category category) {
         return category == null ? null : item.category.eq(category);
     }
