@@ -32,5 +32,16 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom{
                 .fetch();
     }
 
+    @Override
+    public String selectProductTitle(Long productId) {
+        return queryFactory
+                .select(product.item.title)
+                .from(product)
+                .innerJoin(item)
+                .on(product.item.eq(item))
+                .where(product.id.eq(productId))
+                .fetchOne();
+    }
+
 
 }

@@ -1,7 +1,6 @@
 package com.rabbit.dayfilm.config;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.rabbit.dayfilm.elastic.repository.ItemElasticsearchRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -14,9 +13,6 @@ import javax.persistence.PersistenceContext;
 
 @Configuration
 @EnableJpaAuditing
-@EnableJpaRepositories(excludeFilters = @ComponentScan.Filter(
-        type = FilterType.ASSIGNABLE_TYPE,
-        classes = ItemElasticsearchRepository.class))
 public class JPAConfig {
 
     @PersistenceContext

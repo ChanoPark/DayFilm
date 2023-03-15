@@ -1,28 +1,19 @@
 package com.rabbit.dayfilm.item.repository;
 
-import com.querydsl.core.types.ExpressionUtils;
 import com.querydsl.core.types.Projections;
-import com.querydsl.jpa.JPAExpressions;
-import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.rabbit.dayfilm.item.dto.SelectAllItemsDto;
 import com.rabbit.dayfilm.item.dto.SelectDetailImageDto;
 import com.rabbit.dayfilm.item.dto.SelectDetailItemDto;
 import com.rabbit.dayfilm.item.entity.*;
-import org.aspectj.lang.annotation.Before;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import static com.querydsl.core.group.GroupBy.groupBy;
@@ -58,7 +49,7 @@ class ItemRepositoryImplTest {
                 .pricePerOne(1000)
                 .brandName("testBrand")
                 .modelName("testModel")
-                .method(Method.VISIT)
+                .method(DeliveryMethod.VISIT)
                 .use_yn(Boolean.TRUE)
                 .quantity(3)
                 .build();
@@ -93,7 +84,7 @@ class ItemRepositoryImplTest {
                 .pricePerOne(1000)
                 .brandName("testBrand")
                 .modelName("testModel")
-                .method(Method.VISIT)
+                .method(DeliveryMethod.VISIT)
                 .itemImages(new ArrayList<>())
                 .use_yn(Boolean.TRUE)
                 .quantity(3)

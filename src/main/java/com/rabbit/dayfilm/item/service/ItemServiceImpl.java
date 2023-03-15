@@ -1,10 +1,8 @@
 package com.rabbit.dayfilm.item.service;
 
 import com.amazonaws.util.CollectionUtils;
-import com.rabbit.dayfilm.elastic.dto.ItemInfo;
 import com.rabbit.dayfilm.exception.CustomException;
 import com.rabbit.dayfilm.item.dto.*;
-import com.rabbit.dayfilm.elastic.repository.ItemElasticsearchRepository;
 import com.rabbit.dayfilm.item.entity.*;
 import com.rabbit.dayfilm.item.repository.*;
 import com.rabbit.dayfilm.store.entity.Store;
@@ -43,8 +41,6 @@ public class ItemServiceImpl implements ItemService {
     private final LikeRepository likeRepository;
 
     private final ProductRepository productRepository;
-
-    private final ItemElasticsearchRepository itemElasticsearchRepository;
 
 
     @Override
@@ -100,18 +96,8 @@ public class ItemServiceImpl implements ItemService {
                 }
             }
 
-            ItemInfo itemInfo = ItemInfo.builder()
-                    .title(dto.getTitle())
-                    .storeName(store.getStoreName())
-                    .method(dto.getMethod())
-                    .category(dto.getCategory())
-                    .pricePerOne(dto.getPricePerOne())
-                    .imagePath(item.getItemImages().get(0).getImagePath())
-                    .build();
-
             itemRepository.save(item);
             itemImageRepository.saveAll(item.getItemImages());
-            itemElasticsearchRepository.save(itemInfo);
 
         } catch (IOException e) {
             log.info("error message : {}", e.getMessage());
@@ -121,13 +107,9 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<SelectSearchItemsDto> selectAllItems(String keyword, Pageable pageable) {
-        return itemElasticsearchRepository.searchItemsByKeyword(keyword, pageable)
-                .stream()
-                .map(SelectSearchItemsDto::from)
-                .collect(Collectors.toList());
+    public Page<SelectAllItemsDto> selectAllItems(Category category, Pageable pageable) {
+        return itemRepository.selectAllItems(category, pageable);
     }
-
     @Override
     @Transactional(readOnly = true)
     @Cacheable(value = "item-detail", key="#id", cacheManager = "cacheManager", unless="#result == null")
