@@ -1,6 +1,7 @@
 package com.rabbit.dayfilm.item.entity;
 
 import com.rabbit.dayfilm.review.entity.Review;
+import com.rabbit.dayfilm.store.entity.Address;
 import com.rabbit.dayfilm.store.entity.Store;
 import lombok.*;
 
@@ -62,6 +63,9 @@ public class Item {
     @Column(nullable = false)
     private Integer quantity;
 
+    @Embedded
+    @Column(nullable = false)
+    private Address address;
 
     @Column(nullable = false)
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "item", cascade = CascadeType.ALL)

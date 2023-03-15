@@ -9,7 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 public interface ItemService {
-    public void createItem(List<MultipartFile> images, InsertItemRequestDto dto);
+    public void createItem(List<MultipartFile> images, List<MultipartFile> infoImages, InsertItemRequestDto dto);
     public Page<SelectAllItemsDto> selectAllItems(Category category, Pageable pageable);
     public SelectDetailItemDto selectDetailItem(Long id);
 

@@ -5,6 +5,7 @@ import com.rabbit.dayfilm.exception.CustomException;
 import com.rabbit.dayfilm.item.dto.*;
 import com.rabbit.dayfilm.item.entity.*;
 import com.rabbit.dayfilm.item.repository.*;
+import com.rabbit.dayfilm.store.entity.Address;
 import com.rabbit.dayfilm.store.entity.Store;
 import com.rabbit.dayfilm.store.repository.StoreRepository;
 import com.rabbit.dayfilm.user.entity.User;
@@ -45,7 +46,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     @Transactional
-    public void createItem(List<MultipartFile> images, InsertItemRequestDto dto) {
+    public void createItem(List<MultipartFile> images, List<MultipartFile> infoImages, InsertItemRequestDto dto) {
 
         try {
             Store store = storeRepository.findById(dto.getStoreId())
@@ -65,6 +66,12 @@ public class ItemServiceImpl implements ItemService {
                     .method(dto.getMethod())
                     .use_yn(Boolean.TRUE)
                     .quantity(dto.getQuantity())
+                    .address(
+                        Address.builder()
+                                .address(dto.getAddress())
+                                .addressDetail(dto.getAddressDetail())
+                                .postalCode(dto.getPostalCode())
+                                .build())
                     .itemImages(new ArrayList<>())
                     .products(new ArrayList<>())
                     .createdDate(LocalDateTime.now())
@@ -84,12 +91,30 @@ public class ItemServiceImpl implements ItemService {
                 int count = 1;
                 for (MultipartFile image : images) {
                     //개수 제한을 걸 경우, 조건문으로 예외 터트리면 됨.
-                    String filename = store.getStoreName() + "/" + dto.getModelName() + count;
+                    String filename = store.getStoreName() + "/" + dto.getModelName() + "/product/" + count;
                     ImageInfoDto imageInfoDto = s3UploadService.uploadFile(image, filename);
                     ItemImage itemImage = ItemImage.builder()
                             .imagePath(imageInfoDto.getImagePath())
                             .imageName(imageInfoDto.getImageName())
                             .orderNumber(count)
+                            .imageType(ImageType.PRODUCT)
+                            .build();
+                    item.addItemImage(itemImage);
+                    count++;
+                }
+            }
+
+            if (!CollectionUtils.isNullOrEmpty(infoImages)) {
+                int count = 1;
+                for (MultipartFile image : infoImages) {
+                    //개수 제한을 걸 경우, 조건문으로 예외 터트리면 됨.
+                    String filename = store.getStoreName() + "/" + dto.getModelName() + "/info/" + count;
+                    ImageInfoDto imageInfoDto = s3UploadService.uploadFile(image, filename);
+                    ItemImage itemImage = ItemImage.builder()
+                            .imagePath(imageInfoDto.getImagePath())
+                            .imageName(imageInfoDto.getImageName())
+                            .orderNumber(count)
+                            .imageType(ImageType.INFO)
                             .build();
                     item.addItemImage(itemImage);
                     count++;

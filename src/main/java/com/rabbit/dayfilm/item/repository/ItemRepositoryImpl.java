@@ -8,6 +8,7 @@ import com.rabbit.dayfilm.item.dto.SelectAllItemsDto;
 import com.rabbit.dayfilm.item.dto.SelectDetailImageDto;
 import com.rabbit.dayfilm.item.dto.SelectDetailItemDto;
 import com.rabbit.dayfilm.item.entity.*;
+import com.rabbit.dayfilm.review.entity.QReview;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,6 +21,7 @@ import java.util.stream.Collectors;
 import static com.rabbit.dayfilm.item.entity.QItem.*;
 import static com.rabbit.dayfilm.item.entity.QItemImage.*;
 import static com.rabbit.dayfilm.item.entity.QLike.*;
+import static com.rabbit.dayfilm.review.entity.QReview.review;
 
 @RequiredArgsConstructor
 @Repository
@@ -36,9 +38,12 @@ public class ItemRepositoryImpl implements ItemRepositoryCustom {
                         item.title,
                         item.method,
                         item.pricePerOne,
-                        itemImage.imagePath))
+                        itemImage.imagePath,
+                        review.count().as("reviewCount"),
+                        review.star.avg().as("starAvg")))
                 .from(item)
                 .innerJoin(item.itemImages, itemImage)
+                .innerJoin(item.reviews, review)
                 .where(categoryEq(category),
                         imageOrderEqOne(),
                         useEqY())

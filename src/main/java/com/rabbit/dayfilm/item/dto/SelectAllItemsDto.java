@@ -25,4 +25,10 @@ public class SelectAllItemsDto {
 
     @ApiModelProperty(value="s3에 등록된 이미지 url", example="https:/~")
     private String imagePath;
+
+    @ApiModelProperty(value="리뷰 개수", example="5")
+    private Integer reviewCount;
+
+    @ApiModelProperty(value="평균 별점", example="4.4")
+    private Double starAvg;
 }

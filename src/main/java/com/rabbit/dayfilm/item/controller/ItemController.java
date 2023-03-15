@@ -82,8 +82,9 @@ public class ItemController {
             @ApiImplicitParam(name = "data", value = "Item 정보들", required = true, dataTypeClass = InsertItemRequestDto.class, paramType = "form"),
             @ApiImplicitParam(name = "images", value = "Image files", required = true, dataType = "MultipartFile", paramType = "form")
     })
-    public ResponseEntity<SuccessResponse> createItem(@RequestPart List<MultipartFile> images, @RequestPart InsertItemRequestDto data) {
-        itemService.createItem(images, data);
+    public ResponseEntity<SuccessResponse> createItem(@RequestPart List<MultipartFile> images,
+                                                      @RequestPart List<MultipartFile> infoImages,@RequestPart InsertItemRequestDto data) {
+        itemService.createItem(images, infoImages, data);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(new SuccessResponse(CodeSet.OK));
     }
