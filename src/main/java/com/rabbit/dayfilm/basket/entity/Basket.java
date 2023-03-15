@@ -1,6 +1,6 @@
 package com.rabbit.dayfilm.basket.entity;
 
-import com.rabbit.dayfilm.item.entity.Method;
+import com.rabbit.dayfilm.item.entity.DeliveryMethod;
 import com.rabbit.dayfilm.item.entity.Product;
 import com.rabbit.dayfilm.user.entity.User;
 import lombok.*;
@@ -34,5 +34,5 @@ public class Basket {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "method", nullable = false)
-    private Method method;
+    private DeliveryMethod method;
 }

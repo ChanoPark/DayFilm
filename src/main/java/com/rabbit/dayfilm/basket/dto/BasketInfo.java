@@ -1,7 +1,7 @@
 package com.rabbit.dayfilm.basket.dto;
 
 import com.querydsl.core.annotations.QueryProjection;
-import com.rabbit.dayfilm.item.entity.Method;
+import com.rabbit.dayfilm.item.entity.DeliveryMethod;
 import com.rabbit.dayfilm.item.entity.Product;
 import com.rabbit.dayfilm.store.entity.Address;
 import lombok.Getter;
@@ -20,12 +20,12 @@ public class BasketInfo {
     private Integer pricePerOne;
     private Integer pricePerFive;
     private Integer pricePerTen;
-    private Method method;
+    private DeliveryMethod method;
     private Address address;
 
     @QueryProjection
     public BasketInfo(Long basketId, Product product, LocalDateTime started, LocalDateTime ended, String title,
-                      Integer pricePerOne, Integer pricePerFive, Integer pricePerTen, Method method, Address address) {
+                      Integer pricePerOne, Integer pricePerFive, Integer pricePerTen, DeliveryMethod method, Address address) {
         this.basketId = basketId;
         this.product = product;
         this.started = started;

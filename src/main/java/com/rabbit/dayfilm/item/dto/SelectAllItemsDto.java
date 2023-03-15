@@ -1,10 +1,9 @@
 package com.rabbit.dayfilm.item.dto;
 
-import com.rabbit.dayfilm.item.entity.Method;
+import com.rabbit.dayfilm.item.entity.DeliveryMethod;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Getter
 @AllArgsConstructor
@@ -19,7 +18,7 @@ public class SelectAllItemsDto {
     private String title;
 
     @ApiModelProperty(value="대여 방법", example="PARCEL", required = true)
-    private Method method;
+    private DeliveryMethod method;
 
     @ApiModelProperty(value="하루 렌탈가격(1일)", example="10000", required = true)
     private Integer pricePerOne;

@@ -21,8 +21,11 @@ public class EasyPayment extends PayInformation {
         this.discountAmount = discountAmount;
     }
     @Id
+    @Column(name = "order_id")
     private String orderId;
     @Enumerated(EnumType.STRING)
+    @Column(name = "easy_pay_code", nullable = false)
     private EasyPayCode easyPayCode;
+    @Column(name = "discount_amount", nullable = false)
     private Integer discountAmount;
 }

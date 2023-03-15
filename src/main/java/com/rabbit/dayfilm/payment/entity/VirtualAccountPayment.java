@@ -30,14 +30,22 @@ public class VirtualAccountPayment extends PayInformation {
         this.settlementStatus = settlementStatus;
     }
     @Id
+    @Column(name = "order_id")
     private String orderId;
+    @Column(name = "account_type", nullable = false)
     private String accountType;
+    @Column(name = "account_number", nullable = false)
     private String accountNumber;
     @Enumerated(EnumType.STRING)
+    @Column(name = "bank_code", nullable = false)
     private TossCardCode bankCode;
+    @Column(name = "customer_name", nullable = false)
     private String customerName;
+    @Column(name = "due_date", nullable = false)
     private LocalDateTime dueDate;
     @Enumerated(EnumType.STRING)
+    @Column(name = "refund_status", nullable = false)
     private RefundStatus refundStatus;
+    @Column(name = "settlement_status", nullable = false)
     private String settlementStatus;
 }

@@ -54,7 +54,7 @@ public class Item {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private Method method;
+    private DeliveryMethod method;
 
     @Column(nullable = false)
     private Boolean use_yn;

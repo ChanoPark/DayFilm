@@ -1,11 +1,14 @@
 package com.rabbit.dayfilm.payment.toss.object;
 
-import lombok.Data;
+import lombok.*;
 
 /**
  * 간편결제 정보
  */
-@Data
+@Getter
+@AllArgsConstructor
+@NoArgsConstructor
+@ToString
 public class EasyPay {
     private EasyPayCode provider;
     private Integer amount;

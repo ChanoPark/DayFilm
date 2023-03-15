@@ -1,7 +1,5 @@
 package com.rabbit.dayfilm.review.dto;
 
-import com.rabbit.dayfilm.item.entity.Category;
-import com.rabbit.dayfilm.item.entity.Method;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

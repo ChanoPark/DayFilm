@@ -9,7 +9,6 @@ import java.util.List;
 
 @ToString
 @Getter
-@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class Payment {
