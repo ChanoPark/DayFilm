@@ -53,7 +53,7 @@ public class AuthServiceImpl implements UserDetailsService, AuthService {
         return org.springframework.security.core.userdetails.User.builder()
                 .username(email)
                 .password(userInfo.getPw())
-                .authorities("BASIC")
+                .authorities(userInfo.getAuthorities())
                 .build();
     }
 
