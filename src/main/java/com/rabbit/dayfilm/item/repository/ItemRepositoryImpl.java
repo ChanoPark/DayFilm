@@ -1,13 +1,15 @@
 package com.rabbit.dayfilm.item.repository;
 
+import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.JPAExpressions;
+import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.rabbit.dayfilm.item.dto.SelectAllItemsDto;
-import com.rabbit.dayfilm.item.dto.SelectDetailImageDto;
-import com.rabbit.dayfilm.item.dto.SelectDetailItemDto;
+import com.rabbit.dayfilm.item.dto.*;
 import com.rabbit.dayfilm.item.entity.*;
+import com.rabbit.dayfilm.review.entity.QReview;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,6 +22,8 @@ import java.util.stream.Collectors;
 import static com.rabbit.dayfilm.item.entity.QItem.*;
 import static com.rabbit.dayfilm.item.entity.QItemImage.*;
 import static com.rabbit.dayfilm.item.entity.QLike.*;
+import static com.rabbit.dayfilm.item.entity.QProduct.product;
+import static com.rabbit.dayfilm.review.entity.QReview.review;
 
 @RequiredArgsConstructor
 @Repository
@@ -36,12 +40,17 @@ public class ItemRepositoryImpl implements ItemRepositoryCustom {
                         item.title,
                         item.method,
                         item.pricePerOne,
-                        itemImage.imagePath))
+                        itemImage.imagePath,
+                        review.count(),
+                        review.star.avg().as("starAvg"),
+                        like.count()))
                 .from(item)
-                .innerJoin(item.itemImages, itemImage)
+                .leftJoin(itemImage).on(item.eq(itemImage.item), imageOrderEqOne(), imageEqProduct())
+                .leftJoin(review).on(item.eq(review.item))
+                .leftJoin(like).on(item.eq(like.item))
                 .where(categoryEq(category),
-                        imageOrderEqOne(),
                         useEqY())
+                .groupBy(item.id, itemImage.imagePath)
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -56,8 +65,8 @@ public class ItemRepositoryImpl implements ItemRepositoryCustom {
     }
 
     @Override
-    public SelectDetailItemDto selectItem(Long id) {
-        List<SelectDetailItemDto> itemDto = queryFactory
+    public SelectDetailDto selectItem(Long id) {
+        SelectDetailItemDto itemDto = queryFactory
                 .select(Projections.constructor(SelectDetailItemDto.class,
                         item.title,
                         item.category,
@@ -69,23 +78,49 @@ public class ItemRepositoryImpl implements ItemRepositoryCustom {
                         item.modelName,
                         item.method,
                         item.quantity,
-                        Projections.list(Projections.constructor(SelectDetailImageDto.class,
-                                itemImage.id.as("imageId"),
-                                itemImage.imageName,
-                                itemImage.imagePath,
-                                itemImage.orderNumber))
+                        item.address.postalCode,
+                        item.address.address,
+                        item.address.addressDetail
                 ))
                 .from(item)
-                .leftJoin(item.itemImages, itemImage)
                 .where(itemIdEq(id))
+                .fetchOne();
+
+        List<SelectDetailImageDto> imageDto = queryFactory
+                .select(Projections.constructor(SelectDetailImageDto.class,
+                        itemImage.id.as("imageId"),
+                        itemImage.imageName,
+                        itemImage.imagePath,
+                        itemImage.orderNumber,
+                        itemImage.imageType
+                ))
+                .from(itemImage)
+                .where(itemImage.item.id.eq(id))
+                .orderBy(itemImage.orderNumber.asc())
                 .fetch();
 
-        return itemDto.stream()
-                .findFirst()
-                .map(item -> new SelectDetailItemDto(item.getTitle(), item.getCategory(), item.getDetail(), item.getPricePerOne(), item.getPricePerFive(),
-                        item.getPricePerTen(), item.getBrandName(), item.getModelName(), item.getMethod(), item.getQuantity(),
-                        itemDto.stream().flatMap(i -> i.getImages().stream()).collect(Collectors.toList())))
-                .orElse(null);
+        List<SelectDetailProductDto> productDto = queryFactory
+                .select(Projections.constructor(SelectDetailProductDto.class,
+                        product.id.as("productId")
+                ))
+                .from(product)
+                .where(product.item.id.eq(id),
+                        product.productStatus.eq(ProductStatus.AVAILABLE))
+                .fetch();
+
+        List<SelectDetailReviewDto> reviewDto = queryFactory
+                .select(Projections.constructor(SelectDetailReviewDto.class,
+                        review.user.nickname.as("userName"),
+                        review.content,
+                        review.star,
+                        review.createdDate,
+                        review.modifiedDate
+                ))
+                .from(review)
+                .where(review.item.id.eq(id))
+                .fetch();
+
+        return new SelectDetailDto(itemDto, imageDto, productDto, reviewDto);
     }
 
     @Override
@@ -152,7 +187,9 @@ public class ItemRepositoryImpl implements ItemRepositoryCustom {
     private BooleanExpression storeIdEq(Long storeId) {
         return storeId == null ? null : item.store.id.eq(storeId);
     }
-
+    private BooleanExpression imageEqProduct() {
+        return itemImage.imageType.eq(ImageType.PRODUCT);
+    }
     private BooleanExpression categoryEq(Category category) {
         return category == null ? null : item.category.eq(category);
     }

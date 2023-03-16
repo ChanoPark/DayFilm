@@ -42,4 +42,13 @@ public class InsertItemRequestDto {
     @ApiModelProperty(value="재고", example="5", required = true)
     private Integer quantity;
 
+    @ApiModelProperty(value="우편 번호", example="12345", required = true)
+    private Integer postalCode;
+
+    @ApiModelProperty(value="주소", example="서울시 강서구", required = true)
+    private String address;
+
+    @ApiModelProperty(value="상세 주소", example="가로공원로76가길 20", required = true)
+    private String addressDetail;
+
 }

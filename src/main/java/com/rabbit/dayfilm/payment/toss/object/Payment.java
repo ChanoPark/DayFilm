@@ -2,8 +2,8 @@ package com.rabbit.dayfilm.payment.toss.object;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
+import org.springframework.lang.Nullable;
 
-import javax.annotation.Nullable;
 import java.time.LocalDateTime;
 import java.util.List;
 

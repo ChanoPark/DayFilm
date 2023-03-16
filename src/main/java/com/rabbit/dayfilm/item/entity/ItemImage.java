@@ -28,4 +28,8 @@ public class ItemImage {
     @Column(nullable = false)
     private Integer orderNumber;
 
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private ImageType imageType;
+
 }

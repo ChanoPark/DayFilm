@@ -44,6 +44,13 @@ public class SelectDetailItemDto implements Serializable {
     @ApiModelProperty(value="재고", example="5")
     private Integer quantity;
 
-    @ApiModelProperty(value="이미지 정보들")
-    private List<SelectDetailImageDto> images;
+    @ApiModelProperty(value="우편 번호", example="12345", required = true)
+    private Integer postalCode;
+
+    @ApiModelProperty(value="주소", example="서울시 강서구", required = true)
+    private String address;
+
+    @ApiModelProperty(value="상세 주소", example="가로공원로76가길 20", required = true)
+    private String addressDetail;
+
 }
