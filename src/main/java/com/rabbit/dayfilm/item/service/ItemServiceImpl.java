@@ -138,7 +138,7 @@ public class ItemServiceImpl implements ItemService {
     @Override
     @Transactional(readOnly = true)
     @Cacheable(value = "item-detail", key="#id", cacheManager = "cacheManager", unless="#result == null")
-    public SelectDetailItemDto selectDetailItem(Long id) {
+    public SelectDetailDto selectDetailItem(Long id) {
         return itemRepository.selectItem(id);
     }
 

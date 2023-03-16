@@ -11,7 +11,7 @@ import java.util.List;
 public interface ItemService {
     public void createItem(List<MultipartFile> images, List<MultipartFile> infoImages, InsertItemRequestDto dto);
     public Page<SelectAllItemsDto> selectAllItems(Category category, Pageable pageable);
-    public SelectDetailItemDto selectDetailItem(Long id);
+    public SelectDetailDto selectDetailItem(Long id);
 
     public Page<SelectAllItemsDto> selectWriteItems(Category category, Long storeId, Pageable pageable);
     public void modifyItem(Long itemId, List<MultipartFile> images, ModifyItemRequestDto dto);

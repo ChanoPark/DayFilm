@@ -34,6 +34,7 @@ public class ReviewServiceImpl implements ReviewService{
                 .content(dto.getContent())
                 .star(dto.getStar())
                 .createdDate(LocalDateTime.now())
+                .modifiedDate(LocalDateTime.now())
                 .build();
 
         // 연관관계 매핑

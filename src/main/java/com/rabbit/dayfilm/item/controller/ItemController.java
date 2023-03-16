@@ -63,7 +63,7 @@ public class ItemController {
     @GetMapping("/{itemId}")
     @Operation(summary = "상품 상세 조회", description = "상품 상세 조회입니다. /items/40 으로 넘겨주시면 pk 값이 40인 아이템 반환합니다.")
     public ResponseEntity<SelectDetailItemResponse> getItem(@PathVariable Long itemId) {
-        SelectDetailItemDto dto = itemService.selectDetailItem(itemId);
+        SelectDetailDto dto = itemService.selectDetailItem(itemId);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(new SelectDetailItemResponse(CodeSet.OK, dto));
     }

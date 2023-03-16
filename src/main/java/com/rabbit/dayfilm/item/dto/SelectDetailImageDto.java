@@ -1,5 +1,6 @@
 package com.rabbit.dayfilm.item.dto;
 
+import com.rabbit.dayfilm.item.entity.ImageType;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -20,4 +21,7 @@ public class SelectDetailImageDto {
 
     @ApiModelProperty(value="이미지 순서", example="1")
     private Integer orderNumber;
+
+    @ApiModelProperty(value="이미지 타입", example="PRODUCT")
+    private ImageType imageType;
 }

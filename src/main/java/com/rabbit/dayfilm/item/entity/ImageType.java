@@ -1,5 +1,6 @@
 package com.rabbit.dayfilm.item.entity;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
