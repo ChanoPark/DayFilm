@@ -3,6 +3,7 @@ package com.rabbit.dayfilm.user.controller;
 import com.rabbit.dayfilm.common.CodeSet;
 import com.rabbit.dayfilm.user.dto.AddressCreateDto;
 import com.rabbit.dayfilm.user.dto.AddressDto;
+import com.rabbit.dayfilm.user.dto.OrderListResDto;
 import com.rabbit.dayfilm.user.service.UserAddressService;
 import com.rabbit.dayfilm.user.service.UserService;
 import com.rabbit.dayfilm.common.EndPoint;
@@ -10,6 +11,7 @@ import com.rabbit.dayfilm.common.response.SuccessResponse;
 import io.swagger.annotations.Api;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -46,5 +48,12 @@ public class UserController {
     public ResponseEntity<SuccessResponse> deleteAddress(@RequestParam("addressId") Long addressId) {
         userAddressService.deleteAddress(addressId);
         return ResponseEntity.ok().body(new SuccessResponse(CodeSet.OK));
+    }
+
+    /*마이페이지*/
+    @GetMapping(EndPoint.ITEM)
+    @Operation(summary = "회원 주문 목록 조회", description = "회원 주문 목록 조회\n회원 번호 넘겨주시면 됩니다.")
+    public ResponseEntity<OrderListResDto> getOrderList(@RequestParam("userId") Long userId, Pageable pageable) {
+        return ResponseEntity.ok(userService.getOrderList(userId, pageable));
     }
 }
