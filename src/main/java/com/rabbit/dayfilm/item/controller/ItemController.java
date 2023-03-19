@@ -2,12 +2,22 @@ package com.rabbit.dayfilm.item.controller;
 
 import com.rabbit.dayfilm.common.CodeSet;
 import com.rabbit.dayfilm.common.EndPoint;
-import com.rabbit.dayfilm.common.response.ResponseAbs;
 import com.rabbit.dayfilm.common.response.SuccessResponse;
-import com.rabbit.dayfilm.item.dto.InsertItemRequestDto;
-import com.rabbit.dayfilm.item.service.ItemSerivce;
+import com.rabbit.dayfilm.exception.CustomException;
+import com.rabbit.dayfilm.item.dto.*;
+import com.rabbit.dayfilm.item.entity.Category;
+import com.rabbit.dayfilm.item.response.SelectAllItemsResponse;
+import com.rabbit.dayfilm.item.response.SelectDetailItemResponse;
+import com.rabbit.dayfilm.item.response.SelectProductResponse;
+import com.rabbit.dayfilm.item.service.ItemService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -20,41 +30,108 @@ import java.util.List;
 /**
  * 1. Item 생성
  *
+ * 2. 전체 Item 요약 정보 조회(홈 화면) 카테고리, 페이징 포함.
  *
- * 2. 전체 Item 요약 정보 조회(홈 화면)
+ * 3. 해당 Item 상세 페이지 정보 조회.
  *
+ * 4. 작성한 Item 목록들 조회.
  *
- * 3. 카테고리별 전체 Item 요약 정보 조회(카테고리 홈 화면)
+ * 5. Item 수정.
+ *
+ * 6. 좋아요 Item list 조회.
+ *
+ * 7. 좋아요 등록 및 삭제.
  */
 
 @Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(EndPoint.ITEM)
+@Api(tags = "상품")
 public class ItemController {
 
-    private final ItemSerivce itemSerivce;
+    private final ItemService itemService;
 
-//    @PostMapping("")
-//    public ResponseEntity<ResponseAbs> createItem(@RequestBody InsertItemRequestDto dto) {
-//        itemSerivce.createItem(dto);
-//        return ResponseEntity.status(HttpStatus.OK)
-//                .body(new SuccessResponse(CodeSet.OK));
-//    }
+    @GetMapping("/all")
+    @Operation(summary = "전체 상품 조회", description = "전체 상품 조회입니다. \n 쿼리파라미터 형식으로 ?category=CAMERA&page=1&size=9 보내주시면 됩니다. size는 후에 9로 default 처리 해놓을게요. page 가 0부터 시작해서 -1 해서 보내주시면 됩니다.")
+    public ResponseEntity<SelectAllItemsResponse> getAllItems(@RequestParam(required = false, name = "category") Category category, Pageable pageable) {
+        Page<SelectAllItemsDto> dto = itemService.selectAllItems(category, pageable);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(new SelectAllItemsResponse(CodeSet.OK, dto));
+    }
 
-    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ResponseAbs> createItem(@RequestPart List<MultipartFile> images, @RequestPart InsertItemRequestDto dto) {
-        itemSerivce.createItem(images, dto);
+    @GetMapping("/{itemId}")
+    @Operation(summary = "상품 상세 조회", description = "상품 상세 조회입니다. /items/40 으로 넘겨주시면 pk 값이 40인 아이템 반환합니다.")
+    public ResponseEntity<SelectDetailItemResponse> getItem(@PathVariable Long itemId) {
+        SelectDetailDto dto = itemService.selectDetailItem(itemId);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(new SelectDetailItemResponse(CodeSet.OK, dto));
+    }
+
+    @GetMapping("/store-write/{storeId}")
+    @Operation(summary = "작성한 아이템 조회", description = "작성한 아이템 조회입니다. /items/store-write/3 으로 넘겨주시면 pk 값이 3과 일치하는 가게가 작성한 아이템 목록을 반환합니다.")
+    public ResponseEntity<SelectAllItemsResponse> getWriteItems(@PathVariable Long storeId, @RequestParam(required = false) Category category, Pageable pageable) {
+        Page<SelectAllItemsDto> dto = itemService.selectWriteItems(category, storeId, pageable);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(new SelectAllItemsResponse(CodeSet.OK, dto));
+    }
+
+    @PostMapping(value = "/store-write", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @ApiOperation(value = "상품 등록", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<SuccessResponse> createItem(@RequestPart List<MultipartFile> images,
+                                                      @RequestPart(required = false) List<MultipartFile> infoImages,@RequestPart InsertItemRequestDto data) {
+        itemService.createItem(images, infoImages, data);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(new SuccessResponse(CodeSet.OK));
     }
 
-    @GetMapping()
-    public ResponseEntity<ResponseAbs> selectAllItems(@RequestParam(required = false, defaultValue = "0", value = "page") int pageNo
-    , @RequestParam(required = false) String category, Pageable pageable) {
-        pageNo = (pageNo == 0) ? 0 : (pageNo - 1);
-        itemSerivce.selectAllItems();
+
+    @PutMapping(value = "/store-write/{itemId}",  consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @ApiOperation(value = "상품 수정", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @ApiImplicitParams(value = {
+            @ApiImplicitParam(name = "data", value = "Item 정보들", required = true, dataTypeClass = ModifyItemRequestDto.class, paramType = "form"),
+            @ApiImplicitParam(name = "images", value = "Image files", required = true, dataType = "MultipartFile", paramType = "form")
+    })
+    public ResponseEntity<SuccessResponse> modifyItem(@PathVariable Long itemId, @RequestPart List<MultipartFile> images, @RequestPart ModifyItemRequestDto data) {
+        itemService.modifyItem(itemId, images, data);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(new SuccessResponse(CodeSet.OK));
     }
+
+    @PostMapping("/likes")
+    @Operation(summary = "좋아요 등록", description = "게시글을 좋아요 목록에 추가합니다.")
+    public ResponseEntity<SuccessResponse> likeItem(@RequestBody LikeItemRequestDto data) {
+        itemService.likeItem(data);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(new SuccessResponse(CodeSet.OK));
+    }
+
+    @GetMapping("/likes/{userId}")
+    @Operation(summary = "좋아요 게시글 조회", description = "좋아요 누른 게시글 리스트를 조회합니다.")
+    public ResponseEntity<SelectAllItemsResponse> getLikeItems(@PathVariable Long userId, @RequestParam(required = false) Category category, Pageable pageable) {
+        Page<SelectAllItemsDto> dto = itemService.selectLikeItems(category, userId, pageable);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(new SelectAllItemsResponse(CodeSet.OK, dto));
+    }
+
+    @GetMapping("/products/{itemId}")
+    @Operation(summary = "상품 일정 관리", description = "상품에 대해 각 제품 일정과 상태를 반환합니다.")
+    public ResponseEntity<SelectProductResponse> getProducts(@PathVariable Long itemId) {
+        List<SelectProductsDto> dto = itemService.selectProducts(itemId);
+        if (dto == null) {
+            throw new CustomException("해당 상품에 대한 제품 리스트가 존재하지 않습니다. 관리자에게 문의하세요.");
+        }
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(new SelectProductResponse(CodeSet.OK, dto));
+    }
+
+    @PutMapping("/products/{productId}")
+    @Operation(summary = "상품 일정 수정", description = "상품에 대해 제품 일정과 상태를 수정합니다.")
+    public ResponseEntity<SuccessResponse> changeProductStatus(@PathVariable Long productId, @RequestBody ModifyProductRequestDto data) {
+        itemService.modifyProduct(productId, data);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(new SuccessResponse(CodeSet.OK));
+    }
+
+
 }

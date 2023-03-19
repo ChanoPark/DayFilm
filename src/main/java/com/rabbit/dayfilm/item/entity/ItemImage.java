@@ -1,22 +1,23 @@
 package com.rabbit.dayfilm.item.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Entity
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter @Setter
+@Table(name="ITEM_IMAGE_TABLE")
 public class ItemImage {
     @Id @GeneratedValue
-    @Column(name = "item_image_id")
+    @Column(name = "image_id")
     private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="item_id")
+    private Item item;
 
     @Column(nullable = false)
     private String imagePath;
@@ -25,6 +26,10 @@ public class ItemImage {
     private String imageName;
 
     @Column(nullable = false)
-    private Integer order;
+    private Integer orderNumber;
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private ImageType imageType;
 
 }

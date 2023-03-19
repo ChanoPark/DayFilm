@@ -8,18 +8,12 @@ public abstract class ResponseAbs implements Response{
     private CodeSet code;
     private String message;
     private String detail;
-    private Object value;
 
     public ResponseAbs(CodeSet codeSet) {
         this.code = codeSet;
         this.detail = codeSet.getMessage();
     }
 
-    public ResponseAbs(CodeSet codeSet, Object value) {
-        this.code = codeSet;
-        this.detail = codeSet.getMessage();
-        this.value = value;
-    }
 
     @Override
     public void setCode(CodeSet code) {
@@ -32,10 +26,6 @@ public abstract class ResponseAbs implements Response{
         this.detail = detail;
     }
 
-    @Override
-    public void setValue(Object value) {
-        this.value = value;
-    }
 
     @Override
     public CodeSet getCode() {
@@ -52,8 +42,4 @@ public abstract class ResponseAbs implements Response{
         return this.detail;
     }
 
-    @Override
-    public Object getValue() {
-        return this.value;
-    }
 }

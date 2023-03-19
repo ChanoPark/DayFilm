@@ -6,9 +6,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.Optional;
 
-public interface ItemRepository extends JpaRepository<Item, Long> {
-    @Query("select new com.rabbit.dayfilm.item.dto.SelectAllItemsDto(i.id, i.storeName, i.title, i.method, i.pricePerOne) from Item i")
-    List<Item> findWithPagination(Pageable pageable);
-    
+public interface ItemRepository extends JpaRepository<Item, Long>, ItemRepositoryCustom {
+
+//    @Override
+//    @Query("select i from Item i join fetch i.itemImages where i.id = :id")
+//    Optional<Item> findById(Long id);
 }

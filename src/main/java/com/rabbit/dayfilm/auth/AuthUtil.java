@@ -5,7 +5,6 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.rabbit.dayfilm.common.CodeSet;
-import com.rabbit.dayfilm.exception.CustomException;
 import com.rabbit.dayfilm.exception.FilterException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -16,24 +15,30 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import java.security.*;
 import java.security.spec.InvalidKeySpecException;
+import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.sql.Date;
 import java.time.Instant;
 import java.util.Base64;
 
+import static com.rabbit.dayfilm.common.CodeSet.ACCESS_TOKEN_INVALID;
+import static com.rabbit.dayfilm.common.CodeSet.REFRESH_TOKEN_INVALID;
+
 @Component
 public class AuthUtil {
     private static String SECRET_KEY;
     private static String ISSUER;
-    private static String RSA_PUBLIC_KEY;
-    private static String RSA_PRIVATE_KEY;
     private static final String ALGORITHM = "RSA";
 
     private static final String TYPE = "type";
+    private static final String SECRET_KEY_IN_TOKEN = "secret_key";
+    private static final String ACCESS = "access";
+    private static final String REFRESH = "refresh";
+    private static final String CODE = "code";
     private static final long ACCESS_TIME = 60 * 3600;  // 액세스 토큰 6시간
     private static final long REFRESH_TIME = 60 * 60 * 24 * 55;  // 리프레시 토큰 약 2달
 
-    @Value("${secure.jwt.secret_key}")
+    @Value("${secure.jwt.secretKey}")
     public void setSecretKey(String secretKey) {
         AuthUtil.SECRET_KEY = secretKey;
     }
@@ -41,16 +46,6 @@ public class AuthUtil {
     @Value("${secure.jwt.issuer}")
     public void setIssuer(String issuer) {
         AuthUtil.ISSUER = issuer;
-    }
-
-    @Value("${secure.RSA.publicKey}")
-    public void setRsaPublicKey(String publicKey) {
-        AuthUtil.RSA_PUBLIC_KEY = publicKey;
-    }
-
-    @Value("${secure.RSA.privateKey}")
-    public void setRsaPrivateKey(String privateKey) {
-        AuthUtil.RSA_PRIVATE_KEY = privateKey;
     }
 
     public static String createAccessToken(String email, String privateKey, String encryptedPw) {
@@ -62,14 +57,14 @@ public class AuthUtil {
                 .withIssuedAt(Date.from(Instant.now()))
                 .withNotBefore(Date.from(Instant.now()))
                 .withSubject(email)
-                .withClaim("secret_key", privateKey)
-                .withClaim("code", encryptedPw)
-                .withClaim(TYPE, "access")
+                .withClaim(SECRET_KEY_IN_TOKEN, privateKey)
+                .withClaim(CODE, encryptedPw)
+                .withClaim(TYPE, ACCESS)
                 .sign(ALGORITHM);
     }
 
     /*Refresh token provider*/
-    public static String createRefreshToken(String email) {
+    public static String createRefreshToken(String email, String privateKey) {
         final Algorithm ALGORITHM = Algorithm.HMAC256(SECRET_KEY);
 
         return JWT.create()
@@ -77,7 +72,8 @@ public class AuthUtil {
                 .withExpiresAt(Date.from(Instant.now().plusSeconds(REFRESH_TIME)))
                 .withNotBefore(Date.from(Instant.now()))
                 .withSubject(email)
-                .withClaim(TYPE, "refresh")
+                .withClaim(TYPE, REFRESH)
+                .withClaim(SECRET_KEY_IN_TOKEN, privateKey)
                 .sign(ALGORITHM);
     }
 
@@ -88,12 +84,18 @@ public class AuthUtil {
         try {
             verify = JWT.require(ALGORITHM).build().verify(token);
         } catch (IllegalArgumentException | JWTVerificationException e) {
-            throw new CustomException(e.getMessage());
+            throw new FilterException(ACCESS_TOKEN_INVALID);
         }
 
-        if (!verify.getIssuer().equals(ISSUER)) throw new CustomException("ISS_INVALID");
-        else if (verify.getExpiresAt().before(Date.from(Instant.now()))) throw new CustomException("EXP_INVALID");
-        else if (verify.getNotBefore().after(Date.from(Instant.now()))) throw new CustomException("NBF_INVALID");
+        if (!verify.getIssuer().equals(ISSUER)
+                || verify.getNotBefore().after(Date.from(Instant.now()))
+                || verify.getSubject().isEmpty()
+                || verify.getClaim(SECRET_KEY_IN_TOKEN).isNull()
+                || verify.getClaim(CODE).isNull()
+                || !verify.getClaim(TYPE).asString().equals(ACCESS))
+            throw new FilterException(ACCESS_TOKEN_INVALID);
+        else if (verify.getExpiresAt().before(Date.from(Instant.now())))
+            throw new FilterException(CodeSet.ACCESS_TOKEN_EXPIRED);
 
         return true;
     }
@@ -105,11 +107,16 @@ public class AuthUtil {
         try {
             verify = JWT.require(ALGORITHM).build().verify(token);
         } catch (IllegalArgumentException | JWTVerificationException e) {
-            throw new CustomException(e.getMessage());
+            throw new FilterException(REFRESH_TOKEN_INVALID);
         }
 
-        if (!verify.getIssuer().equals(ISSUER)) throw new CustomException("ISS_INVALID");
-        else if (verify.getNotBefore().after(Date.from(Instant.now()))) throw new CustomException("NBF_INVALID");
+        if (!verify.getIssuer().equals(ISSUER)
+                || !verify.getClaim(TYPE).asString().equals(REFRESH)
+                || verify.getNotBefore().after(Date.from(Instant.now()))
+                || verify.getClaim(SECRET_KEY_IN_TOKEN).isNull())
+            throw new FilterException(REFRESH_TOKEN_INVALID);
+        else if (verify.getExpiresAt().before(Date.from(Instant.now())))
+            throw new FilterException(CodeSet.REFRESH_TOKEN_EXPIRED);
 
         return true;
     }
@@ -137,13 +144,36 @@ public class AuthUtil {
         return encryptedPw;
     }
 
-    public static String decrypt(String encryptedText) {
-        return null;
+    public static String decrypt(String encryptedText, String privateKey) {
+        String decryptedText;
+
+        try {
+            //평문으로 전달받은 개인키를 사용하기 위한 개인키 객체 생성 (String -> PrivateKey)
+            KeyFactory keyFactory = KeyFactory.getInstance(ALGORITHM);
+            byte[] bytePrivateKey = Base64.getDecoder().decode(privateKey.getBytes());
+            PKCS8EncodedKeySpec privateKeySpec = new PKCS8EncodedKeySpec(bytePrivateKey);
+            PrivateKey getPrivatekey = keyFactory.generatePrivate(privateKeySpec);
+
+            //개인키 객체로 복호화 설정
+            Cipher cipher = Cipher.getInstance(ALGORITHM);
+            cipher.init(Cipher.DECRYPT_MODE, getPrivatekey);
+
+            byte[] encryptedBytes = Base64.getDecoder().decode(encryptedText.getBytes());
+            byte[] decryptedBytes = cipher.doFinal(encryptedBytes);
+
+            decryptedText = new String(decryptedBytes);
+        } catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
+            throw new FilterException(CodeSet.INVALID_ALGORITHM);
+        } catch (IllegalBlockSizeException | InvalidKeySpecException | BadPaddingException | InvalidKeyException e) {
+            throw new FilterException(CodeSet.INVALID_KEY);
+        }
+
+        return decryptedText;
     }
 
     public static RSAKey generateKey() {
         SecureRandom secureRandom = new SecureRandom();
-        KeyPairGenerator keyPairGenerator = null;
+        KeyPairGenerator keyPairGenerator;
         try {
             keyPairGenerator = KeyPairGenerator.getInstance(ALGORITHM);
         } catch (NoSuchAlgorithmException e) {

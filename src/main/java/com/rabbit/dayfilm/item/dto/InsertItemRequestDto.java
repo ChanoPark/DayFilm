@@ -1,30 +1,54 @@
 package com.rabbit.dayfilm.item.dto;
 
 import com.rabbit.dayfilm.item.entity.Category;
-import com.rabbit.dayfilm.item.entity.ItemStatus;
-import com.rabbit.dayfilm.item.entity.Method;
+import com.rabbit.dayfilm.item.entity.DeliveryMethod;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-
-import javax.persistence.*;
-import java.time.LocalDate;
 
 @Getter
 @AllArgsConstructor
 public class InsertItemRequestDto {
-    private Long id;
+    @ApiModelProperty(value="판매자 고유값(pk)", example="1L", required = true)
+    private Long storeId;
+
+    @ApiModelProperty(value="게시글 제목", example="캐논 ~카메라", required = true)
     private String title;
+
+    @ApiModelProperty(value="카테고리(json)", example="CAMERA", required = true)
     private Category category;
+
+    @ApiModelProperty(value="게시글 상세 설명", example="캐논 ~카메라는 ~~", required = true)
     private String detail;
+
+    @ApiModelProperty(value="하루 렌탈가격(1일)", example="10000", required = true)
     private Integer pricePerOne;
+
+    @ApiModelProperty(value="하루 렌탈가격(5일 이상)", example="8000", required = true)
     private Integer pricePerFive;
+
+    @ApiModelProperty(value="하루 렌탈가격(10일 이상)", example="5000", required = true)
     private Integer pricePerTen;
+
+    @ApiModelProperty(value="상품 브랜드 명", example="캐논", required = true)
     private String brandName;
+
+    @ApiModelProperty(value="상품 모델 명", example="오토보이 S2", required = true)
     private String modelName;
-    private ItemStatus itemStatus;
-    private Integer purchasePrice;
-    private Method method;
+
+    @ApiModelProperty(value="대여 방법", example="PARCEL", required = true)
+    private DeliveryMethod method;
+
+    @ApiModelProperty(value="재고", example="5", required = true)
     private Integer quantity;
+
+    @ApiModelProperty(value="우편 번호", example="12345", required = true)
+    private Integer postalCode;
+
+    @ApiModelProperty(value="주소", example="서울시 강서구", required = true)
+    private String address;
+
+    @ApiModelProperty(value="상세 주소", example="가로공원로76가길 20", required = true)
+    private String addressDetail;
+
 }

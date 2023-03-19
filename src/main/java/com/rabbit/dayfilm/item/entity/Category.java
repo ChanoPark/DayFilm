@@ -1,8 +1,15 @@
 package com.rabbit.dayfilm.item.entity;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.rabbit.dayfilm.common.Constant;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-public enum Category {
+@Getter
+@RequiredArgsConstructor
+public enum Category implements Constant {
     CAMERA("카메라"),
     LENS("렌즈"),
     CAMCORDER( "캠코더"),
@@ -11,16 +18,9 @@ public enum Category {
     LIGHT( "조명"),
     ACCESSORY( "액세서리"),
     ETC("기타");
+    
 
 
     private final String value;
 
-    Category(String value) {
-        this.value = value;
-    }
-
-    @JsonCreator
-    public static Category from(String value) {
-        return Category.valueOf(value);
-    }
 }
