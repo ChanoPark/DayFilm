@@ -144,8 +144,8 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<SelectAllItemsDto> selectWriteItems(Category category, Long storeId, Pageable pageable) {
-        return itemRepository.selectWriteItems(category, storeId, pageable);
+    public List<SelectStoreDto> selectWriteItems(Category category, Long storeId) {
+        return itemRepository.selectWriteItems(category, storeId);
     }
 
     @Override
