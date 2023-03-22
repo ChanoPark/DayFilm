@@ -12,5 +12,5 @@ public interface ProductRepository extends JpaRepository<Product, Long>, Product
     @Query("SELECT i.title FROM Product p INNER JOIN Item i ON p.item = i INNER JOIN Order o ON o.orderId = :orderId AND o.productId = p.id")
     String getTitleByOrderId(@Param("orderId") String orderId);
 
-    List<Product> getProductsByEndDateLessThan(@Param("endDate") LocalDate endDate);
+    List<Product> findProductsByEndDateLessThan(@Param("endDate") LocalDate endDate);
 }

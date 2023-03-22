@@ -73,6 +73,6 @@ public class SecurityConfig {
         return (web) -> web.ignoring()
                 .antMatchers("/doc", "/swagger*/**", "/favicon*/**", "/v2/api-docs")
                 .antMatchers("/check/nickname")
-                .antMatchers("/items/**", "/reviews/**");
+                .antMatchers("/items/**", "/reviews/**", "/products/**");
     }
 }

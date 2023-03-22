@@ -1,6 +1,7 @@
 package com.rabbit.dayfilm.item.service;
 
 import com.amazonaws.util.CollectionUtils;
+import com.rabbit.dayfilm.common.util.CopyUtil;
 import com.rabbit.dayfilm.exception.CustomException;
 import com.rabbit.dayfilm.item.dto.*;
 import com.rabbit.dayfilm.item.entity.*;
@@ -13,8 +14,6 @@ import com.rabbit.dayfilm.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
@@ -23,11 +22,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.beans.PropertyDescriptor;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -38,15 +35,11 @@ public class ItemServiceImpl implements ItemService {
     private final StoreRepository storeRepository;
     private final ItemRepository itemRepository;
     private final ItemImageRepository itemImageRepository;
-
     private final LikeRepository likeRepository;
-
-    private final ProductRepository productRepository;
-
 
     @Override
     @Transactional
-    public void createItem(List<MultipartFile> images, List<MultipartFile> infoImages, InsertItemRequestDto dto) {
+    public void createItem(List<MultipartFile> images, List<MultipartFile> infoImages, CreateItemRequest dto) {
 
         try {
             Store store = storeRepository.findById(dto.getStoreId())
@@ -157,7 +150,7 @@ public class ItemServiceImpl implements ItemService {
                     .orElseThrow(() -> new CustomException("해당 번호 아이템이 존재하지 않습니다."));
 
             // DTO 객체의 null이 아닌 속성을 기존 Item 객체에 복사.
-            BeanUtils.copyProperties(dto, item, getNullPropertyNames(dto));
+            BeanUtils.copyProperties(dto, item, CopyUtil.getNullPropertyNames(dto));
 
             //기존 s3 image 삭제
             List<ItemImage> itemImages = item.getItemImages();
@@ -221,41 +214,5 @@ public class ItemServiceImpl implements ItemService {
 
         likeRepository.save(like);
     }
-
-    @Override
-    public List<SelectProductsDto> selectProducts(Long itemId) {
-        return productRepository.selectProduct(itemId);
-    }
-
-    @Override
-    public void modifyProduct(Long productId, ModifyProductRequestDto dto) {
-        Product findProduct = productRepository.findById(productId)
-                .orElseThrow(() -> new CustomException("해당하는 제품을 찾을 수 없습니다."));
-
-        // DTO 객체의 null이 아닌 속성을 기존 Item 객체에 복사.
-        BeanUtils.copyProperties(dto, findProduct, getNullPropertyNames(dto));
-        productRepository.save(findProduct);
-    }
-
-
-    private static String[] getNullPropertyNames(Object source) {
-        // 소스 객체에 대한 BeanWrapper 객체 생성
-        final BeanWrapper src = new BeanWrapperImpl(source);
-        PropertyDescriptor[] pds = src.getPropertyDescriptors();
-
-        // null 값을 가진 속성의 이름을 저장하기 위한 집합 만들기
-        Set<String> emptyNames = new HashSet<>();
-
-        // 소스 객체의 모든 속성을 반복
-        // 값이 null이면 속성 이름을 집합에 추가
-        for (PropertyDescriptor pd : pds) {
-            Object srcValue = src.getPropertyValue(pd.getName());
-            if (srcValue == null) emptyNames.add(pd.getName());
-        }
-
-        String[] result = new String[emptyNames.size()];
-        return emptyNames.toArray(result);
-    }
-
 
 }

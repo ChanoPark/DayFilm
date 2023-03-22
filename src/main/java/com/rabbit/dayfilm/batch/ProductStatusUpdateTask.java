@@ -26,7 +26,7 @@ public class ProductStatusUpdateTask {
     public void updateProductStatus() {
         try {
             LocalDate currentDate = LocalDate.now();
-            List<Product> findProducts = productRepository.getProductsByEndDateLessThan(currentDate);
+            List<Product> findProducts = productRepository.findProductsByEndDateLessThan(currentDate);
             for (Product product : findProducts) {
                 product.updateProductStatus();
                 productRepository.save(product);

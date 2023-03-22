@@ -9,7 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 public interface ItemService {
-    public void createItem(List<MultipartFile> images, List<MultipartFile> infoImages, InsertItemRequestDto dto);
+    public void createItem(List<MultipartFile> images, List<MultipartFile> infoImages, CreateItemRequest dto);
     public Page<SelectAllItemsDto> selectAllItems(Category category, Pageable pageable);
     public SelectDetailDto selectDetailItem(Long id);
 
@@ -18,6 +18,4 @@ public interface ItemService {
 
     public Page<SelectAllItemsDto> selectLikeItems(Category category, Long userId, Pageable pageable);
     public void likeItem(LikeItemRequestDto dto);
-    public List<SelectProductsDto> selectProducts(Long itemId);
-    public void modifyProduct(Long productId, ModifyProductRequestDto dto);
 }

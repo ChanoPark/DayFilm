@@ -12,6 +12,7 @@ public class EndPoint {
     public static final String ITEM = "/items";
     public static final String LIKE = "/likes";
     public static final String REVIEW = "/reviews";
+    public static final String PRODUCT = "/products";
 
 
     public static final String BASKET = "/basket";

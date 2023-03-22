@@ -3,12 +3,10 @@ package com.rabbit.dayfilm.item.controller;
 import com.rabbit.dayfilm.common.CodeSet;
 import com.rabbit.dayfilm.common.EndPoint;
 import com.rabbit.dayfilm.common.response.SuccessResponse;
-import com.rabbit.dayfilm.exception.CustomException;
 import com.rabbit.dayfilm.item.dto.*;
 import com.rabbit.dayfilm.item.entity.Category;
 import com.rabbit.dayfilm.item.response.SelectAllItemsResponse;
 import com.rabbit.dayfilm.item.response.SelectDetailItemResponse;
-import com.rabbit.dayfilm.item.response.SelectProductResponse;
 import com.rabbit.dayfilm.item.response.SelectStoreItemResponse;
 import com.rabbit.dayfilm.item.service.ItemService;
 import io.swagger.annotations.Api;
@@ -80,7 +78,7 @@ public class ItemController {
     @PostMapping(value = "/store-write", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ApiOperation(value = "상품 등록", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<SuccessResponse> createItem(@RequestPart List<MultipartFile> images,
-                                                      @RequestPart(required = false) List<MultipartFile> infoImages,@RequestPart InsertItemRequestDto data) {
+                                                      @RequestPart(required = false) List<MultipartFile> infoImages,@RequestPart CreateItemRequest data) {
         itemService.createItem(images, infoImages, data);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(new SuccessResponse(CodeSet.OK));
@@ -113,25 +111,6 @@ public class ItemController {
         Page<SelectAllItemsDto> dto = itemService.selectLikeItems(category, userId, pageable);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(new SelectAllItemsResponse(CodeSet.OK, dto));
-    }
-
-    @GetMapping("/products/{itemId}")
-    @Operation(summary = "상품 일정 관리", description = "상품에 대해 각 제품 일정과 상태를 반환합니다.")
-    public ResponseEntity<SelectProductResponse> getProducts(@PathVariable Long itemId) {
-        List<SelectProductsDto> dto = itemService.selectProducts(itemId);
-        if (dto == null) {
-            throw new CustomException("해당 상품에 대한 제품 리스트가 존재하지 않습니다. 관리자에게 문의하세요.");
-        }
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(new SelectProductResponse(CodeSet.OK, dto));
-    }
-
-    @PutMapping("/products/{productId}")
-    @Operation(summary = "상품 일정 수정", description = "상품에 대해 제품 일정과 상태를 수정합니다.")
-    public ResponseEntity<SuccessResponse> changeProductStatus(@PathVariable Long productId, @RequestBody ModifyProductRequestDto data) {
-        itemService.modifyProduct(productId, data);
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(new SuccessResponse(CodeSet.OK));
     }
 
 
