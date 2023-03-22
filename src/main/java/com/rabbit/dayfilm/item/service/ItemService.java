@@ -15,7 +15,7 @@ public interface ItemService {
 
     public List<SelectStoreDto> selectWriteItems(Category category, Long storeId);
     public void modifyItem(Long itemId, List<MultipartFile> images, ModifyItemRequestDto dto);
-
+    public void deleteItem(Long itemId);
     public Page<SelectAllItemsDto> selectLikeItems(Category category, Long userId, Pageable pageable);
     public void likeItem(LikeItemRequestDto dto);
 }

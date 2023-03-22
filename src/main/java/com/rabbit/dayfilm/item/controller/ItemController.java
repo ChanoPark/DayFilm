@@ -97,6 +97,7 @@ public class ItemController {
                 .body(new SuccessResponse(CodeSet.OK));
     }
 
+
     @PostMapping("/likes")
     @Operation(summary = "좋아요 등록", description = "게시글을 좋아요 목록에 추가합니다.")
     public ResponseEntity<SuccessResponse> likeItem(@RequestBody LikeItemRequestDto data) {

@@ -153,10 +153,7 @@ public class ItemServiceImpl implements ItemService {
             BeanUtils.copyProperties(dto, item, CopyUtil.getNullPropertyNames(dto));
 
             //기존 s3 image 삭제
-            List<ItemImage> itemImages = item.getItemImages();
-            for (ItemImage itemImage : itemImages) {
-                s3UploadService.deleteFile(itemImage.getImageName());
-            }
+            deleteS3Image(item);
             //이미지 비우기
             item.clearImages();
             itemImageRepository.deleteByItemId(item.getId());
@@ -187,6 +184,21 @@ public class ItemServiceImpl implements ItemService {
         }
 
 
+    }
+
+    @Override
+    public void deleteItem(Long itemId) {
+        Item findItem = itemRepository.findById(itemId)
+                .orElseThrow(() -> new CustomException("해당 하는 상품을 찾을 수 없습니다."));
+        deleteS3Image(findItem);
+        itemRepository.delete(findItem);
+    }
+
+    private void deleteS3Image(Item item) {
+        List<ItemImage> itemImages = item.getItemImages();
+        for (ItemImage itemImage : itemImages) {
+            s3UploadService.deleteFile(itemImage.getImageName());
+        }
     }
 
     @Override
