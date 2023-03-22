@@ -24,7 +24,7 @@ public class AuthenticationEntryPointImpl implements AuthenticationEntryPoint {
                          HttpServletResponse response,
                          AuthenticationException authException) throws IOException {
         CodeSet code = CodeSet.findCodeByMsg(authException.getMessage());
-        if (code == null) code = CodeSet.FAIL_AUTHORIZATION;
+        if (code == null) code = CodeSet.FAIL_AUTHENTICATION;
 
         response.setStatus(HttpStatus.SC_UNAUTHORIZED);
         response.setContentType("application/json;charset=UTF-8");

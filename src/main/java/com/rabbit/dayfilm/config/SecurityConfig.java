@@ -1,5 +1,6 @@
 package com.rabbit.dayfilm.config;
 
+import com.rabbit.dayfilm.auth.Role;
 import com.rabbit.dayfilm.auth.filter.*;
 import com.rabbit.dayfilm.auth.service.AuthService;
 import com.rabbit.dayfilm.auth.repository.AuthRedisRepository;
@@ -53,7 +54,13 @@ public class SecurityConfig {
                 .csrf().disable()
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeRequests()
-                .antMatchers("/yes").hasRole("ADMIN")
+                .antMatchers("/items/store-write/**").hasRole(Role.STORE.name())
+                .antMatchers(
+                        "/user/**",
+                        "/basket/**",
+                        "/order/**",
+                        "/toss/**"
+                ).hasRole(Role.USER.name())
                 .anyRequest().permitAll()
                 .and()
                 .addFilterBefore(loginFilter, UsernamePasswordAuthenticationFilter.class)
@@ -73,6 +80,6 @@ public class SecurityConfig {
         return (web) -> web.ignoring()
                 .antMatchers("/doc", "/swagger*/**", "/favicon*/**", "/v2/api-docs")
                 .antMatchers("/check/nickname")
-                .antMatchers("/items/**", "/reviews/**");
+                .antMatchers("/toss/redirect/**");
     }
 }
