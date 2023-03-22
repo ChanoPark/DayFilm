@@ -31,4 +31,8 @@ public class Product {
         this.startDate = null;
         this.endDate = null;
     }
+
+    public void deleteProduct() {
+        this.productStatus = ProductStatus.NOTUSE;
+    }
 }
