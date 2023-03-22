@@ -56,4 +56,15 @@ public class ProductServiceImpl implements ProductService{
         BeanUtils.copyProperties(dto, findProduct, CopyUtil.getNullPropertyNames(dto));
         productRepository.save(findProduct);
     }
+
+    @Override
+    public void deleteProduct(Long productId) {
+        try {
+            productRepository.deleteById(productId);
+        } catch (RuntimeException e) {
+            log.error("제품 삭제 실패 : {}", e.getMessage());
+            throw new CustomException("제품 삭제에 실패했습니다.");
+        }
+
+    }
 }

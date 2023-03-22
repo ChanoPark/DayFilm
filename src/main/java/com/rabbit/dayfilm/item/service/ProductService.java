@@ -11,4 +11,5 @@ public interface ProductService {
 
     public void createProduct(Long itemId, CreateProductRequest dto);
     public void modifyProduct(Long productId, ModifyProductRequestDto dto);
+    public void deleteProduct(Long productId);
 }

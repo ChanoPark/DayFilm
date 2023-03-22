@@ -30,7 +30,7 @@ public class ProductController {
     private final ProductService productService;
 
     @GetMapping("/{itemId}")
-    @Operation(summary = "상품 일정 관리", description = "상품에 대해 각 제품 일정과 상태를 반환합니다.")
+    @Operation(summary = "제품 일정 관리", description = "제품에 대해 각 제품 일정과 상태를 반환합니다.")
     public ResponseEntity<SelectProductResponse> getProducts(@PathVariable Long itemId) {
         List<SelectProductsDto> dto = productService.selectProducts(itemId);
         if (dto == null) {
@@ -41,7 +41,7 @@ public class ProductController {
     }
 
     @PostMapping("/{itemId}")
-    @Operation(summary = "상품 등록", description = "상품에 대해 새로운 제품을 생성합니다.")
+    @Operation(summary = "제품 등록", description = "제품에 대해 새로운 제품을 생성합니다.")
     public ResponseEntity<SuccessResponse> createProduct(@PathVariable Long itemId, @RequestBody CreateProductRequest data) {
         productService.createProduct(itemId, data);
         return ResponseEntity.status(HttpStatus.OK)
@@ -50,9 +50,17 @@ public class ProductController {
 
 
     @PutMapping("/{productId}")
-    @Operation(summary = "상품 일정 수정", description = "상품에 대해 제품 일정과 상태를 수정합니다.")
+    @Operation(summary = "제품 일정 수정", description = "제품에 대해 제품 일정과 상태를 수정합니다.")
     public ResponseEntity<SuccessResponse> changeProductStatus(@PathVariable Long productId, @RequestBody ModifyProductRequestDto data) {
         productService.modifyProduct(productId, data);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(new SuccessResponse(CodeSet.OK));
+    }
+
+    @DeleteMapping("/{productId}")
+    @Operation(summary = "제품 삭제", description = "제품에 대해 삭제합니다.")
+    public ResponseEntity<SuccessResponse> deleteProduct(@PathVariable Long productId) {
+        productService.deleteProduct(productId);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(new SuccessResponse(CodeSet.OK));
     }
