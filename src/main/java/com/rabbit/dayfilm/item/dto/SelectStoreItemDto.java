@@ -7,6 +7,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.Objects;
+
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
@@ -36,4 +38,16 @@ public class SelectStoreItemDto {
     @ApiModelProperty(value="좋아요 개수", example="3")
     private Long likeCount;
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        SelectStoreItemDto that = (SelectStoreItemDto) o;
+        return Objects.equals(itemId, that.itemId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(itemId);
+    }
 }
