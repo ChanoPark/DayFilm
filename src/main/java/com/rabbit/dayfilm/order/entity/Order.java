@@ -54,6 +54,9 @@ public class Order {
     @Column(name ="price", nullable = false)
     private Integer price;
 
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private OrderDelivery delivery;
+
     public void updateStatus(OrderStatus status) {
         this.status = status;
     }

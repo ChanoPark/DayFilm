@@ -32,4 +32,5 @@ public class EndPoint {
 
     public static final String STORE = "/store";
     public static final String ORDER_COUNT = ORDER +"/count";
+    public static final String ORDER_LIST = ORDER + "/list";
 }
