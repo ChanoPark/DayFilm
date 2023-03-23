@@ -28,6 +28,7 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom{
                         product.startDate,
                         product.endDate))
                 .from(product)
+                .where(item.id.eq(itemId))
                 .innerJoin(product.item, item)
                 .fetch();
     }

@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.NoResultException;
 import java.util.List;
 
-public interface OrderRepository extends JpaRepository<Order, Long> {
+public interface OrderRepository extends JpaRepository<Order, Long>, OrderQueryRepository {
     List<Order> findAllByOrderId(@Param("orderId") String orderId);
     Boolean existsByOrderId(@Param("orderId") String orderId);
 
