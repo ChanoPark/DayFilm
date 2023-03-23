@@ -16,6 +16,7 @@ public enum CodeSet {
     FAIL_AUTHORIZATION("2009", "권한이 없습니다"),
     NOT_FOUND_USER("2010", "회원이 존재하지 않습니다."),
     DUPLICATE_NICKNAME("3000", "중복된 닉네임입니다."),
+    BATCH_ERROR("8000", "배치 서버 동작 중 문제가 생겼습니다."),
     INTERNAL_SERVER_ERROR("9000", "서버 동작 중 문제가 발생했습니다."),
     INVALID_ALGORITHM("9001", "알고리즘이 유효하지 않습니다."),
     INVALID_KEY("9002", "키 값이 유효하지 않습니다.");

@@ -8,7 +8,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class InsertItemRequestDto {
+public class CreateItemRequest {
     @ApiModelProperty(value="판매자 고유값(pk)", example="1L", required = true)
     private Long storeId;
 

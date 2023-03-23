@@ -10,6 +10,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.rabbit.dayfilm.item.dto.*;
 import com.rabbit.dayfilm.item.entity.*;
 import com.rabbit.dayfilm.review.entity.QReview;
+import com.rabbit.dayfilm.store.entity.QStore;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,6 +25,7 @@ import static com.rabbit.dayfilm.item.entity.QItemImage.*;
 import static com.rabbit.dayfilm.item.entity.QLike.*;
 import static com.rabbit.dayfilm.item.entity.QProduct.product;
 import static com.rabbit.dayfilm.review.entity.QReview.review;
+import static com.rabbit.dayfilm.store.entity.QStore.store;
 
 @RequiredArgsConstructor
 @Repository
@@ -124,29 +126,70 @@ public class ItemRepositoryImpl implements ItemRepositoryCustom {
     }
 
     @Override
-    public Page<SelectAllItemsDto> selectWriteItems(Category category, Long storeId, Pageable pageable) {
-        List<SelectAllItemsDto> content = queryFactory.
-                select(Projections.constructor(SelectAllItemsDto.class,
+    public List<SelectStoreDto> selectWriteItems(Category category, Long storeId) {
+//        List<SelectStoreItemDto> items = queryFactory.
+//                select(Projections.constructor(SelectStoreItemDto.class,
+//                        item.id.as("itemId"),
+//                        item.title,
+//                        item.method,
+//                        item.pricePerOne,
+//                        itemImage.imagePath,
+//                        review.count(),
+//                        review.star.avg().as("starAvg"),
+//                        like.count()))
+//                .from(item)
+//                .leftJoin(itemImage).on(item.eq(itemImage.item), imageOrderEqOne(), imageEqProduct())
+//                .leftJoin(review).on(item.eq(review.item))
+//                .leftJoin(like).on(item.eq(like.item))
+//                .where(categoryEq(category),
+//                        useEqY(),
+//                        store.id.eq(storeId))
+//                .groupBy(item.id, itemImage.imagePath)
+//                .fetch();
+//
+//        List<SelectStoreProductDto> products = queryFactory
+//                .select(Projections.constructor(SelectStoreProductDto.class,
+//                        product.productStatus,
+//                        product.count()))
+//                .from(product)
+//                .join(product.item, item)
+//                .join(item.store, store)
+//                .where(store.id.eq(storeId))
+//                .groupBy(product.productStatus)
+//                .fetch();
+
+        List<Tuple> result = queryFactory.
+                select(Projections.constructor(SelectStoreItemDto.class,
                         item.id.as("itemId"),
-                        item.storeName,
                         item.title,
                         item.method,
                         item.pricePerOne,
-                        itemImage.imagePath))
+                        itemImage.imagePath,
+                        review.count(),
+                        review.star.avg().as("starAvg"),
+                        like.count()),
+                        product.productStatus,
+                        product.count())
                 .from(item)
-                .innerJoin(item.itemImages, itemImage)
-                .where(storeIdEq(storeId),
-                        imageOrderEqOne())
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
+                .leftJoin(itemImage).on(item.eq(itemImage.item), imageOrderEqOne(), imageEqProduct())
+                .leftJoin(review).on(item.eq(review.item))
+                .leftJoin(like).on(item.eq(like.item))
+                .leftJoin(product).on(item.eq(product.item))
+                .where(categoryEq(category),
+                        useEqY(),
+                        item.store.id.eq(storeId))
+                .groupBy(item.id, itemImage.imagePath, product.productStatus)
                 .fetch();
 
-        JPAQuery<Long> countQuery = queryFactory
-                .select(item.count())
-                .from(item)
-                .where(storeIdEq(storeId));
-
-        return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
+        return result.stream()
+                .collect(Collectors.groupingBy(
+                        tuple -> tuple.get(0, SelectStoreItemDto.class),
+                        Collectors.mapping(
+                                tuple -> new SelectStoreProductDto(tuple.get(product.productStatus), tuple.get(product.count())),
+                                Collectors.toList())))
+                .entrySet().stream()
+                .map(entry -> new SelectStoreDto(entry.getKey(), entry.getValue()))
+                .collect(Collectors.toList());
     }
 
     @Override

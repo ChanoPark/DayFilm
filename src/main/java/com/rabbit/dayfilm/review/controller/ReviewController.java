@@ -4,7 +4,6 @@ package com.rabbit.dayfilm.review.controller;
 import com.rabbit.dayfilm.common.CodeSet;
 import com.rabbit.dayfilm.common.EndPoint;
 import com.rabbit.dayfilm.common.response.SuccessResponse;
-import com.rabbit.dayfilm.item.dto.InsertItemRequestDto;
 import com.rabbit.dayfilm.review.dto.InsertReviewRequestDto;
 import com.rabbit.dayfilm.review.service.ReviewService;
 import io.swagger.annotations.Api;
@@ -14,8 +13,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @Slf4j
 @RestController
