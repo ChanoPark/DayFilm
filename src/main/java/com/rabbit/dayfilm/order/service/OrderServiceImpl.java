@@ -107,7 +107,7 @@ public class OrderServiceImpl implements OrderService {
                             .started(basket.getStarted())
                             .ended(basket.getEnded())
                             .address(address)
-                            .method(request.getDeliveryMethod())
+                            .method(basket.getMethod())
                             .shipmentRequired(request.getShipmentRequired())
                             .price(price)
                             .build()
