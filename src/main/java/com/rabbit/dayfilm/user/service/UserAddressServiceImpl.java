@@ -46,7 +46,7 @@ public class UserAddressServiceImpl implements UserAddressService {
 
         List<AddressDto> response = new ArrayList<>();
         for (UserAddress userAddress : user.getAddresses()) {
-            response.add(new AddressDto(userAddress.getAddress(), userAddress.getIsDefault(), userAddress.getNickname()));
+            response.add(new AddressDto(userAddress.getId(), userAddress.getAddress(), userAddress.getIsDefault(), userAddress.getNickname()));
         }
         return response;
     }
