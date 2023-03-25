@@ -4,9 +4,8 @@ public enum OrderStatus {
     //주문접수
     PAY_WAITING,
     PAY_DONE,
-    VISIT_WAIT,
-    DELIVERY_WAIT,
 
+    RECEIVE_WAIT,
     //발송진행
     DELIVERY,
 

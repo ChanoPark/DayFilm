@@ -56,7 +56,9 @@ public class StoreQueryRepositoryImpl implements StoreQueryRepository {
                                 user.nickname,
                                 order.price,
                                 orderDelivery.code,
-                                orderDelivery.trackingNumber
+                                orderDelivery.trackingNumber,
+                                order.outgoingDate,
+                                order.method
                         )
                 )
                 .from(order)

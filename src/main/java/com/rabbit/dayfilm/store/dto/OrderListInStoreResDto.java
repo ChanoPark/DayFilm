@@ -1,12 +1,14 @@
 package com.rabbit.dayfilm.store.dto;
 
 import com.querydsl.core.annotations.QueryProjection;
+import com.rabbit.dayfilm.item.entity.DeliveryMethod;
 import com.rabbit.dayfilm.order.entity.DeliveryCode;
 import com.rabbit.dayfilm.order.entity.OrderStatus;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @AllArgsConstructor
@@ -29,7 +31,7 @@ public class OrderListInStoreResDto {
         private String orderId;
         @ApiModelProperty(value="상품 이름", example="캐논 카메라")
         private String title;
-        @ApiModelProperty(value="주문자 닉네", example="박찬호")
+        @ApiModelProperty(value="주문자 닉네임", example="박찬호")
         private String name;
         @ApiModelProperty(value="가격", example="2500")
         private Integer price;
@@ -37,10 +39,16 @@ public class OrderListInStoreResDto {
         private String parcelCompany;
         @ApiModelProperty(value="운송장 번호", example="234567")
         private String trackingNumber;
+        @ApiModelProperty(value="출고 예정일", example="2023-03-24")
+        private LocalDate outgoingDate;
+
+        @ApiModelProperty(value="수령 방법(PARCEL, VISIT)", example="PARCEL")
+        private DeliveryMethod deliveryMethod;
 
         @QueryProjection
         public OrderList(Long id, OrderStatus status, String orderId, String title, String name,
-                         Integer price, DeliveryCode deliveryCode, String trackingNumber) {
+                         Integer price, DeliveryCode deliveryCode, String trackingNumber,
+                         LocalDate outgoingDate, DeliveryMethod deliveryMethod) {
             this.id = id;
             this.status = status;
             this.orderId = orderId;
@@ -49,6 +57,8 @@ public class OrderListInStoreResDto {
             this.price = price;
             this.parcelCompany = deliveryCode != null ? deliveryCode.getTitle() : null;
             this.trackingNumber = trackingNumber;
+            this.outgoingDate = outgoingDate;
+            this.deliveryMethod = deliveryMethod;
         }
     }
 }

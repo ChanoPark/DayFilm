@@ -1,6 +1,9 @@
 package com.rabbit.dayfilm.store.controller;
 
+import com.rabbit.dayfilm.common.CodeSet;
 import com.rabbit.dayfilm.common.EndPoint;
+import com.rabbit.dayfilm.common.response.SuccessResponse;
+import com.rabbit.dayfilm.store.dto.OrderCheckDto;
 import com.rabbit.dayfilm.store.dto.OrderCountResDto;
 import com.rabbit.dayfilm.store.dto.OrderListCond;
 import com.rabbit.dayfilm.store.dto.OrderListInStoreResDto;
@@ -10,6 +13,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -28,5 +33,11 @@ public class StoreController {
     @Operation(summary = "주문 목록 조회", description = "파라미터로 보내는 상태, 수령 방법 등에 따라서 동적인 검색 결과를 반환.")
     public ResponseEntity<OrderListInStoreResDto> getOrderList(@ModelAttribute OrderListCond condition, Pageable pageable) {
         return ResponseEntity.ok(storeService.getOrderList(condition, pageable));
+    }
+
+    @PostMapping(EndPoint.ORDER_CHECK)
+    @Operation(summary = "주문 확인(출고일 지정)", description = "해당 주문의 출고일을 지정합니다.\n출고일이 지정된 주문 내용을 반환합니다.")
+    public ResponseEntity<List<OrderCheckDto>> checkOrders(@RequestBody List<OrderCheckDto> request) {
+        return ResponseEntity.ok().body(storeService.checkOrders(request));
     }
 }
