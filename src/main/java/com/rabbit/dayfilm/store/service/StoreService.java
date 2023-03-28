@@ -10,4 +10,5 @@ public interface StoreService {
     OrderListInStoreResDto getOrderList(OrderListCond condition, Pageable pageable);
     List<OrderCheckDto> checkOrders(List<OrderCheckDto> request);
     List<DeliveryInfoResDto> updateDeliveryInfo(List<DeliveryInfoReqDto> request);
+    OrderPkDto doneOrder(OrderPkDto request);
 }

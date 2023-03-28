@@ -41,4 +41,10 @@ public class StoreController {
     public ResponseEntity<List<DeliveryInfoResDto>> updateDeliveryInfo(@RequestBody List<DeliveryInfoReqDto> request) {
         return ResponseEntity.ok().body(storeService.updateDeliveryInfo(request));
     }
+
+    @PostMapping(EndPoint.ORDER_DONE)
+    @Operation(summary = "반납 완료 처리", description = "")
+    public ResponseEntity<OrderPkDto> doneOrder(@RequestBody OrderPkDto request) {
+        return ResponseEntity.ok().body(storeService.doneOrder(request));
+    }
 }

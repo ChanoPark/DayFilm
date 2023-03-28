@@ -1,5 +1,7 @@
 package com.rabbit.dayfilm.store.service;
 
+import com.rabbit.dayfilm.item.entity.Product;
+import com.rabbit.dayfilm.item.repository.ProductRepository;
 import com.rabbit.dayfilm.order.entity.Order;
 import com.rabbit.dayfilm.order.entity.OrderDelivery;
 import com.rabbit.dayfilm.order.entity.OrderStatus;
@@ -23,6 +25,7 @@ import java.util.stream.Collectors;
 public class StoreServiceImpl implements StoreService {
     private final StoreRepository storeRepository;
     private final OrderRepository orderRepository;
+    private final ProductRepository productRepository;
 
     @Override
     public OrderCountResDto getOrderCount(Long id) {
@@ -88,5 +91,25 @@ public class StoreServiceImpl implements StoreService {
         }
 
         return response;
+    }
+
+    @Override
+    @Transactional
+    public OrderPkDto doneOrder(OrderPkDto request) {
+        List<Order> orders = orderRepository.findAllById(request.getOrderPk());
+
+        List<Long> response = new ArrayList<>();
+        for (Order order : orders) {
+            if (order.getStatus() == OrderStatus.DELIVERY || order.getStatus() == OrderStatus.RETURN_DELIVERY) {
+                productRepository
+                        .findById(order.getProductId())
+                        .ifPresent(Product::updateProductStatus);
+
+                order.updateStatus(OrderStatus.DONE);
+                response.add(order.getId());
+            }
+        }
+
+        return new OrderPkDto(response);
     }
 }

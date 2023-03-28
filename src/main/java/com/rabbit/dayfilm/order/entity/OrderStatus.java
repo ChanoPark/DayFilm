@@ -11,7 +11,6 @@ public enum OrderStatus {
 
     //발송완료
     RENTAL,
-    RETURN,
     RETURN_DELIVERY,
 
     //환불
