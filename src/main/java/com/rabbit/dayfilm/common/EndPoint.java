@@ -37,4 +37,6 @@ public class EndPoint {
     public static final String ORDER_CHECK = ORDER + "/check";
     public static final String ORDER_DELIVERY_UPDATE = ORDER + DELIVERY + "/update";
     public static final String ORDER_DONE = ORDER + "/done";
+
+    public static final String TRACKING = "/track";
 }

@@ -1,5 +1,6 @@
 package com.rabbit.dayfilm.order.entity;
 
+import com.rabbit.dayfilm.delivery.dto.DeliveryCode;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 

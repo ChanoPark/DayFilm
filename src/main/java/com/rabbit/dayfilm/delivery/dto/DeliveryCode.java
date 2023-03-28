@@ -1,4 +1,4 @@
-package com.rabbit.dayfilm.order.entity;
+package com.rabbit.dayfilm.delivery.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

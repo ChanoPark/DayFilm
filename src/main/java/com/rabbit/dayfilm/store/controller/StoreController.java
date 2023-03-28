@@ -3,6 +3,7 @@ package com.rabbit.dayfilm.store.controller;
 import com.rabbit.dayfilm.common.EndPoint;
 import com.rabbit.dayfilm.store.dto.*;
 import com.rabbit.dayfilm.store.service.StoreService;
+import io.swagger.annotations.Api;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -13,6 +14,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@Api(tags = "가게")
 @RequestMapping(EndPoint.STORE)
 public class StoreController {
     private final StoreService storeService;

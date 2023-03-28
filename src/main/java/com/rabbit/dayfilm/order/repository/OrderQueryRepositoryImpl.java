@@ -3,6 +3,8 @@ package com.rabbit.dayfilm.order.repository;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.rabbit.dayfilm.delivery.dto.DeliveryTrackingDto;
+import com.rabbit.dayfilm.delivery.dto.QDeliveryTrackingDto_DeliveryProductInfo;
 import com.rabbit.dayfilm.order.entity.OrderStatus;
 import com.rabbit.dayfilm.user.dto.OrderListResDto;
 import com.rabbit.dayfilm.user.dto.QOrderListResDto_OrderList;
@@ -26,6 +28,7 @@ public class OrderQueryRepositoryImpl implements OrderQueryRepository {
     public Page<OrderListResDto.OrderList> getOrderList(Long userId, boolean isCanceled, Pageable pageable) {
         List<OrderListResDto.OrderList> content = queryFactory
                 .select(new QOrderListResDto_OrderList(
+                        order.id,
                         item.title,
                         itemImage.imagePath,
                         order.created,
@@ -62,6 +65,28 @@ public class OrderQueryRepositoryImpl implements OrderQueryRepository {
                 );
 
         return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
+    }
+
+    @Override
+    public DeliveryTrackingDto.DeliveryProductInfo getProductDeliveryInfo(Long orderPk) {
+        return queryFactory
+                .select(new QDeliveryTrackingDto_DeliveryProductInfo(
+                        item.title,
+                        itemImage.imagePath,
+                        order.created
+                ))
+                .from(order)
+                .innerJoin(product)
+                .on(product.id.eq(order.productId))
+                .innerJoin(item)
+                .on(item.eq(product.item))
+                .leftJoin(itemImage)
+                .on(
+                        itemImage.item.eq(item),
+                        itemImage.orderNumber.eq(1)
+                )
+                .where(order.id.eq(orderPk))
+                .fetchOne();
     }
 
     private BooleanExpression setStatus(boolean isCanceled) {
