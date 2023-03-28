@@ -31,7 +31,9 @@ public class EndPoint {
     public static final String REDIRECT_FAIL = REDIRECT + "/fail";
 
     public static final String STORE = "/store";
+    public static final String DELIVERY = "/delivery";
     public static final String ORDER_COUNT = ORDER +"/count";
     public static final String ORDER_LIST = ORDER + "/list";
     public static final String ORDER_CHECK = ORDER + "/check";
+    public static final String ORDER_DELIVERY_UPDATE = ORDER + DELIVERY + "/update";
 }

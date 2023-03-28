@@ -1,12 +1,10 @@
 package com.rabbit.dayfilm.store.service;
 
 import com.rabbit.dayfilm.order.entity.Order;
+import com.rabbit.dayfilm.order.entity.OrderDelivery;
 import com.rabbit.dayfilm.order.entity.OrderStatus;
 import com.rabbit.dayfilm.order.repository.OrderRepository;
-import com.rabbit.dayfilm.store.dto.OrderCheckDto;
-import com.rabbit.dayfilm.store.dto.OrderCountResDto;
-import com.rabbit.dayfilm.store.dto.OrderListCond;
-import com.rabbit.dayfilm.store.dto.OrderListInStoreResDto;
+import com.rabbit.dayfilm.store.dto.*;
 import com.rabbit.dayfilm.store.repository.StoreRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -14,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -62,6 +61,32 @@ public class StoreServiceImpl implements StoreService {
                 order.updateOutgoingDate(dto.getOutgoingDate());
             }
         }
+        return response;
+    }
+
+    @Override
+    @Transactional
+    public List<DeliveryInfoResDto> updateDeliveryInfo(List<DeliveryInfoReqDto> request) {
+        request.removeIf(dto -> dto.getOrderPk() == null || dto.getDeliveryCompany() == null || dto.getTrackingNumber() == null);
+        List<Long> orderPks = request.stream()
+                .map(DeliveryInfoReqDto::getOrderPk)
+                .collect(Collectors.toList());
+
+        List<Order> orders = orderRepository.findAllById(orderPks);
+        List<DeliveryInfoResDto> response = new ArrayList<>();
+
+        for (int i = 0; i < orders.size(); i++) {
+            Order order = orders.get(i);
+            DeliveryInfoReqDto dto = request.get(i);
+
+            if (!(order.getStatus() == OrderStatus.PAY_DONE || order.getStatus() == OrderStatus.RECEIVE_WAIT)) continue;
+
+            if (order.getOutgoingDate() == null) order.updateOutgoingDate(LocalDate.now());
+
+            order.setDelivery(new OrderDelivery(order, dto.getDeliveryCompany(), dto.getTrackingNumber()));
+            response.add(new DeliveryInfoResDto(order.getId(), dto.getDeliveryCompany(), dto.getTrackingNumber(), order.getOutgoingDate()));
+        }
+
         return response;
     }
 }

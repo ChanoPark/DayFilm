@@ -55,7 +55,7 @@ public class OrderListInStoreResDto {
             this.title = title;
             this.name = name;
             this.price = price;
-            this.parcelCompany = deliveryCode != null ? deliveryCode.getTitle() : null;
+            this.parcelCompany = deliveryCode != null ? deliveryCode.getName() : null;
             this.trackingNumber = trackingNumber;
             this.outgoingDate = outgoingDate;
             this.deliveryMethod = deliveryMethod;

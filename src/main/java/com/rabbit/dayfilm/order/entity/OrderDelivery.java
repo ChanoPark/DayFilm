@@ -1,8 +1,13 @@
 package com.rabbit.dayfilm.order.entity;
 
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+
 import javax.persistence.*;
 
 @Entity
+@AllArgsConstructor
+@NoArgsConstructor
 public class OrderDelivery {
     @Id @GeneratedValue
     @Column(name = "delivery_id")
@@ -17,4 +22,13 @@ public class OrderDelivery {
 
     @Column(name = "tracking_number", nullable = false)
     private String trackingNumber;
+
+    public OrderDelivery(Order order, DeliveryCode code, String trackingNumber) {
+        this.order = order;
+        this.code = code;
+        this.trackingNumber = trackingNumber;
+    }
+    public void setOrder(Order order) {
+        this.order = order;
+    }
 }

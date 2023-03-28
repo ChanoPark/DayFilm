@@ -67,4 +67,8 @@ public class Order {
     public void updateOutgoingDate(LocalDate outgoingDate) {
         this.outgoingDate = outgoingDate;
     }
+    public void setDelivery(OrderDelivery delivery) {
+        this.delivery = delivery;
+        delivery.setOrder(this);
+    }
 }
