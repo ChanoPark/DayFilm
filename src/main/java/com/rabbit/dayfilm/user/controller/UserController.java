@@ -52,8 +52,10 @@ public class UserController {
 
     /*마이페이지*/
     @GetMapping(EndPoint.ITEM)
-    @Operation(summary = "회원 주문 목록 조회", description = "회원 주문 목록 조회\n회원 번호 넘겨주시면 됩니다.")
-    public ResponseEntity<OrderListResDto> getOrderList(@RequestParam("userId") Long userId, Pageable pageable) {
-        return ResponseEntity.ok(userService.getOrderList(userId, pageable));
+    @Operation(summary = "회원 주문 목록 조회", description = "회원 주문 목록 조회\nisCanceled는 true이면 취소,반품과 같이 취소된게 조회되고, false이면 결제완료,배송완료와 같이 주문 처리(완료) 상태인게 반환됩니다.\n회원 번호 넘겨주시면 됩니다.")
+    public ResponseEntity<OrderListResDto> getOrderList(@RequestParam("userId") Long userId,
+                                                        @RequestParam("isCanceled") Boolean isCanceled,
+                                                        Pageable pageable) {
+        return ResponseEntity.ok(userService.getOrderList(userId, isCanceled, pageable));
     }
 }

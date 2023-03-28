@@ -8,6 +8,9 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public class AddressDto {
+
+    @ApiModelProperty(value="주소 번호", example="1", required = true)
+    private Long id;
     @ApiModelProperty(value="주소", example="주소주소", required = true)
     private Address address;
     @ApiModelProperty(value="기본 주소 여부(default)", example="true", required = true)

@@ -4,16 +4,19 @@ public enum OrderStatus {
     //주문접수
     PAY_WAITING,
     PAY_DONE,
-    VISIT_WAIT,
-    DELIVERY_WAIT,
 
+    RECEIVE_WAIT,
     //발송진행
     DELIVERY,
 
     //발송완료
     RENTAL,
-    FINISH,
+    RETURN,
+    RETURN_DELIVERY,
 
     //환불
-    CANCEL
+    CANCEL,
+
+    //사용 완료
+    DONE
 }

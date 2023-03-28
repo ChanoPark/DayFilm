@@ -22,8 +22,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public OrderListResDto getOrderList(Long userId, Pageable pageable) {
-        Page<OrderListResDto.OrderList> content = orderRepository.getOrderList(userId, false, pageable);
+    public OrderListResDto getOrderList(Long userId, Boolean isCanceled, Pageable pageable) {
+        Page<OrderListResDto.OrderList> content = orderRepository.getOrderList(userId, isCanceled, pageable);
         return new OrderListResDto(content.getTotalPages(), content.isLast(), content.getContent());
     }
 }

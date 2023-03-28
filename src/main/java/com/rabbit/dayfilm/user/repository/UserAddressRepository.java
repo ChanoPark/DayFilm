@@ -16,6 +16,6 @@ public interface UserAddressRepository extends JpaRepository<UserAddress, Long> 
     @Query("SELECT ua.address FROM UserAddress ua WHERE ua.isDefault=true AND ua.user =:user")
     Optional<Address> findDefaultAddress(@Param("user") User user);
 
-    @Query("SELECT new com.rabbit.dayfilm.user.dto.AddressDto(ua.address, ua.isDefault, ua.nickname) FROM UserAddress ua WHERE ua.user =:user")
+    @Query("SELECT new com.rabbit.dayfilm.user.dto.AddressDto(ua.id, ua.address, ua.isDefault, ua.nickname) FROM UserAddress ua WHERE ua.user =:user")
     List<AddressDto> findAllByUser(@Param("user") User user);
 }

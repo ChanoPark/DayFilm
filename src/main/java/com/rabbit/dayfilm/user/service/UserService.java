@@ -6,6 +6,5 @@ import org.springframework.data.domain.Pageable;
 
 public interface UserService {
     CodeSet checkNickname(String nickname);
-
-    OrderListResDto getOrderList(Long userId, Pageable pageable);
+    OrderListResDto getOrderList(Long userId, Boolean isCanceled, Pageable pageable);
 }
