@@ -3,16 +3,18 @@ package com.rabbit.dayfilm.payment.entity;
 import com.rabbit.dayfilm.payment.dto.RefundReceiveAccount;
 import com.rabbit.dayfilm.payment.toss.object.TossCardCode;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
 @Entity
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 public class VirtualAccountRefundInfo {
     @Id
-    private String orderId; // 하나씩 취소할경우 있으면 조회하고 없으면 생성하는 방식
+    private String orderId;
 
     @Column(name = "bank")
     @Enumerated(EnumType.STRING)

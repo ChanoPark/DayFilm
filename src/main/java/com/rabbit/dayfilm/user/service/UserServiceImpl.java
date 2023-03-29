@@ -6,7 +6,7 @@ import com.rabbit.dayfilm.common.CodeSet;
 import com.rabbit.dayfilm.exception.CustomException;
 import com.rabbit.dayfilm.item.repository.ProductRepository;
 import com.rabbit.dayfilm.order.entity.Order;
-import com.rabbit.dayfilm.order.entity.OrderReturnDelivery;
+import com.rabbit.dayfilm.order.entity.OrderReturnInfo;
 import com.rabbit.dayfilm.order.entity.OrderStatus;
 import com.rabbit.dayfilm.order.repository.OrderRepository;
 import com.rabbit.dayfilm.payment.entity.PayInformation;
@@ -75,7 +75,7 @@ public class UserServiceImpl implements UserService {
             orderRepository.delete(order);
             return CodeSet.DELETE_ORDER;
         } else {
-            order.setReturnDelivery(new OrderReturnDelivery(order, request.getCancelReason(), order.getStatus()));
+            order.setReturnInfo(new OrderReturnInfo(order, request.getCancelReason(), order.getStatus()));
             order.updateStatus(OrderStatus.CANCEL_WAIT);
             return CodeSet.OK;
         }

@@ -11,13 +11,13 @@ import javax.persistence.*;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class OrderReturnDelivery {
+public class OrderReturnInfo {
     @Id
     @GeneratedValue
     @Column(name = "return_delivery_id")
     private Long id;
 
-    @OneToOne(mappedBy = "returnDelivery", fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "returnInfo", fetch = FetchType.LAZY)
     private Order order;
 
     @Enumerated(EnumType.STRING)
@@ -35,7 +35,7 @@ public class OrderReturnDelivery {
     private OrderStatus prevStatus;
 
 
-    public OrderReturnDelivery(Order order, String cancelReason, OrderStatus prevStatus) {
+    public OrderReturnInfo(Order order, String cancelReason, OrderStatus prevStatus) {
         this.order = order;
         this.cancelReason = cancelReason;
         this.prevStatus = prevStatus;

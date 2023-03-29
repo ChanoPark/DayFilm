@@ -1,5 +1,6 @@
 package com.rabbit.dayfilm.payment.dto;
 
+import com.rabbit.dayfilm.payment.entity.VirtualAccountRefundInfo;
 import com.rabbit.dayfilm.payment.toss.object.TossCardCode;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -18,4 +19,10 @@ public class RefundReceiveAccount {
 
     @ApiModelProperty(value="에금주", example="박찬호", required = true)
     private String holdName;
+
+    public RefundReceiveAccount(VirtualAccountRefundInfo virtualAccountRefundInfo) {
+        this.bank = virtualAccountRefundInfo.getBank();
+        this.accountNumber = virtualAccountRefundInfo.getAccountNumber();
+        this.holdName = virtualAccountRefundInfo.getHoldName();
+    }
 }

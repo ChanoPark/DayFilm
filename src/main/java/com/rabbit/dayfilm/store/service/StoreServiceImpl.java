@@ -5,9 +5,17 @@ import com.rabbit.dayfilm.item.entity.Product;
 import com.rabbit.dayfilm.item.repository.ProductRepository;
 import com.rabbit.dayfilm.order.entity.Order;
 import com.rabbit.dayfilm.order.entity.OrderDelivery;
-import com.rabbit.dayfilm.order.entity.OrderReturnDelivery;
+import com.rabbit.dayfilm.order.entity.OrderReturnInfo;
 import com.rabbit.dayfilm.order.entity.OrderStatus;
 import com.rabbit.dayfilm.order.repository.OrderRepository;
+import com.rabbit.dayfilm.payment.dto.PaymentCancelResDto;
+import com.rabbit.dayfilm.payment.dto.RefundReceiveAccount;
+import com.rabbit.dayfilm.payment.entity.PayInformation;
+import com.rabbit.dayfilm.payment.entity.VirtualAccountRefundInfo;
+import com.rabbit.dayfilm.payment.repository.PayRepository;
+import com.rabbit.dayfilm.payment.repository.VirtualAccountRefundRepository;
+import com.rabbit.dayfilm.payment.toss.object.Method;
+import com.rabbit.dayfilm.payment.toss.service.TossService;
 import com.rabbit.dayfilm.store.dto.*;
 import com.rabbit.dayfilm.store.repository.StoreRepository;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +36,9 @@ public class StoreServiceImpl implements StoreService {
     private final StoreRepository storeRepository;
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
+    private final PayRepository payRepository;
+    private final VirtualAccountRefundRepository virtualAccountRefundRepository;
+    private final TossService tossService;
 
     @Override
     public OrderCountResDto getOrderCount(Long id) {
@@ -131,9 +142,37 @@ public class StoreServiceImpl implements StoreService {
             else if (request.get(i).getIsAllow()) {
                 order.updateStatus(OrderStatus.CANCEL_DELIVERY);
             } else {
-                OrderReturnDelivery returnDelivery = order.getReturnDelivery();
+                OrderReturnInfo returnDelivery = order.getReturnInfo();
                 order.updateStatus(returnDelivery.getPrevStatus());
             }
         }
+    }
+
+    @Override
+    public List<PaymentCancelResDto> finishCancelOrder(FinishCancelOrderDto request) {
+        if (request.getOrderPk().size() == 0) throw new CustomException("주문 번호가 존재하지 않습니다.");
+        String orderId = request.getOrderId();
+        List<PaymentCancelResDto> response = new ArrayList<>();
+
+        //가상계좌 환불 정보 조회
+        RefundReceiveAccount refundReceiveAccount = null;
+        PayInformation payInfo = payRepository.findByOrderId(orderId).orElseThrow(() -> new CustomException("결제 정보가 존재하지 않습니다."));
+        if (Method.findMethod(payInfo.getMethod()) == Method.VIRTUAL_ACCOUNT) {
+            VirtualAccountRefundInfo virtualAccountRefundInfo = virtualAccountRefundRepository.findById(orderId).orElseThrow(() -> new CustomException("가상계좌의 환불 정보가 존재하지 않습니다."));
+            refundReceiveAccount = new RefundReceiveAccount(virtualAccountRefundInfo);
+        }
+
+        List<Order> orders = orderRepository.findAllById(request.getOrderPk());
+        for (Order order : orders) {
+            if (!order.getOrderId().equals(orderId)) throw new CustomException("주문 번호가 일치하지 않습니다.");
+            else if(!(order.getStatus() == OrderStatus.CANCEL_DELIVERY || order.getStatus() == OrderStatus.CANCEL_WAIT)) throw new CustomException("환불 진행 중인 주문이 아닙니다.");
+
+            OrderReturnInfo returnInfo = order.getReturnInfo();
+            if (returnInfo != null) {
+                response.add(tossService.cancelPayment(payInfo, order, refundReceiveAccount, returnInfo.getCancelReason()));
+            } else throw new CustomException("환불 정보가 올바르지 않습니다.");
+        }
+
+        return response;
     }
 }

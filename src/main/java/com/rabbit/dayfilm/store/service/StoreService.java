@@ -1,5 +1,6 @@
 package com.rabbit.dayfilm.store.service;
 
+import com.rabbit.dayfilm.payment.dto.PaymentCancelResDto;
 import com.rabbit.dayfilm.store.dto.*;
 import org.springframework.data.domain.Pageable;
 
@@ -12,4 +13,5 @@ public interface StoreService {
     List<DeliveryInfoResDto> updateDeliveryInfo(List<DeliveryInfoReqDto> request);
     OrderPkDto doneOrder(OrderPkDto request);
     void processCancelOrder(List<ProcessCancelOrderDto> request);
+    List<PaymentCancelResDto> finishCancelOrder(FinishCancelOrderDto request);
 }

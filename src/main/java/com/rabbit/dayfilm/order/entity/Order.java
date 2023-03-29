@@ -62,7 +62,7 @@ public class Order {
     private OrderDelivery orderDelivery;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private OrderReturnDelivery returnDelivery;
+    private OrderReturnInfo returnInfo;
 
     public void updateStatus(OrderStatus status) {
         this.status = status;
@@ -74,8 +74,8 @@ public class Order {
         this.orderDelivery = delivery;
         delivery.setOrder(this);
     }
-    public void setReturnDelivery(OrderReturnDelivery returnDelivery) {
-        this.returnDelivery = returnDelivery;
+    public void setReturnInfo(OrderReturnInfo returnDelivery) {
+        this.returnInfo = returnDelivery;
         returnDelivery.setOrder(this);
     }
 }

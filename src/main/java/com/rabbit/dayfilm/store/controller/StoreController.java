@@ -3,6 +3,7 @@ package com.rabbit.dayfilm.store.controller;
 import com.rabbit.dayfilm.common.CodeSet;
 import com.rabbit.dayfilm.common.EndPoint;
 import com.rabbit.dayfilm.common.response.SuccessResponse;
+import com.rabbit.dayfilm.payment.dto.PaymentCancelResDto;
 import com.rabbit.dayfilm.store.dto.*;
 import com.rabbit.dayfilm.store.service.StoreService;
 import io.swagger.annotations.Api;
@@ -57,5 +58,11 @@ public class StoreController {
     public ResponseEntity<SuccessResponse> processCancelOrder(@RequestBody List<ProcessCancelOrderDto> request) {
         storeService.processCancelOrder(request);
         return ResponseEntity.ok().body(new SuccessResponse(CodeSet.OK));
+    }
+
+    @PostMapping(EndPoint.ITEM_CANCEL_FINISH)
+    @Operation(summary = "환불 진행", description = "각 주문별 환불이 된 뒤, 리스트로 반환합니다.")
+    public ResponseEntity<List<PaymentCancelResDto>> finishCancelOrder(@RequestBody FinishCancelOrderDto request) {
+        return ResponseEntity.ok().body(storeService.finishCancelOrder(request));
     }
 }

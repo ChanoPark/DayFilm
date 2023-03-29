@@ -41,4 +41,5 @@ public class EndPoint {
 
     public static final String ITEM_CANCEL = ITEM + "/cancel";
     public static final String ITEM_CANCEL_PROCESS = ITEM_CANCEL + "/process";
+    public static final String ITEM_CANCEL_FINISH = ITEM_CANCEL + "/finish";
 }
