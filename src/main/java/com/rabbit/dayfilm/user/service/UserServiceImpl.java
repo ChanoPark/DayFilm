@@ -63,7 +63,7 @@ public class UserServiceImpl implements UserService {
             orderRepository.delete(order);
             return CodeSet.DELETE_ORDER;
         } else {
-            orderReturnDeliveryRepository.save(new OrderReturnDelivery(order, request.getCancelReason()));
+            order.setReturnDelivery(new OrderReturnDelivery(order, request.getCancelReason(), order.getStatus()));
             order.updateStatus(OrderStatus.CANCEL_WAIT);
             return CodeSet.OK;
         }

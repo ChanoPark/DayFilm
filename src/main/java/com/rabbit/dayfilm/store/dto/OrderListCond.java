@@ -2,6 +2,7 @@ package com.rabbit.dayfilm.store.dto;
 
 import com.rabbit.dayfilm.item.entity.DeliveryMethod;
 import com.rabbit.dayfilm.order.entity.OrderStatus;
+import com.sun.istack.NotNull;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,4 +18,10 @@ public class OrderListCond {
     private List<OrderStatus> status;
     @ApiModelProperty(value="배송 방법", example="PARCEL")
     private DeliveryMethod method;
+    @NotNull
+    private Boolean isCanceled;
+
+    public void setStatus(List<OrderStatus> status) {
+        this.status = status;
+    }
 }

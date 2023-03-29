@@ -1,6 +1,8 @@
 package com.rabbit.dayfilm.store.controller;
 
+import com.rabbit.dayfilm.common.CodeSet;
 import com.rabbit.dayfilm.common.EndPoint;
+import com.rabbit.dayfilm.common.response.SuccessResponse;
 import com.rabbit.dayfilm.store.dto.*;
 import com.rabbit.dayfilm.store.service.StoreService;
 import io.swagger.annotations.Api;
@@ -27,7 +29,7 @@ public class StoreController {
 
 
     @GetMapping(EndPoint.ORDER_LIST)
-    @Operation(summary = "주문 목록 조회", description = "파라미터로 보내는 상태, 수령 방법 등에 따라서 동적인 검색 결과를 반환.")
+    @Operation(summary = "주문 목록 조회", description = "파라미터로 보내는 상태, 수령 방법 등에 따라서 동적인 검색 결과를 반환.\nisCanceled는 필수값입니다. 환불 여부입니다.\nisCanceled에 따라서 status가 결정되므로 null로 보내주시면 됩니다.")
     public ResponseEntity<OrderListInStoreResDto> getOrderList(@ModelAttribute OrderListCond condition, Pageable pageable) {
         return ResponseEntity.ok(storeService.getOrderList(condition, pageable));
     }
@@ -48,5 +50,12 @@ public class StoreController {
     @Operation(summary = "반납 완료 처리", description = "")
     public ResponseEntity<OrderPkDto> doneOrder(@RequestBody OrderPkDto request) {
         return ResponseEntity.ok().body(storeService.doneOrder(request));
+    }
+
+    @PostMapping(EndPoint.ITEM_CANCEL_PROCESS)
+    @Operation(summary = "환불 접수", description = "주문번호와 승인여부를 리스트로 받아서 처리합니다.\n승인할 경우 환불 처리 상태로 바꾸고, 거절할 경우 이전 상태로 돌아갑니다.\n잘못된 주문번호가 넘어오면 예외가 발생하고 전체 적용되지 않습니다.")
+    public ResponseEntity<SuccessResponse> processCancelOrder(@RequestBody List<ProcessCancelOrderDto> request) {
+        storeService.processCancelOrder(request);
+        return ResponseEntity.ok().body(new SuccessResponse(CodeSet.OK));
     }
 }

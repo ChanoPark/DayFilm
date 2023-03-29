@@ -1,5 +1,6 @@
 package com.rabbit.dayfilm.order.entity;
 
+import java.util.Arrays;
 import java.util.List;
 
 public enum OrderStatus {
@@ -25,5 +26,11 @@ public enum OrderStatus {
 
     public static List<OrderStatus> getCancelStatus() {
         return List.of(CANCEL_WAIT, CANCEL_DELIVERY, CANCEL);
+    }
+
+    public static List<OrderStatus> getNotCancelStatus() {
+        List<OrderStatus> result = Arrays.asList(OrderStatus.values());
+        result.removeAll(getCancelStatus());
+        return result;
     }
 }

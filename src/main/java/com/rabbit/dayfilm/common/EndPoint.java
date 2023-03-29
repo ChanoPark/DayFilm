@@ -40,4 +40,5 @@ public class EndPoint {
     public static final String TRACKING = "/track";
 
     public static final String ITEM_CANCEL = ITEM + "/cancel";
+    public static final String ITEM_CANCEL_PROCESS = ITEM_CANCEL + "/process";
 }

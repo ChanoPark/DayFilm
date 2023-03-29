@@ -2,11 +2,13 @@ package com.rabbit.dayfilm.order.entity;
 
 import com.rabbit.dayfilm.delivery.dto.DeliveryCode;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
 @Entity
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor
 public class OrderReturnDelivery {
@@ -28,8 +30,17 @@ public class OrderReturnDelivery {
     @Column(name = "cancel_reason")
     private String cancelReason;
 
-    public OrderReturnDelivery(Order order, String cancelReason) {
+    @Column(name = "prev_status", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private OrderStatus prevStatus;
+
+
+    public OrderReturnDelivery(Order order, String cancelReason, OrderStatus prevStatus) {
         this.order = order;
         this.cancelReason = cancelReason;
+        this.prevStatus = prevStatus;
+    }
+    public void setOrder(Order order) {
+        this.order = order;
     }
 }

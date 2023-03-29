@@ -11,4 +11,5 @@ public interface StoreService {
     List<OrderCheckDto> checkOrders(List<OrderCheckDto> request);
     List<DeliveryInfoResDto> updateDeliveryInfo(List<DeliveryInfoReqDto> request);
     OrderPkDto doneOrder(OrderPkDto request);
+    void processCancelOrder(List<ProcessCancelOrderDto> request);
 }

@@ -1,9 +1,11 @@
 package com.rabbit.dayfilm.store.service;
 
+import com.rabbit.dayfilm.exception.CustomException;
 import com.rabbit.dayfilm.item.entity.Product;
 import com.rabbit.dayfilm.item.repository.ProductRepository;
 import com.rabbit.dayfilm.order.entity.Order;
 import com.rabbit.dayfilm.order.entity.OrderDelivery;
+import com.rabbit.dayfilm.order.entity.OrderReturnDelivery;
 import com.rabbit.dayfilm.order.entity.OrderStatus;
 import com.rabbit.dayfilm.order.repository.OrderRepository;
 import com.rabbit.dayfilm.store.dto.*;
@@ -39,8 +41,10 @@ public class StoreServiceImpl implements StoreService {
 
     @Override
     public OrderListInStoreResDto getOrderList(OrderListCond condition, Pageable pageable) {
-        Page<OrderListInStoreResDto.OrderList> result = storeRepository.getOrderListWithPaging(condition, pageable);
+        if (condition.getIsCanceled()) condition.setStatus(OrderStatus.getCancelStatus());
+        else condition.setStatus(OrderStatus.getNotCancelStatus());
 
+        Page<OrderListInStoreResDto.OrderList> result = storeRepository.getOrderListWithPaging(condition, pageable);
         return new OrderListInStoreResDto(result.getContent(), result.getTotalPages(), result.isLast());
     }
 
@@ -111,5 +115,25 @@ public class StoreServiceImpl implements StoreService {
         }
 
         return new OrderPkDto(response);
+    }
+
+    @Override
+    @Transactional
+    public void processCancelOrder(List<ProcessCancelOrderDto> request) {
+        List<Long> orderPks = request.stream()
+                .map(ProcessCancelOrderDto::getOrderPk)
+                .collect(Collectors.toList());
+
+        List<Order> orders = orderRepository.findAllById(orderPks);
+        for (int i=0; i<orders.size(); i++) {
+            Order order = orders.get(i);
+            if (order.getStatus() != OrderStatus.CANCEL_WAIT) throw new CustomException("환불이 접수된 주문이 아닙니다.");
+            else if (request.get(i).getIsAllow()) {
+                order.updateStatus(OrderStatus.CANCEL_DELIVERY);
+            } else {
+                OrderReturnDelivery returnDelivery = order.getReturnDelivery();
+                order.updateStatus(returnDelivery.getPrevStatus());
+            }
+        }
     }
 }

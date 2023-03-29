@@ -74,4 +74,8 @@ public class Order {
         this.orderDelivery = delivery;
         delivery.setOrder(this);
     }
+    public void setReturnDelivery(OrderReturnDelivery returnDelivery) {
+        this.returnDelivery = returnDelivery;
+        returnDelivery.setOrder(this);
+    }
 }
