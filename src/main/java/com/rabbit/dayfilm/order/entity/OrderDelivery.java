@@ -14,7 +14,7 @@ public class OrderDelivery {
     @Column(name = "delivery_id")
     private Long id;
 
-    @OneToOne(mappedBy = "delivery", fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "orderDelivery", fetch = FetchType.LAZY)
     private Order order;
 
     @Enumerated(EnumType.STRING)

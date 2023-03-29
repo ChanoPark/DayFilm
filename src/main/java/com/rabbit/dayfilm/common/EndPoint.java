@@ -14,7 +14,6 @@ public class EndPoint {
     public static final String REVIEW = "/reviews";
     public static final String PRODUCT = "/products";
 
-
     public static final String BASKET = "/basket";
     public static final String ALL = "/all";
 
@@ -39,4 +38,6 @@ public class EndPoint {
     public static final String ORDER_DONE = ORDER + "/done";
 
     public static final String TRACKING = "/track";
+
+    public static final String ITEM_CANCEL = ITEM + "/cancel";
 }

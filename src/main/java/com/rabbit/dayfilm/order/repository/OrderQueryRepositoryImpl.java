@@ -90,6 +90,7 @@ public class OrderQueryRepositoryImpl implements OrderQueryRepository {
     }
 
     private BooleanExpression setStatus(boolean isCanceled) {
-        return isCanceled ? order.status.eq(OrderStatus.CANCEL) : order.status.ne(OrderStatus.CANCEL);
+        List<OrderStatus> cancelStatus = OrderStatus.getCancelStatus();
+        return isCanceled ? order.status.in(cancelStatus) : order.status.notIn(cancelStatus);
     }
 }

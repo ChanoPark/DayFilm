@@ -3,6 +3,7 @@ package com.rabbit.dayfilm.user.controller;
 import com.rabbit.dayfilm.common.CodeSet;
 import com.rabbit.dayfilm.user.dto.AddressCreateDto;
 import com.rabbit.dayfilm.user.dto.AddressDto;
+import com.rabbit.dayfilm.user.dto.CancelOrderDto;
 import com.rabbit.dayfilm.user.dto.OrderListResDto;
 import com.rabbit.dayfilm.user.service.UserAddressService;
 import com.rabbit.dayfilm.user.service.UserService;
@@ -56,6 +57,12 @@ public class UserController {
     public ResponseEntity<OrderListResDto> getOrderList(@RequestParam("userId") Long userId,
                                                         @RequestParam("isCanceled") Boolean isCanceled,
                                                         Pageable pageable) {
-        return ResponseEntity.ok(userService.getOrderList(userId, isCanceled, pageable));
+        return ResponseEntity.ok().body(userService.getOrderList(userId, isCanceled, pageable));
+    }
+
+    @PostMapping(EndPoint.ITEM_CANCEL)
+    @Operation(summary = "회원 환불 신청", description = "주문의 PK와 취소 사유를 보내주시면 됩니다.\n결제 전 주문이라면 주문을 삭제하고 장바구니로 옮깁니다.")
+    public ResponseEntity<SuccessResponse> requestCancelOrder(@RequestBody CancelOrderDto request) {
+        return ResponseEntity.ok().body(new SuccessResponse(userService.requestCancelOrder(request)));
     }
 }

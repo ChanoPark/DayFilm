@@ -86,7 +86,7 @@ public class StoreServiceImpl implements StoreService {
 
             if (order.getOutgoingDate() == null) order.updateOutgoingDate(LocalDate.now());
 
-            order.setDelivery(new OrderDelivery(order, dto.getDeliveryCompany(), dto.getTrackingNumber()));
+            order.setOrderDelivery(new OrderDelivery(order, dto.getDeliveryCompany(), dto.getTrackingNumber()));
             response.add(new DeliveryInfoResDto(order.getId(), dto.getDeliveryCompany(), dto.getTrackingNumber(), order.getOutgoingDate()));
         }
 

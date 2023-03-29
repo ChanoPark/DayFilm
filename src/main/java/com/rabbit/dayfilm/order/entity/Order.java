@@ -59,7 +59,10 @@ public class Order {
     private Integer price;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private OrderDelivery delivery;
+    private OrderDelivery orderDelivery;
+
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private OrderReturnDelivery returnDelivery;
 
     public void updateStatus(OrderStatus status) {
         this.status = status;
@@ -67,8 +70,8 @@ public class Order {
     public void updateOutgoingDate(LocalDate outgoingDate) {
         this.outgoingDate = outgoingDate;
     }
-    public void setDelivery(OrderDelivery delivery) {
-        this.delivery = delivery;
+    public void setOrderDelivery(OrderDelivery delivery) {
+        this.orderDelivery = delivery;
         delivery.setOrder(this);
     }
 }

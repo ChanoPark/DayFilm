@@ -1,5 +1,7 @@
 package com.rabbit.dayfilm.order.entity;
 
+import java.util.List;
+
 public enum OrderStatus {
     //주문접수
     PAY_WAITING,
@@ -14,8 +16,14 @@ public enum OrderStatus {
     RETURN_DELIVERY,
 
     //환불
+    CANCEL_WAIT,
     CANCEL,
+    CANCEL_DELIVERY,
 
     //사용 완료
-    DONE
+    DONE;
+
+    public static List<OrderStatus> getCancelStatus() {
+        return List.of(CANCEL_WAIT, CANCEL_DELIVERY, CANCEL);
+    }
 }
