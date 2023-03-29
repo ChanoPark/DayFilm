@@ -12,7 +12,7 @@ import javax.persistence.*;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@DiscriminatorValue("easy")
+@DiscriminatorValue("easy_payment")
 public class EasyPayment extends PayInformation {
     public EasyPayment(PayInformation payInformation, String orderId, EasyPayCode easyPayCode, Integer discountAmount) {
         super(payInformation);
@@ -20,12 +20,15 @@ public class EasyPayment extends PayInformation {
         this.easyPayCode = easyPayCode;
         this.discountAmount = discountAmount;
     }
+
     @Id
     @Column(name = "order_id")
     private String orderId;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "easy_pay_code", nullable = false)
     private EasyPayCode easyPayCode;
+
     @Column(name = "discount_amount", nullable = false)
     private Integer discountAmount;
 }

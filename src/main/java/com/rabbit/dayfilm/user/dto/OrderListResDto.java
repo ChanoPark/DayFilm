@@ -2,6 +2,7 @@ package com.rabbit.dayfilm.user.dto;
 
 import com.querydsl.core.annotations.QueryProjection;
 import com.rabbit.dayfilm.order.entity.OrderStatus;
+import com.rabbit.dayfilm.payment.toss.object.Method;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -27,6 +28,8 @@ public class OrderListResDto {
         @ApiModelProperty(value="주문번호(PK)", example="11")
         private Long orderPk;
 
+        private String orderId;
+
         @ApiModelProperty(value="아이템 제목", example="캐논 카메라")
         private String title;
 
@@ -48,18 +51,22 @@ public class OrderListResDto {
         @ApiModelProperty(value="가격", example="25000")
         private Integer price;
 
+        private Method payMethod;
+
         @QueryProjection
         public OrderList(Long orderPk, String title, String imagePath,
-                         LocalDateTime created, LocalDateTime started, LocalDateTime ended,
-                         OrderStatus status, Integer price) {
+                         LocalDateTime created, LocalDateTime started, LocalDateTime ended, String orderId,
+                         OrderStatus status, Integer price, String payMethod) {
             this.orderPk = orderPk;
             this.title = title;
             this.imagePath = imagePath;
             this.created = created;
             this.ended = ended;
+            this.orderId = orderId;
             this.started = started;
             this.status = status;
             this.price = price;
+            this.payMethod = Method.findMethod(payMethod);
         }
     }
 }

@@ -30,4 +30,14 @@ public enum Method {
         }
         throw new CustomException("결제 정보가 올바르지 않습니다.");
     }
+
+    public static Method findMethod(String method) {
+        method = method.toLowerCase();
+        for (Method m : Method.values()) {
+            if (m.name().toLowerCase().equals(method)) {
+                return m;
+            }
+        }
+        throw new CustomException("결제 정보가 올바르지 않습니다.");
+    }
 }

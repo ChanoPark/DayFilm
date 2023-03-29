@@ -19,6 +19,7 @@ import static com.rabbit.dayfilm.item.entity.QItem.item;
 import static com.rabbit.dayfilm.item.entity.QItemImage.itemImage;
 import static com.rabbit.dayfilm.item.entity.QProduct.product;
 import static com.rabbit.dayfilm.order.entity.QOrder.order;
+import static com.rabbit.dayfilm.payment.entity.QPayInformation.payInformation;
 
 @RequiredArgsConstructor
 public class OrderQueryRepositoryImpl implements OrderQueryRepository {
@@ -34,12 +35,16 @@ public class OrderQueryRepositoryImpl implements OrderQueryRepository {
                         order.created,
                         order.started,
                         order.ended,
+                        order.orderId,
                         order.status,
-                        order.price
+                        order.price,
+                        payInformation.method
                 ))
                 .from(order)
                 .innerJoin(product)
                 .on(order.productId.eq(product.id))
+                .innerJoin(payInformation)
+                .on(payInformation.orderId.eq(order.orderId))
                 .innerJoin(item)
                 .on(product.in(item.products))
                 .leftJoin(itemImage)
