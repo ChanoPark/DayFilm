@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Repository
@@ -23,7 +24,7 @@ public class PayPerMethodRepository<T extends PayInformation> {
         em.persist(object);
     }
 
-    public VirtualAccountPayment findVirtual(String orderId) {
-        return em.find(VirtualAccountPayment.class, orderId);
+    public Optional<VirtualAccountPayment> findVirtual(String orderId) {
+        return Optional.ofNullable(em.find(VirtualAccountPayment.class, orderId));
     }
 }

@@ -54,7 +54,10 @@ public class SecurityConfig {
                 .csrf().disable()
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeRequests()
-                .antMatchers("/items/store-write/**").hasRole(Role.STORE.name())
+                .antMatchers(
+                        "/items/store-write/**",
+                        "/store/**"
+                ).hasRole(Role.STORE.name())
                 .antMatchers(
                         "/user/**",
                         "/basket/**",

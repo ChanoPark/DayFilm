@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Inheritance(strategy = InheritanceType.JOINED)
-@DiscriminatorColumn(name="method")
+@DiscriminatorColumn(name="method", discriminatorType = DiscriminatorType.STRING)
 public class PayInformation {
     public PayInformation(PayInformation payInformation) {
         this.orderId = payInformation.getOrderId();
@@ -52,6 +52,9 @@ public class PayInformation {
     private Integer vat;
     @Column(name = "type", nullable = false)
     private String type;
+
+    @Column(name = "method", insertable = false, updatable = false)
+    private String method;
 
     public void updateStatus(PayStatus status) {
         this.status = status;

@@ -11,8 +11,8 @@ import com.rabbit.dayfilm.item.repository.ProductRepository;
 import com.rabbit.dayfilm.order.entity.Order;
 import com.rabbit.dayfilm.order.entity.OrderStatus;
 import com.rabbit.dayfilm.order.repository.OrderRepository;
-import com.rabbit.dayfilm.payment.dto.PaymentCancelReqDto;
 import com.rabbit.dayfilm.payment.dto.PaymentCancelResDto;
+import com.rabbit.dayfilm.payment.dto.RefundReceiveAccount;
 import com.rabbit.dayfilm.payment.entity.*;
 import com.rabbit.dayfilm.payment.repository.PayPerMethodRepository;
 import com.rabbit.dayfilm.payment.repository.PayRepository;
@@ -176,29 +176,23 @@ public class TossServiceImpl implements TossService {
         return new TossOrderInfo(user.getNickname(), message, orderId, products);
     }
 
-
     @Override
     @Transactional
-    public PaymentCancelResDto cancelPayment(PaymentCancelReqDto request) {
-        PayInformation payment = payRepository.findById(request.getOrderId()).orElseThrow(() -> new CustomException("결제 내역이 존재하지 않습니다."));
+    public PaymentCancelResDto cancelPayment(PayInformation payment, Order order, RefundReceiveAccount refundReceiveAccount, String cancelReason) {
         ObjectNode data = mapper.createObjectNode();
 
-        List<Order> orders = orderRepository.findAllById(request.getOrderPrimaryId());
-        int price = 0;
-        for (Order order : orders) {
-            price += order.getPrice();
-        }
+        int price = order.getPrice();
 
-        if (payPerMethodRepository.findVirtual(request.getOrderId()) != null) {
+        if (refundReceiveAccount != null) {
             try {
-                String refundInfo = mapper.writeValueAsString(request.getRefundReceiveAccount());
+                String refundInfo = mapper.writeValueAsString(refundReceiveAccount);
                 data.put("refundReceiveAccount", refundInfo);
             } catch (JsonProcessingException e) {
                 throw new CustomException("환불 정보가 올바르지 않습니다.");
             }
         }
 
-        data.put("cancelReason", request.getReason());
+        data.put("cancelReason", cancelReason);
         data.put("cancelAmount", price);
 
         Payment cancelPayment = webClient.post()
@@ -213,21 +207,20 @@ public class TossServiceImpl implements TossService {
                 .bodyToMono(Payment.class)
                 .block();
 
+        Objects.requireNonNull(cancelPayment,"환불 정보가 올바르지 않습니다.");
+        Objects.requireNonNull(cancelPayment.getCancels(), "환불 정보가 올바르지 않습니다.");
         List<Cancels> cancels = cancelPayment.getCancels();
-        Objects.requireNonNull(cancels, "환불 정보가 올바르지 않습니다.");
 
         List<PaymentCancelResDto.ProductInfo> products = new ArrayList<>();
 
-        for (Order order : orders) {
-            order.updateStatus(OrderStatus.CANCEL);
-            String title = productRepository.selectProductTitle(order.getProductId());
-            products.add(new PaymentCancelResDto.ProductInfo(title, order.getStarted(), order.getEnded(), order.getPrice()));
-        }
+        order.updateStatus(OrderStatus.CANCEL);
+        String title = productRepository.selectProductTitle(order.getProductId());
+        products.add(new PaymentCancelResDto.ProductInfo(title, order.getStarted(), order.getEnded(), order.getPrice()));
 
         for (Cancels cancel : cancels) {
             payPerMethodRepository.saveCancelPayment(
                     CancelPayment.builder()
-                            .orderId(request.getOrderId())
+                            .orderId(order.getOrderId())
                             .cancelReason(cancel.getCancelReason())
                             .canceledAt(cancel.getCanceledAt())
                             .cancelAmount(cancel.getCancelAmount())
@@ -240,7 +233,7 @@ public class TossServiceImpl implements TossService {
             );
         }
         payment.updateStatus(cancelPayment.getStatus());
-        return new PaymentCancelResDto(request.getOrderId(), products);
+        return new PaymentCancelResDto(order.getOrderId(), products);
     }
 
     private void createVirtualAccount(String orderId, PayInformation payInformation, VirtualAccount virtualAccount) {

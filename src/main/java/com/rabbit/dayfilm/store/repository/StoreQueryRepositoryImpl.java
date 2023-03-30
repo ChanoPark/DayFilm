@@ -93,8 +93,8 @@ public class StoreQueryRepositoryImpl implements StoreQueryRepository {
         return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
     }
 
-    private BooleanExpression eqStatus(OrderStatus status) {
-        return status != null ? order.status.eq(status) : null;
+    private BooleanExpression eqStatus(List<OrderStatus> status) {
+        return status != null ? order.status.in(status) : null;
     }
 
     private BooleanExpression eqMethod(DeliveryMethod method) {

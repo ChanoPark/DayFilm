@@ -43,7 +43,6 @@ public class TossController {
         } else {
             return ResponseEntity.ok("취소");
         }
-
     }
 
     @GetMapping(EndPoint.REDIRECT_FAIL)
@@ -52,11 +51,5 @@ public class TossController {
                                                          @RequestParam("message") String message,
                                                          @RequestParam("orderId") String orderId) {
         return ResponseEntity.ok().body(tossService.cancelOrder(orderId, message));
-    }
-
-    @PostMapping(EndPoint.CANCEL)
-    @Operation(summary = "환불", description = "결제가 완료된 상품을 환불합니다.")
-    public ResponseEntity<PaymentCancelResDto> paymentCancel(@RequestBody PaymentCancelReqDto request) {
-        return ResponseEntity.ok().body(tossService.cancelPayment(request));
     }
 }
