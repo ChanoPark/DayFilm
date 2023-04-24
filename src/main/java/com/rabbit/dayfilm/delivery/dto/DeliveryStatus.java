@@ -15,7 +15,7 @@ public enum DeliveryStatus {
     @JsonCreator
     public static DeliveryStatus fromString(String status) {
         for (DeliveryStatus d : DeliveryStatus.values()) {
-            if (d.name().toLowerCase().equals(status))
+            if (d.name().equalsIgnoreCase(status))
                 return d;
         }
         throw new CustomException("배송 정보가 올바르지 않습니다.");
