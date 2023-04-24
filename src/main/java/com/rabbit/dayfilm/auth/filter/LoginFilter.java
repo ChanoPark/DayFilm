@@ -80,7 +80,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         response.setHeader("Refresh-Token", BEARER + refreshToken);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding("utf-8");
-        response.getWriter().write(objectMapper.writeValueAsString(new AuthResDto(user.getNickname(), user.getRole())));
+        response.getWriter().write(objectMapper.writeValueAsString(new AuthResDto(user.getNickname(), user.getRole(), user.getPk())));
     }
 
     @Override

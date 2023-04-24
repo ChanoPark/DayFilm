@@ -24,12 +24,12 @@ public class UserInfo implements Serializable, UserDetails {
 
     @Id
     private String email;
+    private Long pk;
     private String pw;
     private String refreshToken;
     private String nickname;
     private Role role;
-//    @TimeToLive(unit = TimeUnit.DAYS)
-//    private Long ttl;
+
     public void changeRefreshToken(String refreshToken) {
         this.refreshToken = refreshToken;
     }
