@@ -25,4 +25,14 @@ public class Product {
 
     private LocalDate startDate;
     private LocalDate endDate;
+
+    public void updateProductStatus() {
+        this.productStatus = ProductStatus.AVAILABLE;
+        this.startDate = null;
+        this.endDate = null;
+    }
+
+    public void deleteProduct() {
+        this.productStatus = ProductStatus.NOTUSE;
+    }
 }

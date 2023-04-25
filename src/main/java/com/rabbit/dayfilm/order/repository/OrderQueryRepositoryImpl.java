@@ -3,6 +3,8 @@ package com.rabbit.dayfilm.order.repository;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.rabbit.dayfilm.delivery.dto.DeliveryTrackingDto;
+import com.rabbit.dayfilm.delivery.dto.QDeliveryTrackingDto_DeliveryProductInfo;
 import com.rabbit.dayfilm.order.entity.OrderStatus;
 import com.rabbit.dayfilm.user.dto.OrderListResDto;
 import com.rabbit.dayfilm.user.dto.QOrderListResDto_OrderList;
@@ -17,6 +19,7 @@ import static com.rabbit.dayfilm.item.entity.QItem.item;
 import static com.rabbit.dayfilm.item.entity.QItemImage.itemImage;
 import static com.rabbit.dayfilm.item.entity.QProduct.product;
 import static com.rabbit.dayfilm.order.entity.QOrder.order;
+import static com.rabbit.dayfilm.payment.entity.QPayInformation.payInformation;
 
 @RequiredArgsConstructor
 public class OrderQueryRepositoryImpl implements OrderQueryRepository {
@@ -26,17 +29,22 @@ public class OrderQueryRepositoryImpl implements OrderQueryRepository {
     public Page<OrderListResDto.OrderList> getOrderList(Long userId, boolean isCanceled, Pageable pageable) {
         List<OrderListResDto.OrderList> content = queryFactory
                 .select(new QOrderListResDto_OrderList(
+                        order.id,
                         item.title,
                         itemImage.imagePath,
                         order.created,
                         order.started,
                         order.ended,
+                        order.orderId,
                         order.status,
-                        order.price
+                        order.price,
+                        payInformation.method
                 ))
                 .from(order)
                 .innerJoin(product)
                 .on(order.productId.eq(product.id))
+                .innerJoin(payInformation)
+                .on(payInformation.orderId.eq(order.orderId))
                 .innerJoin(item)
                 .on(product.in(item.products))
                 .leftJoin(itemImage)
@@ -64,7 +72,30 @@ public class OrderQueryRepositoryImpl implements OrderQueryRepository {
         return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
     }
 
+    @Override
+    public DeliveryTrackingDto.DeliveryProductInfo getProductDeliveryInfo(Long orderPk) {
+        return queryFactory
+                .select(new QDeliveryTrackingDto_DeliveryProductInfo(
+                        item.title,
+                        itemImage.imagePath,
+                        order.created
+                ))
+                .from(order)
+                .innerJoin(product)
+                .on(product.id.eq(order.productId))
+                .innerJoin(item)
+                .on(item.eq(product.item))
+                .leftJoin(itemImage)
+                .on(
+                        itemImage.item.eq(item),
+                        itemImage.orderNumber.eq(1)
+                )
+                .where(order.id.eq(orderPk))
+                .fetchOne();
+    }
+
     private BooleanExpression setStatus(boolean isCanceled) {
-        return isCanceled ? order.status.eq(OrderStatus.CANCEL) : order.status.ne(OrderStatus.CANCEL);
+        List<OrderStatus> cancelStatus = OrderStatus.getCancelStatus();
+        return isCanceled ? order.status.in(cancelStatus) : order.status.notIn(cancelStatus);
     }
 }

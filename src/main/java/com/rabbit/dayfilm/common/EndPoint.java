@@ -12,7 +12,7 @@ public class EndPoint {
     public static final String ITEM = "/items";
     public static final String LIKE = "/likes";
     public static final String REVIEW = "/reviews";
-
+    public static final String PRODUCT = "/products";
 
     public static final String BASKET = "/basket";
     public static final String ALL = "/all";
@@ -28,4 +28,18 @@ public class EndPoint {
     public static final String CANCEL = "/cancel";
     public static final String REDIRECT_SUCCESS = REDIRECT + "/success";
     public static final String REDIRECT_FAIL = REDIRECT + "/fail";
+
+    public static final String STORE = "/store";
+    public static final String DELIVERY = "/delivery";
+    public static final String ORDER_COUNT = ORDER +"/count";
+    public static final String ORDER_LIST = ORDER + "/list";
+    public static final String ORDER_CHECK = ORDER + "/check";
+    public static final String ORDER_DELIVERY_UPDATE = ORDER + DELIVERY + "/update";
+    public static final String ORDER_DONE = ORDER + "/done";
+
+    public static final String TRACKING = "/track";
+
+    public static final String ITEM_CANCEL = ITEM + "/cancel";
+    public static final String ITEM_CANCEL_PROCESS = ITEM_CANCEL + "/process";
+    public static final String ITEM_CANCEL_FINISH = ITEM_CANCEL + "/finish";
 }

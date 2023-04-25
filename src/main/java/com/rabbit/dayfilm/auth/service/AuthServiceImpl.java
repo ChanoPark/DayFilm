@@ -90,11 +90,12 @@ public class AuthServiceImpl implements UserDetailsService, AuthService {
                     .picturePath(imageInfoDto.getImagePath())
                     .build();
 
-            storeRepository.save(store);
+            Store savedStore = storeRepository.save(store);
             authRedisRepository.save(
                     UserInfo.builder()
-                            .email(store.getEmail())
-                            .pw(store.getPw())
+                            .email(savedStore.getEmail())
+                            .pw(savedStore.getPw())
+                            .pk(savedStore.getId())
                             .refreshToken(refreshToken)
                             .nickname(request.getStoreName())
                             .role(Role.STORE)
@@ -120,13 +121,14 @@ public class AuthServiceImpl implements UserDetailsService, AuthService {
                     .role(Role.USER)
                     .build();
 
-            userRepository.save(user);
+            User savedUser = userRepository.save(user);
             authRedisRepository.save(
                     UserInfo.builder()
-                            .email(user.getEmail())
-                            .pw(user.getPw())
+                            .email(savedUser.getEmail())
+                            .pw(request.getPw())
+                            .pk(savedUser.getId())
                             .refreshToken(refreshToken)
-                            .nickname(user.getNickname())
+                            .nickname(savedUser.getNickname())
                             .role(Role.USER)
                             .build()
             );

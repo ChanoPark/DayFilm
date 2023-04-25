@@ -97,6 +97,14 @@ public class Item {
         }
     }
 
+    public void addQuantity(Integer quantity) {
+        this.quantity += quantity;
+    }
+
+    public void minusQuantity(Integer quantity) {
+        this.quantity -= quantity;
+    }
+
     public void clearImages() {
         this.itemImages.clear();
     }

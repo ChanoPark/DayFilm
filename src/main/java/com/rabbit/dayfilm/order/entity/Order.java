@@ -5,6 +5,7 @@ import com.rabbit.dayfilm.store.entity.Address;
 import lombok.*;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -40,6 +41,9 @@ public class Order {
     @Column(name = "ended", nullable = false)
     private LocalDateTime ended;
 
+    @Column(name = "outgoing_date")
+    private LocalDate outgoingDate;
+
     @Column(name = "method", nullable = false)
     @Enumerated(EnumType.STRING)
     private DeliveryMethod method;
@@ -54,7 +58,24 @@ public class Order {
     @Column(name ="price", nullable = false)
     private Integer price;
 
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private OrderDelivery orderDelivery;
+
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private OrderReturnInfo returnInfo;
+
     public void updateStatus(OrderStatus status) {
         this.status = status;
+    }
+    public void updateOutgoingDate(LocalDate outgoingDate) {
+        this.outgoingDate = outgoingDate;
+    }
+    public void setOrderDelivery(OrderDelivery delivery) {
+        this.orderDelivery = delivery;
+        delivery.setOrder(this);
+    }
+    public void setReturnInfo(OrderReturnInfo returnDelivery) {
+        this.returnInfo = returnDelivery;
+        returnDelivery.setOrder(this);
     }
 }
