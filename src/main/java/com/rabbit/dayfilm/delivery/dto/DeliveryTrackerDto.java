@@ -2,40 +2,26 @@ package com.rabbit.dayfilm.delivery.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
+import com.rabbit.dayfilm.common.serializer.OffsetToLocalDateTimeSerializer;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class DeliveryTracker {
+public class DeliveryTrackerDto {
     private FromToInfo from;
     private FromToInfo to;
     private TrackerState state;
     private List<TrackerProgress> progresses;
-
-    public DeliveryTracker(DeliveryTrackerDto dto) {
-        this.from = new FromToInfo(dto.getFrom().getName(), dto.getFrom().getTime());
-        this.to = new FromToInfo(dto.getTo().getName(), dto.getTo().getTime());
-        this.state = new TrackerState(dto.getState().getId(), dto.getState().getText());
-        this.progresses = new ArrayList<>();
-        for (DeliveryTrackerDto.TrackerProgress p : dto.getProgresses()) {
-            this.progresses.add(
-                    new TrackerProgress(
-                            p.getTime(),
-                            new TrackerLocation(p.getLocation().getName()),
-                            new TrackerStatus(p.getStatus().getId(), p.getStatus().getText()), p.getDescription()
-                    )
-            );
-        }
-    }
 
     @AllArgsConstructor
     @NoArgsConstructor
@@ -45,7 +31,7 @@ public class DeliveryTracker {
         private String name;
 
         @ApiModelProperty(value="시간(보낸시간or받은시간)", example="2023-03-28T23:01:00")
-        @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+        @JsonDeserialize(using = OffsetToLocalDateTimeSerializer.class)
         @JsonSerialize(using = LocalDateTimeSerializer.class)
         private LocalDateTime time;
     }
@@ -66,7 +52,7 @@ public class DeliveryTracker {
     @Getter
     public static class TrackerProgress {
         @ApiModelProperty(value="시간", example="2023-03-28T23:01:00")
-        @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+        @JsonDeserialize(using = OffsetToLocalDateTimeSerializer.class)
         @JsonSerialize(using = LocalDateTimeSerializer.class)
         private LocalDateTime time;
 
